@@ -1,3 +1,43 @@
 # node-osrm
 
 Node.js bindings to the [OSRM](https://github.com/DennisOSRM/Project-OSRM).
+
+
+# Depends
+
+ - OSRM built from `develop` branch and `cmake ../ -DWITH_TOOLS=1`
+ - Lua, luabind, and stxxl headers
+ - Boost >= 1.50 or Luabind headers patched as in https://github.com/DennisOSRM/Project-OSRM/issues/465#issuecomment-9133539 (note: it is possible to patch the luabind headers that are installed by apt)
+ - If you use luajit then you need to put the luajit headers on the compile flags like:
+
+    export CXXFLAGS="-I/usr/include/luajit-2.0/"
+
+# Building
+
+To build the bindings, first build the `develop` branch of `Project-OSRM` like:
+
+    git clone -b develop https://github.com/DennisOSRM/Project-OSRM.git
+    cd Project-OSRM
+    mkdir build;cd build;cmake ../ -DWITH_TOOLS=1
+    make
+    cd ../
+
+Then checkout the `node-osrm` repo into the `Project-OSRM` main directory like:
+
+    git clone https://github.com/DennisOSRM/node-osrm.git
+    cd node-osrm
+    npm install
+
+# Setup
+
+Run `osrm-extract` and `osrm-prepare` on some osm data, and edit the `server.ini` in the `Project-OSRM` directory to point to it:
+
+# Testing
+
+First you need to put the `libOSRM.so` on your library path:
+
+    export LD_LIBRARY_PATH=`pwd`/../build
+
+Then run the tests like:
+
+    make test

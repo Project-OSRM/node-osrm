@@ -1,0 +1,4 @@
+.DS_Store
+build
+lib/_osrm.node
+node_modules

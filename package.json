@@ -1,0 +1,35 @@
+{
+    "name": "osrm",
+    "description": "open source routing machine",
+    "url": "https://github.com/DennisOSRM/Project-OSRM",
+    "homepage": "http://project-osrm.org",
+    "author": "Dane Springmeyer <springmeyer>",
+    "version": "1.0.0",
+    "main": "./lib/osrm.js",
+    "bugs": {
+        "email": "dane@mapbox.com",
+        "url": "https://github.com/DennisOSRM/Project-OSRM/issues"
+    },
+    "keywords": [
+        "routing",
+        "geocoding"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/DennisOSRM/Project-OSRM.git"
+    },
+    "licenses": [
+        {
+            "type": "BSD"
+        }
+    ],
+    "devDependencies": {
+        "mocha": "*"
+    },
+    "engines": {
+        "node": ">= 0.6.13 && < 0.11.0"
+    },
+    "scripts": {
+        "test": "mocha"
+    }
+}
