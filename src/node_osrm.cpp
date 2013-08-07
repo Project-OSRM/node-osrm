@@ -75,29 +75,29 @@ Handle<Value> Query::New(Arguments const& args)
 {
     HandleScope scope;
     if (!args.IsConstructCall()) {
-        return ThrowException(String::New("Cannot call constructor as function, you need to use 'new' keyword"));
+        return ThrowException(Exception::Error(String::New("Cannot call constructor as function, you need to use 'new' keyword")));
     }
     try {
         if (args.Length() == 1) {
             if (!args[0]->IsObject()) {
-                return ThrowException(String::New("first argument must be an object"));
+                return ThrowException(Exception::TypeError(String::New("first argument must be an object")));
             }
             Local<Object> obj = args[0]->ToObject();
             if (obj->IsNull() || obj->IsUndefined()) {
-                return ThrowException(String::New("first arg must be an object"));
+                return ThrowException(Exception::TypeError(String::New("first arg must be an object")));
             }
             if (!obj->Has(String::NewSymbol("start")) || !obj->Has(String::NewSymbol("end"))) {
-                return ThrowException(String::New("must provide a start and end (lat/long) coordinate pair"));
+                return ThrowException(Exception::TypeError(String::New("must provide a start and end (lat/long) coordinate pair")));
             }
             Local<Value> start = obj->Get(String::New("start"));
             Local<Value> end = obj->Get(String::New("end"));
             if (!start->IsArray() || !end->IsArray()) {
-                return ThrowException(String::New("start and end must be an array of (lat/long) coordinate pairs"));
+                return ThrowException(Exception::TypeError(String::New("start and end must be an array of (lat/long) coordinate pairs")));
             }
             Local<Array> start_array = Local<Array>::Cast(start);
             Local<Array> end_array = Local<Array>::Cast(end);
             if (start_array->Length() != 2 || end_array->Length() != 2) {
-                return ThrowException(String::New("start and end must be an array of 2 (lat/long) coordinates"));
+                return ThrowException(Exception::TypeError(String::New("start and end must be an array of 2 (lat/long) coordinates")));
             }
             _Coordinate start_coordinate(start_array->Get(0)->NumberValue()*100000,
                                          start_array->Get(1)->NumberValue()*100000);
@@ -120,10 +120,10 @@ Handle<Value> Query::New(Arguments const& args)
             q->Wrap(args.This());
             return args.This();
         } else {
-            return ThrowException(String::New("please provide an object of options for the first argument"));
+            return ThrowException(Exception::TypeError(String::New("please provide an object of options for the first argument")));
         }
     } catch (std::exception const& ex) {
-        return ThrowException(String::New(ex.what()));
+        return ThrowException(Exception::TypeError(String::New(ex.what())));
     }
     return Undefined();
 }
@@ -148,21 +148,21 @@ Handle<Value> Engine::New(Arguments const& args)
 {
     HandleScope scope;
     if (!args.IsConstructCall()) {
-        return ThrowException(String::New("Cannot call constructor as function, you need to use 'new' keyword"));
+        return ThrowException(Exception::Error(String::New("Cannot call constructor as function, you need to use 'new' keyword")));
     }
     try {
         if (args.Length() == 1) {
             if (!args[0]->IsString()) {
-                return ThrowException(String::New("OSRM config path must be a string"));
+                return ThrowException(Exception::TypeError(String::New("OSRM config path must be a string")));
             }
             Engine* im = new Engine(*String::Utf8Value(args[0]->ToString()));
             im->Wrap(args.This());
             return args.This();
         } else {
-            return ThrowException(String::New("please provide Engine width and height"));
+            return ThrowException(Exception::TypeError(String::New("please provide Engine width and height")));
         }
     } catch (std::exception const& ex) {
-        return ThrowException(String::New(ex.what()));
+        return ThrowException(Exception::Error(String::New(ex.what())));
     }
     return Undefined();
 }
@@ -172,16 +172,16 @@ Handle<Value> Engine::runSync(Arguments const& args)
     HandleScope scope;
 
     if (args.Length() < 1) {
-        ThrowException(String::New("first argument must be a osrm.Query"));
+        ThrowException(Exception::TypeError(String::New("first argument must be a osrm.Query")));
     }
 
     if (!args[0]->IsObject()) {
-        return ThrowException(String::New("first argument must be a osrm.Query object"));
+        return ThrowException(Exception::TypeError(String::New("first argument must be a osrm.Query object")));
     }
 
     Local<Object> obj = args[0]->ToObject();
     if (obj->IsNull() || obj->IsUndefined() || !Query::constructor->HasInstance(obj)) {
-        ThrowException(Exception::TypeError(String::New("osrm.Query object expected for first argument")));
+        return ThrowException(Exception::TypeError(String::New("osrm.Query object expected for first argument")));
     }
     Query *query = ObjectWrap::Unwrap<Query>(obj);
     Engine* machine = ObjectWrap::Unwrap<Engine>(args.This());
