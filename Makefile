@@ -23,7 +23,7 @@ berlin-latest.osrm.hsgr: berlin-latest.osrm
 	cd ../ && ./build/osrm-prepare node-osrm/berlin-latest.osrm node-osrm/berlin-latest.osrm.restrictions
 
 test: berlin-latest.osrm.hsgr
-	export NODE_PATH=./lib && npm test
+	@export NODE_PATH=./lib && npm test
 
 check: test
 
