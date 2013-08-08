@@ -16,7 +16,7 @@ describe('osrm', function() {
     });
 
     // @TODO not safe yet to test: https://github.com/DennisOSRM/Project-OSRM/issues/692
-    it.skip('should throw if ini file does not exist', function(done) {
+    it.skip('should throw if ini file is blank', function(done) {
         assert.throws(function() { new osrm.Engine("./test/data/bogus.ini"); },
         /@TODO/);
         done();
@@ -38,7 +38,7 @@ describe('osrm', function() {
 
 
     // @TODO not safe yet to test: https://github.com/DennisOSRM/Project-OSRM/issues/693
-    it.skip('should throw if ini port option is invalid', function(done) {
+    it.skip('should throw if ini references corrupt files', function(done) {
         assert.throws(function() { new osrm.Engine("./test/data/references-corrupt-files.ini"); },
         /hsgr not found/);
         done();
