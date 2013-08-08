@@ -52,12 +52,8 @@ describe('osrm', function() {
 
     it('should return results for berlin using sync api', function(done) {
         var engine = new osrm.Engine("./test/data/berlin.ini");
-        // http://geojson.io/#6177953 | https://gist.github.com/anonymous/6177953
-        var start = [13.362293243408203,52.502429681191614];
-        var end = [13.405036926269531,52.54347705679033];
-        // ugh, lat/lon not lon/lat?
-        start.reverse();
-        end.reverse();
+        var start = [52.519930,13.438640];
+        var end = [52.513191,13.415852];
         var query = new osrm.Query( { start: start, end: end });
         var sync_result = engine.run(query);
         engine.run(query,function(err,async_result) {
