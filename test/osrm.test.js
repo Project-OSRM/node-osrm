@@ -16,9 +16,9 @@ describe('osrm', function() {
     });
 
     // @TODO not safe yet to test: https://github.com/DennisOSRM/Project-OSRM/issues/692
-    it.skip('should throw if ini file is blank', function(done) {
+    it('should throw if ini file is blank', function(done) {
         assert.throws(function() { new osrm.Engine("./test/data/bogus.ini"); },
-        /@TODO/);
+        /no ram index file name in server ini/);
         done();
     });
 
@@ -38,9 +38,9 @@ describe('osrm', function() {
 
 
     // @TODO not safe yet to test: https://github.com/DennisOSRM/Project-OSRM/issues/693
-    it.skip('should throw if ini references corrupt files', function(done) {
+    it('should throw if ini references corrupt files', function(done) {
         assert.throws(function() { new osrm.Engine("./test/data/references-corrupt-files.ini"); },
-        /hsgr not found/);
+        /hsgr file is empty/);
         done();
     });
 
