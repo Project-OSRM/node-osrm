@@ -18,7 +18,7 @@ describe('osrm', function() {
     // @TODO not safe yet to test: https://github.com/DennisOSRM/Project-OSRM/issues/692
     it('should throw if ini file is blank', function(done) {
         assert.throws(function() { new osrm.Engine("./test/data/bogus.ini"); },
-        /no ram index file name in server ini/);
+        /\.\/test\/data\/bogus.ini is empty/);
         done();
     });
 
@@ -26,7 +26,7 @@ describe('osrm', function() {
     // https://github.com/DennisOSRM/Project-OSRM/commit/34735b8aad06098d09d3fb907137697799a281e4#commitcomment-3809465
     it('should throw if ini file does not exist', function(done) {
         assert.throws(function() { new osrm.Engine("doesnotexist.ini"); },
-        /server.ini not found/);
+        /doesnotexist.ini not found/);
         done();
     });
 
