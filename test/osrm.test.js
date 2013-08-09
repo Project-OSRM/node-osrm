@@ -32,7 +32,7 @@ describe('osrm', function() {
 
     it('should throw if files referenced by ini do not exist', function(done) {
         assert.throws(function() { new osrm.Engine("./test/data/references-missing-files.ini"); },
-        /hsgr not found/);
+        /hsgr file does not exist/);
         done();
     });
 
