@@ -49,7 +49,7 @@
         "src/node_osrm.cpp"
       ],
       'xcode_settings': {
-        'OTHER_CPLUSPLUSFLAGS':[ ],
+        'OTHER_CPLUSPLUSFLAGS':['-Wno-unneeded-internal-declaration', '-Wno-unknown-pragmas'],
         'GCC_ENABLE_CPP_RTTI': 'YES',
         'GCC_ENABLE_CPP_EXCEPTIONS': 'YES'
       }
