@@ -99,9 +99,9 @@ Handle<Value> Query::New(Arguments const& args)
             if (start_array->Length() != 2 || end_array->Length() != 2) {
                 return ThrowException(Exception::TypeError(String::New("start and end must be an array of 2 (lat/long) coordinates")));
             }
-            _Coordinate start_coordinate(start_array->Get(0)->NumberValue()*COORDINATE_PRECISION,
+            FixedPointCoordinate start_coordinate(start_array->Get(0)->NumberValue()*COORDINATE_PRECISION,
                                          start_array->Get(1)->NumberValue()*COORDINATE_PRECISION);
-            _Coordinate end_coordinate(end_array->Get(0)->NumberValue()*COORDINATE_PRECISION,
+            FixedPointCoordinate end_coordinate(end_array->Get(0)->NumberValue()*COORDINATE_PRECISION,
                                        end_array->Get(1)->NumberValue()*COORDINATE_PRECISION);
 
             Query* q = new Query();
