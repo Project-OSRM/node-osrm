@@ -1,6 +1,10 @@
 // v8
 #include <v8.h>
 
+// boost
+#include <boost/make_shared.hpp>
+#include <boost/shared_ptr.hpp>
+
 // node
 #include <node.h>
 #include <node_version.h>
