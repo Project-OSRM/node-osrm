@@ -65,4 +65,20 @@ describe('osrm', function() {
             done();
         });
     });
+
+    it('should return results for berlin using sync api and shared memory', function(done) {
+        var opts = new osrm.Options("./test/data/berlin.ini",true);
+        var engine = new osrm.Engine(opts);
+        var start = [52.519930,13.438640];
+        var end = [52.513191,13.415852];
+        var query = new osrm.Query( { start: start, end: end });
+        var sync_result = engine.run(query);
+        engine.run(query,function(err,async_result) {
+            assert.equal(sync_result,async_result);
+            var result_json = JSON.parse(async_result);
+            assert.equal(result_json.status_message,'Found route between points');
+            done();
+        });
+    });
+
 });

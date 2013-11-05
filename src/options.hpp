@@ -22,7 +22,7 @@ public:
     static Persistent<FunctionTemplate> constructor;
     static void Initialize(Handle<Object> target);
     static Handle<Value> New(Arguments const& args);
-    Options();
+    Options(bool use_shared_memory=false);
     inline server_paths_ptr get() { return this_; }
     void _ref() { Ref(); }
     void _unref() { Unref(); }
@@ -45,12 +45,12 @@ void Options::Initialize(Handle<Object> target) {
     target->Set(String::NewSymbol("Options"),constructor->GetFunction());
 }
 
-Options::Options()
+Options::Options(bool use_shared_memory)
   : ObjectWrap(),
     ip_address_("0.0.0.0"),
     ip_port_(5000),
     requested_num_threads_(8),
-    use_shared_memory_(false),    
+    use_shared_memory_(use_shared_memory),
     this_(boost::make_shared<ServerPaths>()) { }
 
 Options::~Options() { }
@@ -62,12 +62,20 @@ Handle<Value> Options::New(Arguments const& args)
         return ThrowException(Exception::Error(String::New("Cannot call constructor as function, you need to use 'new' keyword")));
     }
     try {
-        if (args.Length() == 1) {
+        if (args.Length() >= 1) {
             if (!args[0]->IsString()) {
                 return ThrowException(Exception::TypeError(String::New("OSRM config path must be a string")));
             }
+            bool use_shared_memory = false;
+            // shared memory
+            if (args.Length() == 2) {
+                if (!args[1]->IsBoolean()) {
+                    return ThrowException(Exception::TypeError(String::New("second option must be a boolean")));
+                }
+                use_shared_memory = args[1]->BooleanValue();
+            }
             std::string server_config = *String::Utf8Value(args[0]->ToString());
-            Options* opts = new Options();
+            Options* opts = new Options(use_shared_memory);
             ServerPaths & server_paths = *opts->get();
             const char * argv[] = {
                 "node-osrm",
