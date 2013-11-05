@@ -1,17 +1,4 @@
 {
-  'conditions': [
-      ['OS=="win"', {
-        'variables': {
-          'copy_command%': 'copy',
-          'bin_name':'call'
-        },
-      },{
-        'variables': {
-          'copy_command%': 'cp',
-          'bin_name':'node'
-        },
-      }]
-  ],
   'target_defaults': {
       'default_configuration': 'Release',
       'configurations': {
@@ -59,17 +46,11 @@
       'target_name': 'action_after_build',
       'type': 'none',
       'dependencies': [ '_osrm' ],
-'actions': [
-        {
-          'action_name': 'move_node_module',
-          'inputs': [
-            '<@(PRODUCT_DIR)/_osrm.node'
-          ],
-          'outputs': [
-            'lib/_osrm.node'
-          ],
-          'action': ['<@(copy_command)', '<@(PRODUCT_DIR)/_osrm.node', 'lib/_osrm.node']
-        }
+      'copies': [
+          {
+            'files': [ '<(PRODUCT_DIR)/_osrm.node' ],
+            'destination': './lib/'
+          }
       ]
     }
   ]
