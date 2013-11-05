@@ -23,7 +23,7 @@ To build the bindings, first build the `develop` branch of `Project-OSRM` like:
     make
     cd ../
 
-Then checkout the `node-osrm` repo into the `Project-OSRM` main directory like:
+Then checkout the `node-osrm` **beside** the `Project-OSRM` main directory like:
 
     git clone https://github.com/DennisOSRM/node-osrm.git
     cd node-osrm

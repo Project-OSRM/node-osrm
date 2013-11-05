@@ -1,40 +1,24 @@
 {
-  'target_defaults': {
-      'default_configuration': 'Release',
-      'configurations': {
-          'Debug': {
-              'cflags_cc!': ['-O3', '-DNDEBUG'],
-              'xcode_settings': {
-                'OTHER_CPLUSPLUSFLAGS!':['-O3', '-DNDEBUG']
-              },
-              'msvs_settings': {
-                 'VCCLCompilerTool': {
-                     'ExceptionHandling': 1,
-                     'RuntimeTypeInfo':'true',
-                     'RuntimeLibrary': '3'
-                 }
-              }
-          },
-          'Release': {
-          }
-      },
+  'includes': [ 'common.gypi' ],
+  'variables': {
+      'osrm%':'../Project-OSRM/',
+  },
+  'targets': [
+    {
+      'target_name': '_osrm',
       'include_dirs': [
-          '../Library/',
+          '<@(osrm)/Library/',
           './src/'
       ],
       'cflags_cc!': ['-fno-rtti', '-fno-exceptions'],
       'cflags_cc' : [ ],
       'libraries': [
-        '-L../../build/',
+        '-L../<@(osrm)/build',
         '-lOSRM',
-      ]
-  },
-  'targets': [
-    {
-      'target_name': '_osrm',
+      ],
       'sources': [
         "src/node_osrm.cpp",
-        "../Util/GitDescription.cpp"
+        "<@(osrm)/Util/GitDescription.cpp"
       ],
       'xcode_settings': {
         'OTHER_CPLUSPLUSFLAGS':['-Wno-unneeded-internal-declaration', '-Wno-unknown-pragmas'],
