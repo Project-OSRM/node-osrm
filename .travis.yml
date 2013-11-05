@@ -1,0 +1,31 @@
+language: node_js
+
+node_js:
+ - "0.10"
+ - "0.8"
+
+before_install:
+ - sudo apt-get -qq update
+ - sudo apt-get install build-essential git cmake protobuf-compiler libprotobuf-lite7 libprotobuf-dev libboost-dev libboost-filesystem-dev libboost-program-options-dev libboost-python-dev libboost-regex-dev libboost-system-dev libboost-thread-dev libbz2-dev libstxxl-dev libstxxl-doc libstxxl1 libxml2-dev libzip-dev  lua5.1 liblua5.1-0-dev libluabind-dev
+ - git clone https://github.com/scrosby/OSM-binary.git
+ - cd OSM-binary/src
+ - make && sudo make install
+ - cd ../../
+
+install:
+ - npm install mocha
+ - git clone https://github.com/DennisOSRM/Project-OSRM.git ../Project-OSRM
+ - cd ../Project-OSRM
+ - git checkout develop
+ - mkdir build
+ - cd build
+ - cmake ../ -DWITH_TOOLS=1
+ - make
+ - cd ../../node-OSRM
+
+before_script:
+ - export CXXFLAGS="-I/usr/include/lua5.1/"
+ - npm install --osrm=`pwd`/../Project-OSRM
+
+script:
+ - npm test
