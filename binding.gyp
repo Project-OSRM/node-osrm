@@ -46,7 +46,8 @@
     {
       'target_name': '_osrm',
       'sources': [
-        "src/node_osrm.cpp"
+        "src/node_osrm.cpp",
+        "../Util/GitDescription.cpp"
       ],
       'xcode_settings': {
         'OTHER_CPLUSPLUSFLAGS':['-Wno-unneeded-internal-declaration', '-Wno-unknown-pragmas'],
