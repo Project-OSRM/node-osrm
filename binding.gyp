@@ -16,6 +16,7 @@
         '-L../<@(osrm)/build',
         '-lOSRM',
       ],
+      'conditions': [ [ 'OS=="linux"', {'libraries+':['-Wl,-rpath=../<@(osrm)/build']} ] ],
       'sources': [
         "src/node_osrm.cpp",
         "<@(osrm)/Util/GitDescription.cpp"
