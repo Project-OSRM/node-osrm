@@ -2,6 +2,7 @@
 
 Node.js bindings to the [OSRM](https://github.com/DennisOSRM/Project-OSRM).
 
+[![Build Status](https://secure.travis-ci.org/DennisOSRM/node-OSRM.png)](https://travis-ci.org/DennisOSRM/node-OSRM)
 
 # Depends
 
