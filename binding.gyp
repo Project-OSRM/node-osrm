@@ -1,25 +1,25 @@
 {
   'includes': [ 'common.gypi' ],
   'variables': {
-      'osrm%':'../Project-OSRM/',
+      'cwd%':'<!(pwd)',
   },
   'targets': [
     {
       'target_name': '_osrm',
       'include_dirs': [
-          '<@(osrm)/Library/',
+          '<@(cwd)/../Project-OSRM/Library/',
           './src/'
       ],
       'cflags_cc!': ['-fno-rtti', '-fno-exceptions'],
       'cflags_cc' : [ ],
       'libraries': [
-        '-L../<@(osrm)/build',
+        '-L<@(cwd)/../Project-OSRM/build',
         '-lOSRM',
       ],
-      'conditions': [ [ 'OS=="linux"', {'libraries+':['-Wl,-rpath=../<@(osrm)/build']} ] ],
+      'conditions': [ [ 'OS=="linux"', {'libraries+':['-Wl,-rpath=<@(cwd)/../Project-OSRM/build']} ] ],
       'sources': [
         "src/node_osrm.cpp",
-        "<@(osrm)/Util/GitDescription.cpp"
+        "../Project-OSRM/Util/GitDescription.cpp"
       ],
       'xcode_settings': {
         'OTHER_CPLUSPLUSFLAGS':['-Wno-unneeded-internal-declaration', '-Wno-unknown-pragmas'],
