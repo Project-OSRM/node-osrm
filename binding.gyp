@@ -16,7 +16,13 @@
         '-L<@(cwd)/../Project-OSRM/build',
         '-lOSRM',
       ],
-      'conditions': [ [ 'OS=="linux"', {'libraries+':['-Wl,-rpath=<@(cwd)/../Project-OSRM/build']} ] ],
+      'conditions': [ [ 'OS=="linux"', {
+            'libraries+':[
+                '-Wl,-rpath=<@(cwd)/../Project-OSRM/build',
+                '-lboost_program_options',
+                '-lboost_regex',
+            ]}
+      ] ],
       'sources': [
         "src/node_osrm.cpp",
         "../Project-OSRM/Util/GitDescription.cpp"
