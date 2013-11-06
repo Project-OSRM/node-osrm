@@ -17,6 +17,7 @@ install:
  - git clone https://github.com/DennisOSRM/Project-OSRM.git ../Project-OSRM
  - cd ../Project-OSRM
  - git checkout develop
+ - git describe
  - mkdir -p build && cd build && cmake ../ -DWITH_TOOLS=1
  - make
  - cd ../../node-OSRM
