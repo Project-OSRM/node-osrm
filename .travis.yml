@@ -6,7 +6,7 @@ node_js:
 
 before_install:
  - sudo apt-get -qq update
- - sudo apt-get install build-essential git cmake protobuf-compiler libprotobuf-lite7 libprotobuf-dev libboost-dev libboost-filesystem-dev libboost-program-options-dev libboost-python-dev libboost-regex-dev libboost-system-dev libboost-thread-dev libbz2-dev libstxxl-dev libstxxl-doc libstxxl1 libxml2-dev libzip-dev  lua5.1 liblua5.1-0-dev libluabind-dev
+ - sudo apt-get install build-essential git cmake libboost1.46-all-dev libprotoc-dev libprotobuf7 protobuf-compiler libprotobuf-dev libosmpbf-dev libpng12-dev libbz2-dev libstxxl-dev libstxxl-doc libstxxl1 libxml2-dev libzip-dev lua5.1 liblua5.1-0-dev libluabind-dev
  - git clone https://github.com/scrosby/OSM-binary.git
  - cd OSM-binary/src
  - make && sudo make install
@@ -17,9 +17,7 @@ install:
  - git clone https://github.com/DennisOSRM/Project-OSRM.git ../Project-OSRM
  - cd ../Project-OSRM
  - git checkout develop
- - mkdir build
- - cd build
- - cmake ../ -DWITH_TOOLS=1
+ - mkdir -p build && cd build && cmake ../ -DWITH_TOOLS=1
  - make
  - cd ../../node-OSRM
 
@@ -28,4 +26,4 @@ before_script:
  - npm install
 
 script:
- - npm test
+ - make test # make target downloads data and prepares it if it does not exist
