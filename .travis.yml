@@ -25,7 +25,7 @@ install:
 
 before_script:
  - export CXXFLAGS="-I/usr/include/lua5.1/"
- - npm install --osrm=`pwd`/../Project-OSRM
+ - npm install
 
 script:
  - npm test
