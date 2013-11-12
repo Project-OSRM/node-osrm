@@ -2,3 +2,4 @@
 build
 lib/_osrm.node
 node_modules
+berlin-latest.osm.pbf
