@@ -26,8 +26,8 @@ To build the bindings, first build the `develop` branch of `Project-OSRM` like:
 
 Then checkout the `node-osrm` **beside** the `Project-OSRM` main directory like:
 
-    git clone https://github.com/DennisOSRM/node-osrm.git
-    cd node-osrm
+    git clone https://github.com/DennisOSRM/node-OSRM.git
+    cd node-OSRM
     npm install
 
 # Setup
