@@ -15,7 +15,6 @@ before_install:
  - sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm
 
 install:
- - npm install mocha
  - git clone https://github.com/DennisOSRM/Project-OSRM.git ../Project-OSRM
  - cd ../Project-OSRM
  - git checkout develop
@@ -25,7 +24,8 @@ install:
  - cd ../../node-OSRM
 
 before_script:
- - export CXXFLAGS="-I/usr/include/lua5.1/"
+ #- export CXXFLAGS="-I/usr/include/lua5.1/"
+ - npm install mocha
  - npm install
 
 script:
