@@ -15,7 +15,8 @@
       'libraries': [
         '-L<@(cwd)/../Project-OSRM/build',
         '-lOSRM',
-        '<@(cwd)/../Project-OSRM/build/libUUID.a'
+        '<@(cwd)/../Project-OSRM/build/libUUID.a',
+        '<@(cwd)/../Project-OSRM/build/libGITDESCRIPTION.a'
       ],
       'conditions': [ [ 'OS=="linux"', {
             'libraries+':[
