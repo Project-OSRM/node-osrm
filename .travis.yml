@@ -11,6 +11,8 @@ before_install:
  - cd OSM-binary/src
  - make && sudo make install
  - cd ../../
+ # https://github.com/travis-ci/travis-cookbooks/issues/155
+ - sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm
 
 install:
  - npm install mocha
