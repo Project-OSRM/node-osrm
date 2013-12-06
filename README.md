@@ -36,10 +36,6 @@ Run `osrm-extract` and `osrm-prepare` on some osm data, and edit the `server.ini
 
 # Testing
 
-First you need to put the `libOSRM.so` on your library path:
-
-    export LD_LIBRARY_PATH=`pwd`/../build
-
-Then run the tests like:
+Run the tests like:
 
     make test
