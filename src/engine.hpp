@@ -12,6 +12,7 @@
 #include <OSRM.h>
 #include "query.hpp"
 #include "options.hpp"
+#include <boost/algorithm/string/join.hpp>
 
 using namespace v8;
 
@@ -103,7 +104,7 @@ Handle<Value> Engine::runSync(Arguments const& args)
     Engine* machine = ObjectWrap::Unwrap<Engine>(args.This());
     http::Reply osrm_reply;
     machine->this_->RunQuery(*query->get(), osrm_reply);
-    return scope.Close(String::New(osrm_reply.content.c_str()));
+    return scope.Close(String::New(boost::algorithm::join(osrm_reply.content," ").c_str()));
 }
 
 typedef struct {
@@ -162,7 +163,7 @@ void Engine::AsyncRun(uv_work_t* req) {
     try {
         http::Reply osrm_reply;
         closure->machine->this_->RunQuery(*(closure->query->get()), osrm_reply);
-        closure->result = osrm_reply.content;
+        closure->result = boost::algorithm::join(osrm_reply.content," ");
     } catch(std::exception const& ex) {
         closure->error = true;
         closure->result = ex.what();
