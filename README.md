@@ -16,23 +16,19 @@ Node.js bindings to the [OSRM](https://github.com/DennisOSRM/Project-OSRM).
 
 # Building
 
-To build the bindings, first build the `develop` branch of `Project-OSRM` like:
+To build the bindings do:
 
     git clone -b develop https://github.com/DennisOSRM/Project-OSRM.git
-    cd Project-OSRM
-    mkdir build;cd build;cmake ../ -DWITH_TOOLS=1
-    make
-    cd ../
-
-Then checkout the `node-osrm` **beside** the `Project-OSRM` main directory like:
-
     git clone https://github.com/DennisOSRM/node-OSRM.git
-    cd node-OSRM
+    cd Project-OSRM
+    mkdir build;
+    cd build;
+    cmake ../ -DWITH_TOOLS=1
+    make
+    cd ../node-OSRM
     npm install
 
-# Setup
-
-Run `osrm-extract` and `osrm-prepare` on some osm data, and edit the `server.ini` in the `Project-OSRM` directory to point to it:
+So, the `Project-OSRM` checkout and `node-OSRM` checkout must both sit at the same directory level.
 
 # Testing
 
