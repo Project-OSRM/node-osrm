@@ -88,6 +88,10 @@ Handle<Value> Query::New(Arguments const& args)
         q->this_->jsonpParameter = ""; //set for jsonp wrapping
         q->this_->language = ""; //unused atm
 
+        if (obj->Has(String::NewSymbol("alternateRoute"))) {
+            q->this_->alternateRoute = obj->Get(String::New("alternateRoute"))->BooleanValue();
+        }
+
         for (uint32_t i = 0; i < coordinates_array->Length(); ++i) {
             Local<Value> coordinate = coordinates_array->Get(i);
             if (!coordinate->IsArray()) {
