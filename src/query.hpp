@@ -62,23 +62,17 @@ Handle<Value> Query::New(Arguments const& args)
             if (obj->IsNull() || obj->IsUndefined()) {
                 return ThrowException(Exception::TypeError(String::New("first arg must be an object")));
             }
-            if (!obj->Has(String::NewSymbol("start")) || !obj->Has(String::NewSymbol("end"))) {
-                return ThrowException(Exception::TypeError(String::New("must provide a start and end (lat/long) coordinate pair")));
+            if (!obj->Has(String::NewSymbol("coordinates"))) {
+                return ThrowException(Exception::TypeError(String::New("must provide a coordinates property")));
             }
-            Local<Value> start = obj->Get(String::New("start"));
-            Local<Value> end = obj->Get(String::New("end"));
-            if (!start->IsArray() || !end->IsArray()) {
-                return ThrowException(Exception::TypeError(String::New("start and end must be an array of (lat/long) coordinate pairs")));
+            Local<Value> coordinates = obj->Get(String::New("coordinates"));
+            if (!coordinates->IsArray()) {
+                return ThrowException(Exception::TypeError(String::New("coordinates must be an array of (lat/long) pairs")));
             }
-            Local<Array> start_array = Local<Array>::Cast(start);
-            Local<Array> end_array = Local<Array>::Cast(end);
-            if (start_array->Length() != 2 || end_array->Length() != 2) {
-                return ThrowException(Exception::TypeError(String::New("start and end must be an array of 2 (lat/long) coordinates")));
+            Local<Array> coordinates_array = Local<Array>::Cast(coordinates);
+            if (coordinates_array->Length() < 2) {
+                return ThrowException(Exception::TypeError(String::New("at least two coordinates must be provided")));
             }
-            FixedPointCoordinate start_coordinate(start_array->Get(0)->NumberValue()*COORDINATE_PRECISION,
-                                         start_array->Get(1)->NumberValue()*COORDINATE_PRECISION);
-            FixedPointCoordinate end_coordinate(end_array->Get(0)->NumberValue()*COORDINATE_PRECISION,
-                                       end_array->Get(1)->NumberValue()*COORDINATE_PRECISION);
 
             Query* q = new Query();
             q->this_->zoomLevel = 18; //no generalization
@@ -91,8 +85,21 @@ Handle<Value> Query::New(Arguments const& args)
             q->this_->outputFormat = "json";
             q->this_->jsonpParameter = ""; //set for jsonp wrapping
             q->this_->language = ""; //unused atm
-            q->this_->coordinates.push_back(start_coordinate);
-            q->this_->coordinates.push_back(end_coordinate);
+
+            for (uint32_t i = 0; i < coordinates_array->Length(); ++i) {
+                Local<Value> coordinate = coordinates_array->Get(i);
+                if (!coordinate->IsArray()) {
+                    return ThrowException(Exception::TypeError(String::New("coordinates must be an array of (lat/long) pairs")));
+                }
+                Local<Array> coordinate_array = Local<Array>::Cast(coordinate);
+                if (coordinate_array->Length() != 2) {
+                    return ThrowException(Exception::TypeError(String::New("coordinates must be an array of (lat/long) pairs")));
+                }
+                q->this_->coordinates.push_back(
+                    FixedPointCoordinate(coordinate_array->Get(0)->NumberValue()*COORDINATE_PRECISION,
+                                         coordinate_array->Get(1)->NumberValue()*COORDINATE_PRECISION));
+            }
+
             q->Wrap(args.This());
             return args.This();
         } else {
