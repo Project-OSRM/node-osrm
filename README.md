@@ -38,6 +38,8 @@ To build the bindings you need to build both `Project-OSRM` and `node-OSRM` toge
 
 So, the `Project-OSRM` checkout and `node-OSRM` checkout must both sit at the same directory level.
 
+If you hit problems building Project-OSRM see [the wiki](https://github.com/DennisOSRM/Project-OSRM/wiki/Building%20OSRM) for details.
+
 # Testing
 
 Run the tests like:
