@@ -2,6 +2,7 @@
   'includes': [ 'common.gypi' ],
   'variables': {
       'cwd%':'<!(pwd)',
+      'std%':'ansi'
   },
   'targets': [
     {
@@ -24,7 +25,21 @@
                 '-lboost_program_options',
                 '-lboost_regex',
             ]}
-      ] ],
+      ],
+      ['std == "c++11"', {
+          'cflags_cc' : [
+              '-std=c++11',
+          ],
+          'xcode_settings': {
+            'OTHER_CPLUSPLUSFLAGS':['-std=c++11','-stdlib=libc++'],
+            'OTHER_CPLUSPLUSFLAGS':['-stdlib=libc++'],
+            'OTHER_LDFLAGS':['-stdlib=libc++'],
+            'CLANG_CXX_LANGUAGE_STANDARD':'c++11',
+            'MACOSX_DEPLOYMENT_TARGET':'10.7'
+          }
+      }
+      ]
+      ],
       'sources': [
         "src/node_osrm.cpp"
       ],
