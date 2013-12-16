@@ -21,7 +21,7 @@ install:
  - git describe
  - mkdir -p build && cd build && cmake ../ -DWITH_TOOLS=1
  - make
- - cd ../../node-OSRM
+ - cd ../../node-osrm
 
 before_script:
  #- export CXXFLAGS="-I/usr/include/lua5.1/"
