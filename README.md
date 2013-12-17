@@ -33,6 +33,7 @@ To build the bindings you need to build both `Project-OSRM` and `node-osrm` toge
     cd build;
     cmake ../ -DWITH_TOOLS=1
     make
+    sudo make install
     cd ../node-osrm
     npm install
 
