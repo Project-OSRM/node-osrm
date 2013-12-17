@@ -2,7 +2,7 @@
 
 Node.js bindings to the [OSRM](https://github.com/DennisOSRM/Project-OSRM).
 
-[![Build Status](https://secure.travis-ci.org/DennisOSRM/node-OSRM.png)](https://travis-ci.org/DennisOSRM/node-OSRM)
+[![Build Status](https://secure.travis-ci.org/DennisOSRM/node-osrm.png)](https://travis-ci.org/DennisOSRM/node-osrm)
 
 # Depends
 
@@ -20,23 +20,23 @@ To build with OS X Mavericks you need to ensure the bindings like to `libc++`. A
 
     export CXXFLAGS=-mmacosx-version-min=10.9
 
-before building `node-OSRM`.
+before building `node-osrm`.
 
 # Building
 
-To build the bindings you need to build both `Project-OSRM` and `node-OSRM` together:
+To build the bindings you need to build both `Project-OSRM` and `node-osrm` together:
 
     git clone -b develop https://github.com/DennisOSRM/Project-OSRM.git
-    git clone https://github.com/DennisOSRM/node-OSRM.git
+    git clone https://github.com/DennisOSRM/node-osrm.git
     cd Project-OSRM
     mkdir build;
     cd build;
     cmake ../ -DWITH_TOOLS=1
     make
-    cd ../node-OSRM
+    cd ../node-osrm
     npm install
 
-So, the `Project-OSRM` checkout and `node-OSRM` checkout must both sit at the same directory level.
+So, the `Project-OSRM` checkout and `node-osrm` checkout must both sit at the same directory level.
 
 If you hit problems building Project-OSRM see [the wiki](https://github.com/DennisOSRM/Project-OSRM/wiki/Building%20OSRM) for details.
 
