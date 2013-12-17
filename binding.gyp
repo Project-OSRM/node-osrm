@@ -5,7 +5,8 @@
       "module_name":"osrm",
       "module_path":"./lib/",
       'cwd%':'<!(pwd)',
-      'std%':'ansi'
+      'std%':'ansi',
+      'runtime_link%':'shared'
   },
   'targets': [
     {
@@ -16,12 +17,7 @@
       ],
       'libraries': [
         '-L<@(osrm)/build',
-        '-lOSRM',
-        '-lboost_program_options',
-        '-lboost_regex',
-        '-lboost_thread',
-        '-lboost_system',
-        '-lboost_filesystem'
+        '-lOSRM'
       ],
       'conditions': [
         [ 'OS=="linux"', {
@@ -29,6 +25,15 @@
               '-Wl,-rpath=<@(osrm)/build',
           ]}
         ],
+        ['runtime_link == "static"', {
+            'libraries': [
+                '-lboost_program_options',
+                '-lboost_regex',
+                '-lboost_thread',
+                '-lboost_system',
+                '-lboost_filesystem'
+             ]
+        }],
         ['std == "c++11"', {
             'cflags_cc' : [
                 '-std=c++11',
