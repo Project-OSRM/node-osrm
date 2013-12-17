@@ -16,7 +16,7 @@ Node.js bindings to the [OSRM](https://github.com/DennisOSRM/Project-OSRM).
 
 # Mavericks
 
-To build with OS X Mavericks you need to ensure the bindings like to `libc++`. An easy way to do this is to set:
+To build with OS X Mavericks you need to ensure the bindings link to `libc++`. An easy way to do this is to set:
 
     export CXXFLAGS=-mmacosx-version-min=10.9
 
