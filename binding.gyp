@@ -23,6 +23,8 @@
         [ 'OS=="linux"', {
           'libraries+':[
               '-Wl,-rpath=<@(osrm)/build',
+              '-lboost_program_options',
+              '-lboost_regex'
           ]}
         ],
         ['runtime_link == "static"', {
