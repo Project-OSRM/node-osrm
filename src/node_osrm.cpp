@@ -32,4 +32,4 @@ extern "C" {
 
 } // namespace node_osrm
 
-NODE_MODULE(_osrm, node_osrm::start)
+NODE_MODULE(osrm, node_osrm::start)

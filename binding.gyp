@@ -1,12 +1,14 @@
 {
   'includes': [ 'common.gypi' ],
   'variables': {
+      "module_name":"osrm",
+      "module_path":"./lib/",
       'cwd%':'<!(pwd)',
       'std%':'ansi'
   },
   'targets': [
     {
-      'target_name': '_osrm',
+      'target_name': '<(module_name)',
       'include_dirs': [
           '<@(cwd)/../Project-OSRM/Library/',
           './src/'
@@ -55,11 +57,11 @@
     {
       'target_name': 'action_after_build',
       'type': 'none',
-      'dependencies': [ '_osrm' ],
+      'dependencies': [ '<(module_name)' ],
       'copies': [
           {
-            'files': [ '<(PRODUCT_DIR)/_osrm.node' ],
-            'destination': './lib/'
+            'files': [ '<(PRODUCT_DIR)/<(module_name).node' ],
+            'destination': '<(module_path)'
           }
       ]
     }
