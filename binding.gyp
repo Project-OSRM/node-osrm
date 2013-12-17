@@ -1,6 +1,7 @@
 {
   'includes': [ 'common.gypi' ],
   'variables': {
+      'osrm%':'<!(pwd)/../Project-OSRM',
       "module_name":"osrm",
       "module_path":"./lib/",
       'cwd%':'<!(pwd)',
@@ -10,24 +11,22 @@
     {
       'target_name': '<(module_name)',
       'include_dirs': [
-          '<@(cwd)/../Project-OSRM/Library/',
+          '<@(osrm)/Library',
           './src/'
       ],
       'libraries': [
-        '-L<@(cwd)/../Project-OSRM/build',
+        '-L<@(osrm)/build',
         '-lOSRM',
         '-lboost_program_options',
         '-lboost_regex',
         '-lboost_thread',
         '-lboost_system',
-        '-lboost_filesystem',
-        '<@(cwd)/../Project-OSRM/build/libUUID.a',
-        '<@(cwd)/../Project-OSRM/build/libGITDESCRIPTION.a'
+        '-lboost_filesystem'
       ],
       'conditions': [
         [ 'OS=="linux"', {
           'libraries+':[
-              '-Wl,-rpath=<@(cwd)/../Project-OSRM/build',
+              '-Wl,-rpath=<@(osrm)/build',
           ]}
         ],
         ['std == "c++11"', {
