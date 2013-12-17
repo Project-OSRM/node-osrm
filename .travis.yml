@@ -33,6 +33,7 @@ install:
  - cd build
  - cmake ../ -DWITH_TOOLS=1
  - make
+ - sudo make install
  - cd ../../node-osrm
 
 before_script:
