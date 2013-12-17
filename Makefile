@@ -1,10 +1,13 @@
 all: osrm.node
 
-./build: binding.gyp
-	`npm explore npm -g -- pwd`/bin/node-gyp-bin/node-gyp configure
+./node_modules/.bin/node-gyp:
+	npm install node-gyp
+
+./build: binding.gyp ./node_modules/.bin/node-gyp
+	./node_modules/.bin/node-gyp configure
 
 osrm.node: Makefile ./build
-	`npm explore npm -g -- pwd`/bin/node-gyp-bin/node-gyp build
+	./node_modules/.bin/node-gyp build
 
 clean:
 	@rm -rf ./build
