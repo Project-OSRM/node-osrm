@@ -23,8 +23,6 @@ berlin-latest.osrm: berlin-latest.osm.pbf
 	osrm-extract berlin-latest.osm.pbf -p test/data/car.lua
 
 berlin-latest.osrm.hsgr: berlin-latest.osrm
-	# TODO: needed?
-	#echo '2000-00-00T00:00:00Z' > berlin-latest.osrm.timestamp
 	osrm-prepare berlin-latest.osrm
 
 test: berlin-latest.osrm.hsgr
