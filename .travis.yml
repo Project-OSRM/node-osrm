@@ -5,28 +5,39 @@ node_js:
  - "0.8"
 
 before_install:
+ - sudo apt-add-repository --yes ppa:mapnik/boost # boost 1.49 (in future 1.55)
  - sudo apt-get -qq update
- - sudo apt-get install build-essential git cmake libboost1.46-all-dev libprotoc-dev libprotobuf7 protobuf-compiler libprotobuf-dev libosmpbf-dev libpng12-dev libbz2-dev libstxxl-dev libstxxl-doc libstxxl1 libxml2-dev libzip-dev lua5.1 liblua5.1-0-dev libluabind-dev
+ - sudo apt-get install -y libboost-filesystem-dev libboost-program-options-dev libboost-iostreams-dev libboost-regex-dev libboost-system-dev libboost-thread-dev
+ - sudo apt-get install build-essential git cmake libprotoc-dev libprotobuf7 protobuf-compiler libprotobuf-dev libbz2-dev libstxxl-dev libstxxl-doc libstxxl1 libxml2-dev libzip-dev lua5.1 liblua5.1-0-dev
+ - git clone https://github.com/DennisOSRM/luabind.git
+ - cd luabind
+ - mkdir -p build
+ - cd build
+ - cmake ../ -DCMAKE_BUILD_TYPE=Release
+ - make
+ - sudo make install
+ - cd ../../
  - git clone https://github.com/scrosby/OSM-binary.git
  - cd OSM-binary/src
- - make && sudo make install
+ - make
+ - sudo make install
  - cd ../../
  # https://github.com/travis-ci/travis-cookbooks/issues/155
  - sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm
 
 install:
- - git clone https://github.com/DennisOSRM/Project-OSRM.git ../Project-OSRM
+ # assumes we are currently inside the node-osrm directory
+ - git clone https://github.com/DennisOSRM/Project-OSRM.git ../Project-OSRM -b develop
  - cd ../Project-OSRM
- - git checkout develop
- - git describe
- - mkdir -p build && cd build && cmake ../ -DWITH_TOOLS=1
+ - mkdir -p build 
+ - cd build
+ - cmake ../ -DWITH_TOOLS=1
  - make
  - cd ../../node-osrm
 
 before_script:
- #- export CXXFLAGS="-I/usr/include/lua5.1/"
  - npm install mocha
  - npm install
 
 script:
- - make test # make target downloads data and prepares it if it does not exist
+ - make test
