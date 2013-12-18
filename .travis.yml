@@ -9,6 +9,10 @@ before_install:
  - sudo apt-get -qq update
  - sudo apt-get install -y libboost-filesystem-dev libboost-program-options-dev libboost-iostreams-dev libboost-regex-dev libboost-system-dev libboost-thread-dev
  - sudo apt-get install -y build-essential git cmake libprotoc-dev libprotobuf7 protobuf-compiler libprotobuf-dev libbz2-dev libstxxl-dev libstxxl-doc libstxxl1 libxml2-dev libzip-dev lua5.1 liblua5.1-0-dev
+ # https://github.com/travis-ci/travis-cookbooks/issues/155
+ - sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm
+
+install:
  - git clone https://github.com/DennisOSRM/luabind.git
  - cd luabind
  - mkdir -p build
@@ -22,19 +26,14 @@ before_install:
  - make
  - sudo make install
  - cd ../../
- # https://github.com/travis-ci/travis-cookbooks/issues/155
- - sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm
-
-install:
- # assumes we are currently inside the node-osrm directory
- - git clone https://github.com/DennisOSRM/Project-OSRM.git ../Project-OSRM -b develop
- - cd ../Project-OSRM
+ - git clone https://github.com/DennisOSRM/Project-OSRM.git Project-OSRM -b develop
+ - cd Project-OSRM
  - mkdir -p build 
  - cd build
  - cmake ../ -DWITH_TOOLS=1
  - make
  - sudo make install
- - cd ../../node-osrm
+ - cd ../../
 
 before_script:
  - npm install mocha
