@@ -1,7 +1,7 @@
 {
   'includes': [ 'common.gypi' ],
   'variables': {
-      'osrm%':'<!(pwd)/../Project-OSRM',
+      'osrm%':'/usr/local/',
       "module_name":"osrm",
       "module_path":"./lib/",
       'cwd%':'<!(pwd)',
@@ -12,17 +12,17 @@
     {
       'target_name': '<(module_name)',
       'include_dirs': [
-          '<@(osrm)/Library',
+          '<@(osrm)/include/osrm',
           './src/'
       ],
       'libraries': [
-        '-L<@(osrm)/build',
+        '-L<@(osrm)/lib',
         '-lOSRM'
       ],
       'conditions': [
         [ 'OS=="linux"', {
           'libraries+':[
-              '-Wl,-rpath=<@(osrm)/build',
+              '-Wl,-rpath=<@(osrm)/lib',
               '-lboost_program_options',
               '-lboost_regex'
           ]}

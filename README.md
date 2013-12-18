@@ -24,22 +24,25 @@ before building `node-osrm`.
 
 # Building
 
-To build the bindings you need to build both `Project-OSRM` and `node-osrm` together:
+To build the bindings you need to first build and **install** the `develop` branch of `Project-OSRM`:
 
+    # grab develop branch
     git clone -b develop https://github.com/DennisOSRM/Project-OSRM.git
-    git clone https://github.com/DennisOSRM/node-osrm.git
     cd Project-OSRM
     mkdir build;
     cd build;
     cmake ../ -DWITH_TOOLS=1
     make
     sudo make install
-    cd ../node-osrm
+
+NOTE: If you hit problems building Project-OSRM see [the wiki](https://github.com/DennisOSRM/Project-OSRM/wiki/Building%20OSRM) for details.
+
+Then build `node-osrm` against `Project-OSRM` installed in `/usr/local`:
+
+    git clone https://github.com/DennisOSRM/node-osrm.git
+    cd node-osrm
     npm install
 
-So, the `Project-OSRM` checkout and `node-osrm` checkout must both sit at the same directory level.
-
-If you hit problems building Project-OSRM see [the wiki](https://github.com/DennisOSRM/Project-OSRM/wiki/Building%20OSRM) for details.
 
 # Testing
 
