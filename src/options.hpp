@@ -1,6 +1,9 @@
 #ifndef __NODE_OSRM_OPTIONS_H__
 #define __NODE_OSRM_OPTIONS_H__
 
+// node osrm
+#include "program_options.hpp"
+
 // v8
 #include <v8.h>
 
@@ -81,6 +84,7 @@ Handle<Value> Options::New(Arguments const& args)
                 "node-osrm",
                 "-c",
                 server_config.c_str()};
+
             if( !GenerateServerProgramOptions(
                     3,
                     argv,
