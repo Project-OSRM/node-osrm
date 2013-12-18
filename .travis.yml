@@ -8,7 +8,7 @@ before_install:
  - sudo apt-add-repository --yes ppa:mapnik/boost # boost 1.49 (in future 1.55)
  - sudo apt-get -qq update
  - sudo apt-get install -y libboost-filesystem-dev libboost-program-options-dev libboost-iostreams-dev libboost-regex-dev libboost-system-dev libboost-thread-dev
- - sudo apt-get install build-essential git cmake libprotoc-dev libprotobuf7 protobuf-compiler libprotobuf-dev libbz2-dev libstxxl-dev libstxxl-doc libstxxl1 libxml2-dev libzip-dev lua5.1 liblua5.1-0-dev
+ - sudo apt-get install -y build-essential git cmake libprotoc-dev libprotobuf7 protobuf-compiler libprotobuf-dev libbz2-dev libstxxl-dev libstxxl-doc libstxxl1 libxml2-dev libzip-dev lua5.1 liblua5.1-0-dev
  - git clone https://github.com/DennisOSRM/luabind.git
  - cd luabind
  - mkdir -p build
