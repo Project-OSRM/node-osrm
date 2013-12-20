@@ -6,7 +6,7 @@
       "module_path":"./lib/",
       'cwd%':'<!(pwd)',
       'std%':'ansi',
-      'runtime_link%':'shared'
+      'runtime_link%':'static'
   },
   'targets': [
     {
