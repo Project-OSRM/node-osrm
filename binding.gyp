@@ -12,7 +12,7 @@
     {
       'target_name': '<(module_name)',
       'include_dirs': [
-          '<@(osrm)/include/osrm',
+          '<@(osrm)/include/',
           './src/'
       ],
       'libraries': [

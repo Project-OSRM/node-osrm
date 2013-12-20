@@ -14,10 +14,6 @@
 #include "query.hpp"
 #include "engine.hpp"
 
-// osrm
-#include <OSRM.h>
-
-
 namespace node_osrm {
 
 using namespace v8;

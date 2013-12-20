@@ -9,10 +9,10 @@
 #include <node_version.h>
 #include <node_object_wrap.h>
 
-#include <OSRM.h>
+#include <osrm/OSRM.h>
+#include <boost/algorithm/string/join.hpp>
 #include "query.hpp"
 #include "options.hpp"
-#include <boost/algorithm/string/join.hpp>
 
 using namespace v8;
 

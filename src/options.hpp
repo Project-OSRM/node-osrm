@@ -12,7 +12,7 @@
 #include <node_version.h>
 #include <node_object_wrap.h>
 
-#include <OSRM.h>
+#include <osrm/OSRM.h>
 
 using namespace v8;
 
