@@ -37,7 +37,7 @@ install:
 
 before_script:
  - npm install mocha
- - npm install
+ - npm install --verbose
 
 script:
  - make test
