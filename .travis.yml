@@ -37,6 +37,9 @@ install:
 
 before_script:
  - npm install mocha
+ - pkg-config libosrm --cflags
+ - pkg-config libosrm --libs
+ - pkg-config libosrm --libs --static
  - npm install --verbose
 
 script:
