@@ -26,7 +26,7 @@ install:
  - make
  - sudo make install
  - cd ../../
- - git clone https://github.com/springmeyer/Project-OSRM.git Project-OSRM -b pkg-config-pthread-fix
+ - git clone https://github.com/DennisOSRM/Project-OSRM.git Project-OSRM -b develop
  - cd Project-OSRM
  - mkdir -p build 
  - cd build
