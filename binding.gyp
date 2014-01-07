@@ -18,7 +18,8 @@
       ],
       'conditions': [
         [ 'OS=="linux"', {
-          'libraries+':[
+          'libraries':[
+              '-Wl,-rpath=<!@(pkg-config libosrm --variable=prefix)/lib',
               '-lboost_program_options',
               '-lboost_regex'
           ]}
