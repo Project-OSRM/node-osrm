@@ -1,10 +1,8 @@
 {
   'includes': [ 'common.gypi' ],
   'variables': {
-      'osrm%':'/usr/local/',
       "module_name":"osrm",
       "module_path":"./lib/",
-      'cwd%':'<!(pwd)',
       'std%':'ansi',
       'runtime_link%':'static'
   },
@@ -12,28 +10,23 @@
     {
       'target_name': '<(module_name)',
       'include_dirs': [
-          '<@(osrm)/include/',
+          '<!@(pkg-config libosrm --cflags)',
           './src/'
       ],
       'libraries': [
-        '-L<@(osrm)/lib',
-        '-lOSRM'
+        '<!@(pkg-config libosrm --libs)'
       ],
       'conditions': [
         [ 'OS=="linux"', {
-          'libraries+':[
-              '-Wl,-rpath=<@(osrm)/lib',
+          'libraries':[
+              '-Wl,-rpath=<!@(pkg-config libosrm --variable=prefix)/lib',
               '-lboost_program_options',
               '-lboost_regex'
           ]}
         ],
         ['runtime_link == "static"', {
             'libraries': [
-                '-lboost_program_options',
-                '-lboost_regex',
-                '-lboost_thread',
-                '-lboost_system',
-                '-lboost_filesystem'
+                '<!@(pkg-config libosrm --libs --static)'
              ]
         }],
         ['std == "c++11"', {
