@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e -u -x
+set -u
 
 git clone https://github.com/mapnik/mapnik-packaging.git
 cd mapnik-packaging
