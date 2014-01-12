@@ -18,7 +18,7 @@ before_install:
  - sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm
 
 install:
- - ./util/${RUN_BUILD}.sh
+ - source ./util/${RUN_BUILD}.sh
 
 before_script:
  - npm install mocha
