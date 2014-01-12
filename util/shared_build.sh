@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e -u
+set -u
 
 # install packages
 sudo apt-add-repository --yes ppa:mapnik/boost # boost 1.49 (in future 1.55)
