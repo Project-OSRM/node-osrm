@@ -24,7 +24,7 @@ before_script:
  - npm install mocha
 
 before_script:
- - npm install --verbose --build-from-source
+ - npm install --build-from-source
 
 script:
  - make test
