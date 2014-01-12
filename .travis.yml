@@ -4,44 +4,27 @@ node_js:
  - "0.10"
  - "0.8"
 
+env:
+  matrix:
+    - export RUN_BUILD="ubuntu_precise_build"
+  global:
+    - secure: F+sEL/v56CzHqmCSSES4pEyC9NeQlkoR0Gs/ZuZxX1ytrj8SKtp3MKqBj7zhIclSdXBz4Ev966Da5ctmcTd410p0b240MV6BVOkLUtkjZJyErMBOkeb8n8yVfSoeMx8RiIhBmIvEn+rlQq+bSFis61/JkE9rxsjkGRZi14hHr4M=
+    - secure: o2nkUQIiABD139XS6L8pxq3XO5gch27hvm/gOdV+dzNKc/s2KomVPWcOyXNxtJGhtecAkABzaW8KHDDi5QL1kNEFx6BxFVMLO8rjFPsMVaBG9Ks6JiDQkkmrGNcnVdxI/6EKTLHTH5WLsz8+J7caDBzvKbEfTux5EamEhxIWgrI=
+
 before_install:
- - sudo apt-add-repository --yes ppa:mapnik/boost # boost 1.49 (in future 1.55)
- - sudo apt-get -qq update
- - sudo apt-get install -y libboost-filesystem-dev libboost-program-options-dev libboost-iostreams-dev libboost-regex-dev libboost-system-dev libboost-thread-dev
- - sudo apt-get install -y build-essential git cmake libprotoc-dev libprotobuf7 protobuf-compiler libprotobuf-dev libbz2-dev libstxxl-dev libstxxl-doc libstxxl1 libxml2-dev libzip-dev lua5.1 liblua5.1-0-dev
+ # fixes node/gyp install
  # https://github.com/travis-ci/travis-cookbooks/issues/155
  - sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm
 
 install:
- - git clone https://github.com/DennisOSRM/luabind.git
- - cd luabind
- - mkdir -p build
- - cd build
- - cmake ../ -DCMAKE_BUILD_TYPE=Release
- - make
- - sudo make install
- - cd ../../
- - git clone https://github.com/scrosby/OSM-binary.git
- - cd OSM-binary/src
- - make
- - sudo make install
- - cd ../../
- - git clone https://github.com/DennisOSRM/Project-OSRM.git Project-OSRM -b develop
- - cd Project-OSRM
- - mkdir -p build 
- - cd build
- - cmake ../ -DWITH_TOOLS=1
- - make
- - sudo make install
- - cd ../../
+ - ./util/${RUN_BUILD}.sh
 
 before_script:
  - npm install mocha
- - pkg-config libosrm --cflags
- - pkg-config libosrm --libs
- - pkg-config libosrm --libs --static
- - cat /usr/local/lib/pkgconfig/*
+
+before_script:
  - npm install --verbose
 
 script:
  - make test
+ - ./node_modules/.bin/node-pre-gyp package publish

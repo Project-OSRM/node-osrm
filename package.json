@@ -25,7 +25,7 @@
         "template": "{module_name}-v{major}.{minor}.{patch}-{node_abi}-{platform}-{arch}.tar.gz"
     },
     "dependencies": {
-        "node-pre-gyp": "0.1.x"
+        "node-pre-gyp": "~0.2.1"
     },
     "bundledDependencies":["node-pre-gyp"],
     "licenses": [
