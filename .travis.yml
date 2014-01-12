@@ -18,7 +18,9 @@ before_install:
  - sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm
 
 install:
+ - CURRENT_DIR=`pwd`
  - source ./util/${RUN_BUILD}.sh
+ - cd $CURRENT_DIR
 
 before_script:
  - npm install mocha
