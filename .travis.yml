@@ -2,10 +2,10 @@ language: cpp
 
 env:
   matrix:
-   - NODE_VERSION="0.8" RUN_BUILD="static_build"
    - NODE_VERSION="0.10" RUN_BUILD="static_build"
-   - NODE_VERSION="0.8" RUN_BUILD="shared_build"
+   - NODE_VERSION="0.8" RUN_BUILD="static_build"
    - NODE_VERSION="0.10" RUN_BUILD="shared_build"
+   - NODE_VERSION="0.8" RUN_BUILD="shared_build"
   global:
    - secure: LvrV5lifkIM99Wz0G0jqxC3uqGYIYz4hgM0oeB0MsPmQ62l8+CfIURqcFlfKSb+0s0YP2mAeacSno8oTpSZoWP27sTJutYmyk0jeVUHKQqwQClkloeErOfyLVnYijUTAX/J1Blgl+fhfvGtZE/dBIk/XEa6tEKmF0kv7z6GKVz8=
    - secure: hNMAfx4uCD8P5ycw7en9WbPFxd9Z4i8LmuClPC6lYYBTf/3lsHbtO5oRVmqFQevlZbFoPt1OU1pr4Pnj7iQsYnezc3YBevXQNsv0UvMlQAzwmW2cQOuRjHZ5TXEEMAQBbiWO0BOeQrC6m46wkQbkuzX1XpxRnaXhdhd/FeZxVwk=
