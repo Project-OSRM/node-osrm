@@ -25,7 +25,7 @@
         "template": "{module_name}-v{version}-{node_abi}-{platform}-{arch}.tar.gz"
     },
     "dependencies": {
-        "node-pre-gyp": "https://github.com/springmeyer/node-pre-gyp/tarball/master",
+        "node-pre-gyp": "https://github.com/springmeyer/node-pre-gyp/tarball/master"
     },
     "bundledDependencies":["node-pre-gyp"],
     "licenses": [
