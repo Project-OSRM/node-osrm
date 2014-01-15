@@ -1,5 +1,6 @@
 .DS_Store
-build
-lib/_osrm.node
+build/
+lib/binding/
 node_modules
 berlin-latest.osm.pbf
+berlin-latest.osrm*

@@ -39,7 +39,9 @@ script:
 - if [ "[publish-binary]" = `git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n'` ]; then echo PUBLISH_BINARY;PUBLISH_BINARY=true; fi;
 - if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]] && [[ $RUN_BUILD == "static_build" ]]; then echo PUBLISH_BINARY;PUBLISH_BINARY=true; fi;
 - if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package publish; fi
+- node-pre-gyp clean
 - if [[ $PUBLISH_BINARY == true ]]; then npm install --fallback-to-build=false; fi
+- node-pre-gyp clean
 # TODO - unpublish binary if this failed
 
 after_success:
