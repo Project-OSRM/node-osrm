@@ -12,24 +12,36 @@ env:
    - secure: ExeNqcXWXhCuXT4gT5EicaDUJHMw4oRu9U6++Msuw/cpKriT6181SnOHj6j+b7P+XZKcpRPRUbwUECmQ/D+ULblp63WCpvux77qxHLj0EXcnM35HfubSBAnQ548eoI292ttv2p0/naHu190z1g/OZc1nGNmUT6QfhulFFgBC57s=
 
 before_install:
- - true
+# put node-pre-gyp on path
+- export PATH=./node_modules/.bin/:$PATH
+- echo $NODE_VERSION
+- git clone https://github.com/creationix/nvm.git ../.nvm
+- source ../.nvm/nvm.sh
+- nvm install $NODE_VERSION
+- nvm use $NODE_VERSION
+- node --version
+- npm --version
 
 install:
- - CURRENT_DIR=`pwd`
- - source ./util/${RUN_BUILD}.sh
- - cd $CURRENT_DIR
+- CURRENT_DIR=`pwd`
+- source ./util/${RUN_BUILD}.sh
+- cd $CURRENT_DIR
 
 before_script:
- - npm install mocha
+- npm install mocha
 
 before_script:
- - npm install --build-from-source
+- npm install --build-from-source
 
 script:
- - make test
+- make test
+- PUBLISH_BINARY=false
+- if [ "[publish-binary]" = `git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n'` ]; then echo PUBLISH_BINARY;PUBLISH_BINARY=true; fi;
+- if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]] && [[ $RUN_BUILD == "static_build" ]]; then echo PUBLISH_BINARY;PUBLISH_BINARY=true; fi;
+- if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package publish; fi
+- if [[ $PUBLISH_BINARY == true ]]; then npm install --fallback-to-build=false; fi
+# TODO - unpublish binary if this failed
 
 after_success:
-# publish to binary
-- if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]] && [[ $RUN_BUILD == "static_build" ]]; then ./node_modules/.bin/node-pre-gyp package publish; fi;
 # publish to npm if this is a tag
 - if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]] && [[ $RUN_BUILD == "static_build" ]] && [[ $NODE_VERSION == "0.10" ]]; then npm publish --silent --email=dane@dbsgeo.com --_auth=$NPM_AUTH; fi;
