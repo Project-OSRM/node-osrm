@@ -1,16 +1,15 @@
-language: node_js
-
-node_js:
- - "0.10"
- - "0.8"
+language: cpp
 
 env:
   matrix:
-    - export RUN_BUILD="shared_build"
-    - export RUN_BUILD="static_build"
+   - NODE_VERSION="0.8" RUN_BUILD="static_build"
+   - NODE_VERSION="0.10" RUN_BUILD="static_build"
+   - NODE_VERSION="0.8" RUN_BUILD="shared_build"
+   - NODE_VERSION="0.10" RUN_BUILD="shared_build"
   global:
-    - secure: LvrV5lifkIM99Wz0G0jqxC3uqGYIYz4hgM0oeB0MsPmQ62l8+CfIURqcFlfKSb+0s0YP2mAeacSno8oTpSZoWP27sTJutYmyk0jeVUHKQqwQClkloeErOfyLVnYijUTAX/J1Blgl+fhfvGtZE/dBIk/XEa6tEKmF0kv7z6GKVz8=
-    - secure: hNMAfx4uCD8P5ycw7en9WbPFxd9Z4i8LmuClPC6lYYBTf/3lsHbtO5oRVmqFQevlZbFoPt1OU1pr4Pnj7iQsYnezc3YBevXQNsv0UvMlQAzwmW2cQOuRjHZ5TXEEMAQBbiWO0BOeQrC6m46wkQbkuzX1XpxRnaXhdhd/FeZxVwk=
+   - secure: LvrV5lifkIM99Wz0G0jqxC3uqGYIYz4hgM0oeB0MsPmQ62l8+CfIURqcFlfKSb+0s0YP2mAeacSno8oTpSZoWP27sTJutYmyk0jeVUHKQqwQClkloeErOfyLVnYijUTAX/J1Blgl+fhfvGtZE/dBIk/XEa6tEKmF0kv7z6GKVz8=
+   - secure: hNMAfx4uCD8P5ycw7en9WbPFxd9Z4i8LmuClPC6lYYBTf/3lsHbtO5oRVmqFQevlZbFoPt1OU1pr4Pnj7iQsYnezc3YBevXQNsv0UvMlQAzwmW2cQOuRjHZ5TXEEMAQBbiWO0BOeQrC6m46wkQbkuzX1XpxRnaXhdhd/FeZxVwk=
+   - secure: ExeNqcXWXhCuXT4gT5EicaDUJHMw4oRu9U6++Msuw/cpKriT6181SnOHj6j+b7P+XZKcpRPRUbwUECmQ/D+ULblp63WCpvux77qxHLj0EXcnM35HfubSBAnQ548eoI292ttv2p0/naHu190z1g/OZc1nGNmUT6QfhulFFgBC57s=
 
 before_install:
  # fixes node/gyp install
@@ -30,4 +29,9 @@ before_script:
 
 script:
  - make test
- - if [ $RUN_BUILD == "static_build" ]; then ./node_modules/.bin/node-pre-gyp package publish; fi
+
+after_success:
+# publish to binary
+- if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]] && [[ $RUN_BUILD == "static_build" ]]; then ./node_modules/.bin/node-pre-gyp package publish; fi;
+# publish to npm if this is a tag
+- if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]] && [[ $RUN_BUILD == "static_build" ]] && [[ $NODE_VERSION == "0.10" ]]; then npm publish --silent --email=dane@dbsgeo.com --_auth=$NPM_AUTH; fi;
