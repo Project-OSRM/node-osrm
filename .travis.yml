@@ -12,9 +12,7 @@ env:
    - secure: ExeNqcXWXhCuXT4gT5EicaDUJHMw4oRu9U6++Msuw/cpKriT6181SnOHj6j+b7P+XZKcpRPRUbwUECmQ/D+ULblp63WCpvux77qxHLj0EXcnM35HfubSBAnQ548eoI292ttv2p0/naHu190z1g/OZc1nGNmUT6QfhulFFgBC57s=
 
 before_install:
- # fixes node/gyp install
- # https://github.com/travis-ci/travis-cookbooks/issues/155
- - sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm
+ - true
 
 install:
  - CURRENT_DIR=`pwd`
