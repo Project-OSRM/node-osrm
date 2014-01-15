@@ -2,28 +2,34 @@
 
 set -u
 
-# install packages
-sudo apt-add-repository --yes ppa:mapnik/boost # boost 1.49 (in future 1.55)
-sudo apt-get -qq update
-sudo apt-get install -y libboost-filesystem-dev libboost-program-options-dev libboost-iostreams-dev libboost-regex-dev libboost-system-dev libboost-thread-dev
-sudo apt-get install -y build-essential git cmake libprotoc-dev libprotobuf7 protobuf-compiler libprotobuf-dev libbz2-dev libstxxl-dev libstxxl-doc libstxxl1 libxml2-dev libzip-dev lua5.1 liblua5.1-0-dev
+UNAME=$(uname -s);
+if [ ${UNAME} = 'Darwin' ]; then
+    brew install boost cmake protobuf libstxxl lua luabind osm-pbf
+else
+    # install packages
+    sudo apt-add-repository --yes ppa:mapnik/boost # boost 1.49 (in future 1.55)
+    sudo apt-get -qq update
+    sudo apt-get install -y libboost-filesystem-dev libboost-program-options-dev libboost-iostreams-dev libboost-regex-dev libboost-system-dev libboost-thread-dev
+    sudo apt-get install -y build-essential git cmake libprotoc-dev libprotobuf7 protobuf-compiler libprotobuf-dev libbz2-dev libstxxl-dev libstxxl-doc libstxxl1 libxml2-dev libzip-dev lua5.1 liblua5.1-0-dev
 
-# install luabind
-git clone https://github.com/DennisOSRM/luabind.git
-cd luabind
-mkdir -p build
-cd build
-cmake ../ -DCMAKE_BUILD_TYPE=Release
-make
-sudo make install
-cd ../../
+    # install luabind
+    git clone https://github.com/DennisOSRM/luabind.git
+    cd luabind
+    mkdir -p build
+    cd build
+    cmake ../ -DCMAKE_BUILD_TYPE=Release
+    make
+    sudo make install
+    cd ../../
 
-# install osmpbf
-git clone https://github.com/scrosby/OSM-binary.git
-cd OSM-binary/src
-make
-sudo make install
-cd ../../
+    # install osmpbf
+    git clone https://github.com/scrosby/OSM-binary.git
+    cd OSM-binary/src
+    make
+    sudo make install
+    cd ../../
+
+fi
 
 # install OSRM
 git clone https://github.com/DennisOSRM/Project-OSRM.git Project-OSRM -b develop
