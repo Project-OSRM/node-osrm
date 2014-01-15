@@ -4,7 +4,7 @@
     "url": "https://github.com/DennisOSRM/Project-OSRM",
     "homepage": "http://project-osrm.org",
     "author": "Dane Springmeyer <springmeyer>",
-    "version": "0.1.0",
+    "version": "0.2.0-alpha",
     "main": "./lib/osrm.js",
     "bugs": {
         "email": "dane@mapbox.com",
@@ -20,12 +20,12 @@
     },
     "binary": {
         "module_name": "osrm",
-        "module_path": "./lib",
+        "module_path": "./lib/binding/",
         "remote_uri": "http://node-osrm.s3.amazonaws.com",
         "template": "{module_name}-v{major}.{minor}.{patch}-{node_abi}-{platform}-{arch}.tar.gz"
     },
     "dependencies": {
-        "node-pre-gyp": "~0.2.1"
+        "node-pre-gyp": "~0.3.0"
     },
     "bundledDependencies":["node-pre-gyp"],
     "licenses": [

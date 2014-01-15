@@ -11,7 +11,7 @@ osrm.node: Makefile ./build
 
 clean:
 	@rm -rf ./build
-	rm -f lib/_osrm.node
+	rm -rf lib/binding/
 	rm -f *.osrm*
 
 rebuild:
