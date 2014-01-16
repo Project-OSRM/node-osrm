@@ -2,10 +2,10 @@ language: cpp
 
 env:
   matrix:
-   - NODE_VERSION="0.10" RUN_BUILD="static_build"
-   - NODE_VERSION="0.8" RUN_BUILD="static_build"
-   - NODE_VERSION="0.10" RUN_BUILD="shared_build"
-   - NODE_VERSION="0.8" RUN_BUILD="shared_build"
+   - NODE_NVM_VERSION="0.10" RUN_BUILD="static_build"
+   - NODE_NVM_VERSION="0.8" RUN_BUILD="static_build"
+   - NODE_NVM_VERSION="0.10" RUN_BUILD="shared_build"
+   - NODE_NVM_VERSION="0.8" RUN_BUILD="shared_build"
   global:
    - secure: LvrV5lifkIM99Wz0G0jqxC3uqGYIYz4hgM0oeB0MsPmQ62l8+CfIURqcFlfKSb+0s0YP2mAeacSno8oTpSZoWP27sTJutYmyk0jeVUHKQqwQClkloeErOfyLVnYijUTAX/J1Blgl+fhfvGtZE/dBIk/XEa6tEKmF0kv7z6GKVz8=
    - secure: hNMAfx4uCD8P5ycw7en9WbPFxd9Z4i8LmuClPC6lYYBTf/3lsHbtO5oRVmqFQevlZbFoPt1OU1pr4Pnj7iQsYnezc3YBevXQNsv0UvMlQAzwmW2cQOuRjHZ5TXEEMAQBbiWO0BOeQrC6m46wkQbkuzX1XpxRnaXhdhd/FeZxVwk=
@@ -14,16 +14,17 @@ env:
 before_install:
 # put node-pre-gyp on path
 - export PATH=./node_modules/.bin/:$PATH
-- echo $NODE_VERSION
+- echo $NODE_NVM_VERSION
 - git clone https://github.com/creationix/nvm.git ../.nvm
 - source ../.nvm/nvm.sh
-- nvm install $NODE_VERSION
-- nvm use $NODE_VERSION
+- nvm install $NODE_NVM_VERSION
+- nvm use $NODE_NVM_VERSION
 - node --version
 - npm --version
 
 install:
 - CURRENT_DIR=`pwd`
+# WARNING: this script modifies the environment
 - source ./util/${RUN_BUILD}.sh
 - cd $CURRENT_DIR
 
@@ -49,6 +50,10 @@ after_success:
 - PUBLISH=false
 - npm config set email dane@dbsgeo.com
 - npm config set _auth $NPM_AUTH
-- if [[ $RUN_BUILD == "static_build" ]] && [[ $NODE_VERSION == "0.10" ]] && [ "[publish]" = `git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n'` ]; then echo PUBLISH; PUBLISH=true; fi;
-- if [[ $RUN_BUILD == "static_build" ]] && [[ $NODE_VERSION == "0.10" ]] && [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then echo PUBLISH; PUBLISH=true; fi;
+- echo $RUN_BUILD
+- echo $NODE_VERSION
+- echo $NODE_NVM_VERSION
+- echo `git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n'`
+- if [[ $RUN_BUILD == "static_build" ]] && [[ $NODE_NVM_VERSION == "0.10" ]] && [ "[publish]" = `git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n'` ]; then echo "publish"; PUBLISH=true; fi;
+- if [[ $RUN_BUILD == "static_build" ]] && [[ $NODE_NVM_VERSION== "0.10" ]] && [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then echo "publish"; PUBLISH=true; fi;
 - if [[ $PUBLISH == true ]]; then echo "publishing"; npm publish; fi;
