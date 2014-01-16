@@ -9,7 +9,7 @@ env:
   global:
    - secure: LvrV5lifkIM99Wz0G0jqxC3uqGYIYz4hgM0oeB0MsPmQ62l8+CfIURqcFlfKSb+0s0YP2mAeacSno8oTpSZoWP27sTJutYmyk0jeVUHKQqwQClkloeErOfyLVnYijUTAX/J1Blgl+fhfvGtZE/dBIk/XEa6tEKmF0kv7z6GKVz8=
    - secure: hNMAfx4uCD8P5ycw7en9WbPFxd9Z4i8LmuClPC6lYYBTf/3lsHbtO5oRVmqFQevlZbFoPt1OU1pr4Pnj7iQsYnezc3YBevXQNsv0UvMlQAzwmW2cQOuRjHZ5TXEEMAQBbiWO0BOeQrC6m46wkQbkuzX1XpxRnaXhdhd/FeZxVwk=
-   - secure: ExeNqcXWXhCuXT4gT5EicaDUJHMw4oRu9U6++Msuw/cpKriT6181SnOHj6j+b7P+XZKcpRPRUbwUECmQ/D+ULblp63WCpvux77qxHLj0EXcnM35HfubSBAnQ548eoI292ttv2p0/naHu190z1g/OZc1nGNmUT6QfhulFFgBC57s=
+   - secure: Atz+Zcl9Faw1OvUEv5vK3aYXGWQS8dvDd4nLQ/2XU0doVKjsNvFxVWtBFvE91yvbnJnkSR6IrD6U4I3RQkmaEZ4s37nipHZ1nkuPlSucV0SamAwOcO4Wm+D0yrlPAt/bDQHlAojY1UE98U0oqDKfkBvLwdzIGvv0qISR/W/8rLI=
 
 before_install:
 # put node-pre-gyp on path
@@ -46,4 +46,9 @@ script:
 
 after_success:
 # publish to npm if this is a tag
-- if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]] && [[ $RUN_BUILD == "static_build" ]] && [[ $NODE_VERSION == "0.10" ]]; then npm publish --silent --email=dane@dbsgeo.com --_auth=$NPM_AUTH; fi;
+- PUBLISH=false
+- npm config set email dane@dbsgeo.com
+- npm config set _auth $NPM_AUTH
+- if [[ $RUN_BUILD == "static_build" ]] && [[ $NODE_VERSION == "0.10" ]] && [ "[publish]" = `git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n'` ]; then echo PUBLISH; PUBLISH=true; fi;
+- if [[ $RUN_BUILD == "static_build" ]] && [[ $NODE_VERSION == "0.10" ]] && [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then echo PUBLISH; PUBLISH=true; fi;
+- if [[ $PUBLISH == true ]]; then echo "publishing"; npm publish; fi;
