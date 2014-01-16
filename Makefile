@@ -2,12 +2,13 @@ all: osrm.node
 
 ./node_modules/.bin/node-gyp:
 	npm install node-gyp
+	npm install --build-from-source
 
-./build: binding.gyp ./node_modules/.bin/node-gyp
+./build: binding.gyp ./node_modules/.bin/node-gyp ./node_modules/.bin/node-pre-gyp
 	./node_modules/.bin/node-gyp configure
 
 osrm.node: Makefile ./build
-	./node_modules/.bin/node-gyp build
+	./node_modules/.bin/node-pre-gyp build
 
 clean:
 	@rm -rf ./build
