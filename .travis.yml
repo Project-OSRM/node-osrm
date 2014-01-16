@@ -55,5 +55,5 @@ after_success:
 - echo $NODE_NVM_VERSION
 - echo `git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n'`
 - if [[ $RUN_BUILD == "static_build" ]] && [[ $NODE_NVM_VERSION == "0.10" ]] && [ "[publish]" = `git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n'` ]; then echo "publish"; PUBLISH=true; fi;
-- if [[ $RUN_BUILD == "static_build" ]] && [[ $NODE_NVM_VERSION== "0.10" ]] && [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then echo "publish"; PUBLISH=true; fi;
+- if [[ $RUN_BUILD == "static_build" ]] && [[ $NODE_NVM_VERSION == "0.10" ]] && [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then echo "publish"; PUBLISH=true; fi;
 - if [[ $PUBLISH == true ]]; then echo "publishing"; npm publish; fi;
