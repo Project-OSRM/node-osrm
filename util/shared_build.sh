@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -u
-
 UNAME=$(uname -s);
 if [ ${UNAME} = 'Darwin' ]; then
     brew install boost cmake protobuf libstxxl lua luabind osm-pbf

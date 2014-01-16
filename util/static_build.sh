@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -u
-
 git clone --depth=0 https://github.com/mapnik/mapnik-packaging.git
 cd mapnik-packaging
 export CXX11=false
