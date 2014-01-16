@@ -8,24 +8,28 @@ Provides bindings to the [Open Source Routing Machine - OSRM](https://github.com
 
 # Depends
 
- - Node.js v0.10.x
+ - Node.js v0.10.x or v0.8.x
 
 # Installing
 
-By default, binaries are provided and no external dependencies or compile is needed.
+By default, binaries are provided for:
+
+ - 64 bit OS X and 64 bit Linux
+ - Node v0.8.x and v0.10.x
+
+On those platforms no external dependencies are needed.
 
 Just do:
 
     npm install osrm
 
-We currently provide binaries for 64 bit OS X and 64 bit Linux. Running `npm install` on other
-platforms will fall back to a source compile (see `Developing` below for build details).
+However other platforms will fall back to a source compile: see [Source Build](#source-build) for details.
 
 # Usage
 
-First you need to download some OSM data and process it with OSRM.
+1) Download an osm extract and process it with OSRM.
 
-Next you need to create an OSRM config (ini) file that references the OSRM prepared routing data.
+2) Create an OSRM config (ini) file that references the OSRM prepared routing data.
 
 This repository contains a Makefile to automatically do this, assuming you have OSRM installed.
 
@@ -33,7 +37,7 @@ Just run:
 
     make berlin-latest.osrm.hsgr
 
-Next, since we want to use node-osrm locally, do:
+3) Next, since we want to use node-osrm locally, do:
 
     export NODE_PATH=lib
 
@@ -50,102 +54,7 @@ JSON.parse(engine.run(query));
   status_message: 'Found route between points',
   route_geometry: '{~pdcBmjfsXsBrD{KhS}DvHyApCcf@l}@kg@z|@_MbX|GjHdXh^fm@dr@~\\l_@pFhF|GjCfeAbTdh@fFqRp}DoEn\\cHzR{FjLgCnFuBlG{AlHaAjJa@hLXtGnCnKtCnFxCfCvEl@lHBzA}@vIoFzCs@|CcAnEQ~NhHnf@zUpm@rc@d]zVrTnTr^~]xbAnaAhSnPgJd^kExPgOzk@maAx_Ek@~BuKvd@cJz`@oAzFiAtHvKzAlBXzNvB|b@hGl@Dha@zFbGf@fBAjQ_AxEbA`HxBtPpFpa@rO_Cv_B_ZlD}LlBGB',
   route_instructions: 
-   [ [ '10',
-       'Friedenstraße',
-       294,
-       0,
-       0,
-       '294m',
-       'NW',
-       317 ],
-     [ '7',
-       'Friedrichsberger Straße',
-       270,
-       7,
-       0,
-       '270m',
-       'SW',
-       213 ],
-     [ '1',
-       'Lebuser Straße',
-       200,
-       13,
-       0,
-       '200m',
-       'S',
-       190 ],
-     [ '3',
-       'B 1;B 5',
-       290,
-       15,
-       0,
-       '290m',
-       'W',
-       280 ],
-     [ '11-3',
-       'Lichtenberger Straße',
-       598,
-       31,
-       0,
-       '598m',
-       'SE',
-       157 ],
-     [ '3',
-       'Holzmarktstraße',
-       472,
-       43,
-       0,
-       '472m',
-       'NW',
-       301 ],
-     [ '7',
-       'Alexanderstraße',
-       124,
-       52,
-       0,
-       '124m',
-       'S',
-       188 ],
-     [ '1',
-       'Jannowitzbrücke',
-       76,
-       57,
-       0,
-       '76m',
-       'S',
-       188 ],
-     [ '1',
-       'Brückenstraße',
-       164,
-       59,
-       0,
-       '164m',
-       'S',
-       179 ],
-     [ '3',
-       'Rungestraße',
-       105,
-       65,
-       0,
-       '105m',
-       'W',
-       274 ],
-     [ '3',
-       'Am Köllnischen Park',
-       73,
-       66,
-       0,
-       '73m',
-       'N',
-       353 ],
-     [ '15',
-       '',
-       0,
-       69,
-       0,
-       '',
-       'N',
-       0 ] ],
+   [ ... ],
   route_summary: 
    { total_distance: 2814,
      total_time: 211,
@@ -170,7 +79,7 @@ JSON.parse(engine.run(query));
         'TgcEAFwFAAAAAAAAVAAAANIeb5DqBHs_ikkhA1W0zAA' ] } }
 ```
 
-# Developing
+# Source Build
 
  - OSRM `develop` branch, cloned from github.
  - OSRM build with `-DWITH_TOOLS=1` so that `libOSRM` is created
@@ -210,8 +119,29 @@ Then build `node-osrm` against `Project-OSRM` installed in `/usr/local`:
     npm install
 
 
+# Developing
+
+Developers of `node-osrm` should set up a [Source Build](#source-build) and after changes to the code run:
+
+    make
+
+Under the hood this uses [node-gyp](https://github.com/TooTallNate/node-gyp) to compile the source code.
+
+Releasing a new version of `node-osrm` requires:
+
+1. Changing the package.json version: either increment the version of remove the `-alpha` flag
+1. Tagging a new release with git: `git tag v0.3.0 -m "Tagging v0.3.0`
+1. Pushing the tag to github: `git push --tags`
+
+After pushing the tag Travis.ci will automatically:
+
+ - Build binaries and publish them to S3 with [node-pre-gyp](https://github.com/springmeyer/node-pre-gyp)
+ - Run tests, and upon success
+ - Will run `npm publish` to push the package to the npm registry
+
 # Testing
 
 Run the tests like:
 
     make test
+
