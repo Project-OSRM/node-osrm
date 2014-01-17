@@ -2,6 +2,8 @@ language: cpp
 
 env:
   matrix:
+   # static_build == portable, statically linked OSRM and deps
+   # shared_build == non-portable, shared libraries via package manager
    - NODE_NVM_VERSION="0.10" RUN_BUILD="static_build"
    - NODE_NVM_VERSION="0.8" RUN_BUILD="static_build"
    - NODE_NVM_VERSION="0.10" RUN_BUILD="shared_build"
@@ -14,7 +16,9 @@ env:
 before_install:
 # put node-pre-gyp on path
 - export PATH=./node_modules/.bin/:$PATH
-- echo $NODE_NVM_VERSION
+# here we set up the node version on the fly based on the matrix value.
+# This is done manually so that it is easy to flip the 'language' to
+# objective-c in another branch (to run the same travis.yml on OS X)
 - git clone https://github.com/creationix/nvm.git ../.nvm
 - source ../.nvm/nvm.sh
 - nvm install $NODE_NVM_VERSION
@@ -32,21 +36,39 @@ before_script:
 - npm install mocha
 
 before_script:
+# install from source, ensure this works first
 - npm install --build-from-source
+- make test
 
 script:
-- make test
+# now we publish the binary, if needed
 - PUBLISH_BINARY=false
-- if [ "[publish-binary]" = `git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n'` ]; then echo PUBLISH_BINARY;PUBLISH_BINARY=true; fi;
+# check if this is a git tag built statically to be portable
 - if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]] && [[ $RUN_BUILD == "static_build" ]]; then echo PUBLISH_BINARY;PUBLISH_BINARY=true; fi;
+# or check if we are manually requesting binary publishing via a commit keyword
+- COMMIT_MESSAGE=$(git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n')
+- if test "${COMMIT_MESSAGE#*[publish-binary]}" != "$COMMIT_MESSAGE"; then echo PUBLISH_BINARY;PUBLISH_BINARY=true; fi;
+# if either are true, then publish the binary
+# Note: this publishing is done here, in the 'script' section, instead of the 'after_success'
+# since we want any failure here to stop the build immediately
 - if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package publish; fi
+# now clean up to prepare to re-install from remote binary
 - node-pre-gyp clean
-- if [[ $PUBLISH_BINARY == true ]]; then npm install --fallback-to-build=false; fi
+# now install from published binary
+# Note: we capture the error here so that if the install fails we can unpublish
+- INSTALL_RESULT=0
+- if [[ $PUBLISH_BINARY == true ]]; then INSTALL_RESULT=$(npm install --fallback-to-build=false)$? || true; fi
+# if install returned non zero (errored) then we first unpublish and then call false so travis will bail at this line
+- if [ $INSTALL_RESULT != 0 ]; then 'echo failed!';node-pre-gyp unpublish;false; fi
+# If success then we arrive here so lets clean up
 - node-pre-gyp clean
-# TODO - unpublish binary if this failed
 
 after_success:
-# publish to npm if this is a tag
+# Now finally, all of the above succeeded!
+# It's time to auto-publish to npm if this is
+# a tag or the commit has the [publish] keyword
+# Note: we only allow publishing for "static_build" since
+# that is the only portable method of building
 - PUBLISH=false
 - npm config set email dane@dbsgeo.com
 - npm config set _auth $NPM_AUTH
