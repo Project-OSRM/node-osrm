@@ -29,7 +29,7 @@ before_install:
 
 install:
 # set a few env settings for the static build script
-- if [[ $RUN_BUILD == "static_build" ]]; then PACKAGE_COMMAND_LINE_TOOLS=true; TMP_DEPS_DIR=`mktemp -d -t /tmp`; fi;
+- if [[ $RUN_BUILD == "static_build" ]]; then PACKAGE_COMMAND_LINE_TOOLS=true; TMP_DEPS_DIR=`mktemp -d -t /tmpXXXXXX`; fi;
 - NODE_MODULE_ROOT=`pwd`
 # WARNING: this script modifies the environment
 - source ./scripts/${RUN_BUILD}.sh
