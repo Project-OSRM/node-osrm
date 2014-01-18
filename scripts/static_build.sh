@@ -5,7 +5,6 @@ cd ${TMP_DEPS_DIR}/mapnik-packaging
 export CXX11=false
 source build.sh
 UNAME=$(uname -s);
-ls ${NODE_MODULE_ROOT}
 if [ ${UNAME} = 'Darwin' ]; then
     build_osrm_for_osx
 else
@@ -14,7 +13,6 @@ else
     sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm
     build_osrm_for_linux
 fi
-ls ${NODE_MODULE_ROOT}
 if [[ ${PACKAGE_COMMAND_LINE_TOOLS} == true ]]; then
     mkdir -p "${NODE_MODULE_ROOT}/lib/binding/"
     cp `which lua` "${NODE_MODULE_ROOT}/lib/binding/"
@@ -23,5 +21,3 @@ if [[ ${PACKAGE_COMMAND_LINE_TOOLS} == true ]]; then
 else
     echo "node packaging command line tools"
 fi
-ls ${NODE_MODULE_ROOT}
-ls "${NODE_MODULE_ROOT}/lib/binding/"
