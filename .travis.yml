@@ -14,6 +14,7 @@ env:
    - secure: Atz+Zcl9Faw1OvUEv5vK3aYXGWQS8dvDd4nLQ/2XU0doVKjsNvFxVWtBFvE91yvbnJnkSR6IrD6U4I3RQkmaEZ4s37nipHZ1nkuPlSucV0SamAwOcO4Wm+D0yrlPAt/bDQHlAojY1UE98U0oqDKfkBvLwdzIGvv0qISR/W/8rLI=
 
 before_install:
+# get commit message
 - COMMIT_MESSAGE=$(git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n')
 # put node-pre-gyp on path
 - export PATH=./node_modules/.bin/:$PATH
