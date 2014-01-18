@@ -30,7 +30,7 @@ before_install:
 install:
 - CURRENT_DIR=`pwd`
 # WARNING: this script modifies the environment
-- source ./util/${RUN_BUILD}.sh
+- source ./scripts/${RUN_BUILD}.sh
 - cd $CURRENT_DIR
 
 before_script:
