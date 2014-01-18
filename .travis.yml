@@ -28,10 +28,12 @@ before_install:
 - npm --version
 
 install:
-- CURRENT_DIR=`pwd`
+# set a few env settings for the static build script
+- if [[ $RUN_BUILD == "static_build" ]]; then PACKAGE_COMMAND_LINE_TOOLS=true; TMP_DEPS_DIR=`mktemp -d -t /tmp`; fi;
+- NODE_MODULE_ROOT=`pwd`
 # WARNING: this script modifies the environment
 - source ./scripts/${RUN_BUILD}.sh
-- cd $CURRENT_DIR
+- cd ${NODE_MODULE_ROOT}
 
 before_script:
 - npm install mocha
@@ -39,6 +41,8 @@ before_script:
 before_script:
 # install from source, ensure this works first
 - npm install --build-from-source
+# if a static build then are safe to nuke the depedencies
+- if [[ $RUN_BUILD == "static_build" ]]; then which osrm-extract||true;rm -rf ${TMP_DEPS_DIR};which osrm-extract||true; fi;
 - make test
 
 script:

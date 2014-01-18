@@ -24,10 +24,10 @@ berlin-latest.osm.pbf:
 	wget http://download.geofabrik.de/europe/germany/berlin-latest.osm.pbf
 
 berlin-latest.osrm: berlin-latest.osm.pbf
-	osrm-extract berlin-latest.osm.pbf -p test/data/car.lua
+	PATH="./lib/binding:${PATH}" && osrm-extract berlin-latest.osm.pbf -p test/data/car.lua
 
 berlin-latest.osrm.hsgr: berlin-latest.osrm
-	osrm-prepare berlin-latest.osrm
+	PATH="./lib/binding:${PATH}" && osrm-prepare berlin-latest.osrm
 
 test: berlin-latest.osrm.hsgr
 	npm test
