@@ -6,7 +6,6 @@ export CXX11=false
 source build.sh
 UNAME=$(uname -s);
 if [ ${UNAME} = 'Darwin' ]; then
-    brew install lua
     build_osrm_for_osx
 else
     # fixes node/gyp install
