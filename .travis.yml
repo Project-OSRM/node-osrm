@@ -14,6 +14,7 @@ env:
    - secure: Atz+Zcl9Faw1OvUEv5vK3aYXGWQS8dvDd4nLQ/2XU0doVKjsNvFxVWtBFvE91yvbnJnkSR6IrD6U4I3RQkmaEZ4s37nipHZ1nkuPlSucV0SamAwOcO4Wm+D0yrlPAt/bDQHlAojY1UE98U0oqDKfkBvLwdzIGvv0qISR/W/8rLI=
 
 before_install:
+# get commit message
 - COMMIT_MESSAGE=$(git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n')
 # put node-pre-gyp on path
 - export PATH=./node_modules/.bin/:$PATH
@@ -28,10 +29,12 @@ before_install:
 - npm --version
 
 install:
-- CURRENT_DIR=`pwd`
+# set a few env settings for the static build script
+- if [[ $RUN_BUILD == "static_build" ]]; then PACKAGE_COMMAND_LINE_TOOLS=true; TMP_DEPS_DIR=`mktemp -d -t XXXXXXXXXXX`; fi;
+- NODE_MODULE_ROOT=`pwd`
 # WARNING: this script modifies the environment
 - source ./scripts/${RUN_BUILD}.sh
-- cd $CURRENT_DIR
+- cd ${NODE_MODULE_ROOT}
 
 before_script:
 - npm install mocha
@@ -39,6 +42,8 @@ before_script:
 before_script:
 # install from source, ensure this works first
 - npm install --build-from-source
+# if a static build then are safe to nuke the depedencies
+- if [[ $RUN_BUILD == "static_build" ]]; then which osrm-extract||true;rm -rf ${TMP_DEPS_DIR};which osrm-extract||true; fi;
 - make test
 
 script:
@@ -47,7 +52,7 @@ script:
 # check if this is a git tag built statically to be portable
 - if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]] && [[ $RUN_BUILD == "static_build" ]]; then echo PUBLISH_BINARY;PUBLISH_BINARY=true; fi;
 # or check if we are manually requesting binary publishing via a commit keyword
-- if test "${COMMIT_MESSAGE#*[publish-binary]}" != "$COMMIT_MESSAGE"; then echo PUBLISH_BINARY;PUBLISH_BINARY=true; fi;
+- if test "${COMMIT_MESSAGE#*'[publish-binary]'}" != "$COMMIT_MESSAGE"; then echo PUBLISH_BINARY;PUBLISH_BINARY=true; fi;
 # if either are true, then publish the binary
 # Note: this publishing is done here, in the 'script' section, instead of the 'after_success'
 # since we want any failure here to stop the build immediately
@@ -76,6 +81,6 @@ after_success:
 - echo $NODE_VERSION
 - echo $NODE_NVM_VERSION
 - echo `git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n'`
-- if [[ $RUN_BUILD == "static_build" ]] && [[ $NODE_NVM_VERSION == "0.8" ]] && test "${COMMIT_MESSAGE#*[publish]}" != "$COMMIT_MESSAGE"; then echo "publish"; PUBLISH=true; fi;
+- if [[ $RUN_BUILD == "static_build" ]] && [[ $NODE_NVM_VERSION == "0.8" ]] && test "${COMMIT_MESSAGE#*'[publish]'}" != "$COMMIT_MESSAGE"; then echo "publish"; PUBLISH=true; fi;
 - if [[ $RUN_BUILD == "static_build" ]] && [[ $NODE_NVM_VERSION == "0.8" ]] && [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then echo "publish"; PUBLISH=true; fi;
 - if [[ $PUBLISH == true ]]; then echo "publishing"; npm publish; fi;
