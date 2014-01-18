@@ -4,3 +4,5 @@ lib/binding/
 node_modules
 berlin-latest.osm.pbf
 berlin-latest.osrm*
+stxxl.errlog
+stxxl.log
