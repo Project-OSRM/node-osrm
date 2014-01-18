@@ -27,23 +27,23 @@ However other platforms will fall back to a source compile: see [Source Build](#
 
 # Usage
 
-1) Download an osm extract and process it with OSRM.
+The `node-osrm` module consumes data processed by OSRM core.
 
-2) Create an OSRM config (ini) file that references the OSRM prepared routing data.
+This repository contains a Makefile that does this automatically:
 
-This repository contains a Makefile to automatically do this, assuming you have OSRM installed.
+- Downloads an OSM extract
+- Runs `osrm-extract` and `osrm-prepare`
+- Has a OSRM config (ini) file that references the prepared data
 
 Just run:
 
     make berlin-latest.osrm.hsgr
 
-3) Next, since we want to use node-osrm locally, do:
-
-    export NODE_PATH=lib
-
 Once that is done then you can calculate routes in Javascript like:
 
 ```js
+// Note: to require osrm locally do:
+// require('./lib/osrm.js')
 var osrm = require('osrm')
 var opts = new osrm.Options("./test/data/berlin.ini");
 var engine = new osrm.Engine(opts);
@@ -81,15 +81,11 @@ JSON.parse(engine.run(query));
 
 # Source Build
 
+To build from source you will need:
+
  - OSRM `develop` branch, cloned from github.
  - OSRM build with `-DWITH_TOOLS=1` so that `libOSRM` is created
  - Lua, luabind, and stxxl headers
- - Boost >= 1.50 or Luabind headers patched as in https://github.com/DennisOSRM/Project-OSRM/issues/465#issuecomment-9133539 (note: it is possible to patch the luabind headers that are installed by apt)
- - If you use luajit then you may need to put the luajit headers on the compile flags like:
-
-    export CXXFLAGS="-I/usr/include/luajit-2.0/"
-
-### Mavericks
 
 To build with OS X Mavericks you need to ensure the bindings link to `libc++`. An easy way to do this is to set:
 
