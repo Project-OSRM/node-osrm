@@ -123,21 +123,36 @@ Developers of `node-osrm` should set up a [Source Build](#source-build) and afte
 
 Under the hood this uses [node-gyp](https://github.com/TooTallNate/node-gyp) to compile the source code.
 
-Releasing a new version of `node-osrm` requires:
-
-1. Changing the package.json version: either increment the version of remove the `-alpha` flag
-1. Tagging a new release with git: `git tag v0.3.0 -m "Tagging v0.3.0`
-1. Pushing the tag to github: `git push --tags`
-
-After pushing the tag Travis.ci will automatically:
-
- - Build binaries and publish them to S3 with [node-pre-gyp](https://github.com/springmeyer/node-pre-gyp)
- - Run tests, and upon success
- - Will run `npm publish` to push the package to the npm registry
-
 # Testing
 
 Run the tests like:
 
     make test
 
+# Releasing
+
+Releasing a new version of `node-osrm` requires:
+
+**1)** Bump version
+
+Change the package.json version: either increment the version of remove the `-alpha` flag
+
+**2)** Tag
+
+Tag a new release:
+
+    git tag v0.3.0 -m "Tagging v0.3.0
+
+**3)** Push the tag to github:
+
+    git push --tags
+
+This will trigger travis.ci to build Ubuntu binaries and publish the entire package to the npm registry upon success.
+
+**4)** Merge `master` into the `osx` branch
+
+    git checkout osx
+    git pull origin master --no-commit
+    git commit -a -m "[publish-binary]"
+
+This will build and publish OS X binaries on travis.ci. Be prepared to watch the travis run and re-start builds that fail due to timeouts (the OS X machines are underpowered).
