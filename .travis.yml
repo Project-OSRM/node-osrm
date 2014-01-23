@@ -32,6 +32,8 @@ install:
 # set a few env settings for the static build script
 - if [[ $RUN_BUILD == "static_build" ]]; then PACKAGE_COMMAND_LINE_TOOLS=true; TMP_DEPS_DIR=`mktemp -d -t XXXXXXXXXXX`; fi;
 - NODE_MODULE_ROOT=`pwd`
+- export OSRM_BRANCH="develop"
+- export OSRM_COMMIT="40517e3010757bdbb"
 # WARNING: this script modifies the environment
 - source ./scripts/${RUN_BUILD}.sh
 - cd ${NODE_MODULE_ROOT}

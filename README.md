@@ -133,13 +133,18 @@ Run the tests like:
 
 Releasing a new version of `node-osrm` requires:
 
-**1)** Confirm the desired OSRM version/hash.
+**1)** Confirm the desired OSRM branch and commit.
 
-This will be more configurable in the future, but currently this requires pinging @springmeyer to bump the hash used [here](https://github.com/mapnik/mapnik-packaging/blob/051f66433ef393fa48c0ba9bb6f0a002967940e7/osx/scripts/build_osrm.sh#L11).
+This is configurable via the `OSRM_BRANCH` and `OSRM_COMMIT` variables in travis.ci.
+
+See [Issue 36](https://github.com/DennisOSRM/node-osrm/issues/36) for further ideas on streamlining this.
 
 **2)** Bump node-osrm version
 
-Change the package.json version: either increment the version of remove the `-alpha` flag
+Change the package.json version:
+
+ - Add `-alpha` if you are testing experimental features or binary packaging.
+ - Remove `-alpha` if you are preparting for a stable release and increment if needed.
 
 **3)** Tag
 
