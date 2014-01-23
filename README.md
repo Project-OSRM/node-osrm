@@ -135,7 +135,7 @@ Releasing a new version of `node-osrm` requires:
 
 **1)** Confirm the desired OSRM version/hash.
 
-The will be more configurable in the future, but currently this requires pinging @springmeyer to bump the hash used [here](https://github.com/mapnik/mapnik-packaging/blob/051f66433ef393fa48c0ba9bb6f0a002967940e7/osx/scripts/build_osrm.sh#L11).
+This will be more configurable in the future, but currently this requires pinging @springmeyer to bump the hash used [here](https://github.com/mapnik/mapnik-packaging/blob/051f66433ef393fa48c0ba9bb6f0a002967940e7/osx/scripts/build_osrm.sh#L11).
 
 **2)** Bump node-osrm version
 
