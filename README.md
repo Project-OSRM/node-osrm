@@ -133,26 +133,37 @@ Run the tests like:
 
 Releasing a new version of `node-osrm` requires:
 
-**1)** Bump version
+**1)** Confirm the desired OSRM version/hash.
+
+The will be more configurable in the future, but currently this requires pinging @springmeyer to bump the hash used [here](https://github.com/mapnik/mapnik-packaging/blob/051f66433ef393fa48c0ba9bb6f0a002967940e7/osx/scripts/build_osrm.sh#L11).
+
+**2)** Bump node-osrm version
 
 Change the package.json version: either increment the version of remove the `-alpha` flag
 
-**2)** Tag
+**3)** Tag
 
 Tag a new release:
 
     git tag v0.3.0 -m "Tagging v0.3.0
 
-**3)** Push the tag to github:
+**4)** Push the tag to github:
 
     git push --tags
 
-This will trigger travis.ci to build Ubuntu binaries and publish the entire package to the npm registry upon success.
+This will trigger travis.ci to build Ubuntu binaries and publish the entire package to the npm registry upon success. The publishing will use the s3 and npm auth credentials of @springmeyer currently - this needs to be made more configurable in the future.
 
-**4)** Merge `master` into the `osx` branch
+**5)** Merge `master` into the `osx` branch
 
     git checkout osx
     git pull origin master --no-commit
     git commit -a -m "[publish-binary]"
 
 This will build and publish OS X binaries on travis.ci. Be prepared to watch the travis run and re-start builds that fail due to timeouts (the OS X machines are underpowered).
+
+**6)** You are done
+
+If the travis builds succeeded then you can rest assured the binaries are working since they not only publish but also test installing from what they published.
+
+Now go ahead and use the new tag in your applications `package.json` as a dependency and you will get binaries rather than needing a source compile.
+
