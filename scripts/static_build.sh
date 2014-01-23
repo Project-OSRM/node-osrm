@@ -18,6 +18,7 @@ if [[ ${PACKAGE_COMMAND_LINE_TOOLS} == true ]]; then
     cp `which lua` "${NODE_MODULE_ROOT}/lib/binding/"
     cp `which osrm-extract` "${NODE_MODULE_ROOT}/lib/binding/"
     cp `which osrm-prepare` "${NODE_MODULE_ROOT}/lib/binding/"
+    cp `which osrm-datastore` "${NODE_MODULE_ROOT}/lib/binding/"
 else
     echo "node packaging command line tools"
 fi
