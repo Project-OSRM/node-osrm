@@ -1,5 +1,9 @@
 ## node-osrm changelog
 
+### 0.2.7
+
+ - Fixed tag validation
+
 ### 0.2.6
 
  - Pull binaries from https
