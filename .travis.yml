@@ -44,7 +44,8 @@ before_script:
 before_script:
 # install from source, ensure this works first
 - npm install --build-from-source
-- if [[ `uname -s` == 'Darwin' ]]; then otool -L ./lib/binding/*;brew list boost; fi
+- if [[ `uname -s` == 'Darwin' ]]; then otool -L ./lib/binding/* || true; fi
+- if [[ `uname -s` == 'Linux' ]]; then readelf -d ./lib/binding/* || true; fi
 # if a static build then are safe to nuke the dependencies
 - if [[ $RUN_BUILD == "static_build" ]]; then which osrm-extract||true;rm -rf ${TMP_DEPS_DIR};which osrm-extract||true; fi;
 - make test
@@ -53,9 +54,9 @@ script:
 # now we publish the binary, if needed
 - PUBLISH_BINARY=false
 # check if this is a git tag built statically to be portable
-- if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]] && [[ $RUN_BUILD == "static_build" ]]; then echo PUBLISH_BINARY;PUBLISH_BINARY=true; fi;
+- if [[ $RUN_BUILD == "static_build" ]] && [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then echo PUBLISH_BINARY;PUBLISH_BINARY=true; fi;
 # or check if we are manually requesting binary publishing via a commit keyword
-- if test "${COMMIT_MESSAGE#*'[publish-binary]'}" != "$COMMIT_MESSAGE"; then echo PUBLISH_BINARY;PUBLISH_BINARY=true; fi;
+- if [[ $RUN_BUILD == "static_build" ]] && test "${COMMIT_MESSAGE#*'[publish binary]'}" != "$COMMIT_MESSAGE"; then echo PUBLISH_BINARY;PUBLISH_BINARY=true; fi;
 # if either are true, then publish the binary
 # Note: this publishing is done here, in the 'script' section, instead of the 'after_success'
 # since we want any failure here to stop the build immediately

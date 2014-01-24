@@ -137,7 +137,7 @@ Releasing a new version of `node-osrm` is mostly automated using travis.ci.
 
 - If you create and push a new git tag Travis.ci will automatically publish both binaries and the package to the npm registry.
 
-- Before tagging you can test publishing of just binaries by including the keyword `[publish-binary]` in your commit message. But until [this feature](https://github.com/springmeyer/node-pre-gyp/issues/28) is implementedand be very careful that the `version` in package.json has been incremented since the last tag. Otherwise existing binaries will get overwritten, which you likely don't want.
+- Before tagging you can test publishing of just binaries by including the keyword `[publish binary]` in your commit message. But until [this feature](https://github.com/springmeyer/node-pre-gyp/issues/28) is implementedand be very careful that the `version` in package.json has been incremented since the last tag. Otherwise existing binaries will get overwritten, which you likely don't want.
 
 ### Steps to release
 
@@ -175,7 +175,7 @@ This will trigger travis.ci to build Ubuntu binaries and publish the entire pack
 **6)** Merge into the `osx` branch
 
     git checkout osx
-    git merge v0.3.0 -m "[publish-binary]"
+    git merge v0.3.0 -m "[publish binary]"
     git push origin osx
 
 This will build and publish OS X binaries on travis.ci. Be prepared to watch the travis run and re-start builds that fail due to timeouts (the OS X machines are underpowered).
