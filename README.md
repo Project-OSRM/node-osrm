@@ -131,7 +131,15 @@ Run the tests like:
 
 # Releasing
 
-Releasing a new version of `node-osrm` requires:
+Releasing a new version of `node-osrm` is mostly automated using travis.ci.
+
+### Caveats
+
+- If you create and push a new git tag Travis.ci will automatically publish both binaries and the package to the npm registry.
+
+- Before tagging you can test publishing of just binaries by including the keyword `[publish-binary]` in your commit message. But until [this feature](https://github.com/springmeyer/node-pre-gyp/issues/28) is implementedand be very careful that the `version` in package.json has been incremented since the last tag. Otherwise existing binaries will get overwritten, which you likely don't want.
+
+### Steps to release
 
 **1)** Confirm the desired OSRM branch and commit.
 
@@ -141,24 +149,28 @@ See [Issue 36](https://github.com/DennisOSRM/node-osrm/issues/36) for further id
 
 **2)** Bump node-osrm version
 
-Change the package.json version:
+Update the `CHANGELOG.md` and the `package.json` version:
 
  - Add `-alpha` if you are testing experimental features or binary packaging.
  - Remove `-alpha` if you are preparting for a stable release and increment if needed.
 
-**3)** Tag
+**3)** Check Travis.ci
+
+Ensure Travis.ci [builds are passing](https://travis-ci.org/DennisOSRM/node-osrm) after your last commit. This is important because upstream OSRM is being pulled in and may have changed.
+
+**4)** Tag
 
 Tag a new release:
 
     git tag v0.3.0 -m "Tagging v0.3.0
 
-**4)** Push the tag to github:
+**5)** Push the tag to github:
 
     git push --tags
 
 This will trigger travis.ci to build Ubuntu binaries and publish the entire package to the npm registry upon success. The publishing will use the s3 and npm auth credentials of @springmeyer currently - this needs to be made more configurable in the future.
 
-**5)** Merge `master` into the `osx` branch
+**6)** Merge `master` into the `osx` branch
 
     git checkout osx
     git pull origin master --no-commit
@@ -166,7 +178,7 @@ This will trigger travis.ci to build Ubuntu binaries and publish the entire pack
 
 This will build and publish OS X binaries on travis.ci. Be prepared to watch the travis run and re-start builds that fail due to timeouts (the OS X machines are underpowered).
 
-**6)** You are done
+**7)** You are done
 
 If the travis builds succeeded then you can rest assured the binaries are working since they not only publish but also test installing from what they published.
 
