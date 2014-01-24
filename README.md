@@ -160,26 +160,50 @@ Ensure Travis.ci [builds are passing](https://travis-ci.org/DennisOSRM/node-osrm
 Tag a new release:
 
     git add CHANGELOG.md package.json
-    git commit -m "Tagging v0.3.0"
-    git tag v0.3.0
+    git commit -m "Tagging v0.2.8"
+    git tag v0.2.8
 
 **5)** Push the tag to github:
 
-    git push origin master v0.3.0
+    git push origin master v0.2.8
 
 This will trigger travis.ci to build Ubuntu binaries and publish the entire package to the npm registry upon success. The publishing will use the s3 and npm auth credentials of @springmeyer currently - this needs to be made more configurable in the future.
 
 **6)** Merge into the `osx` branch
 
     git checkout osx
-    git merge v0.3.0 -m "[publish binary]"
+    git merge v0.2.8 -m "[publish binary]"
     git push origin osx
 
 This will build and publish OS X binaries on travis.ci. Be prepared to watch the travis run and re-start builds that fail due to timeouts (the OS X machines are underpowered).
 
-**7)** You are done
+**7)** Check published binaries
 
-If the travis builds succeeded then you can rest assured the binaries are working since they not only publish but also test installing from what they published.
+If travis builds passed for both the `master` branch and the `osx` branch then binaries should be published for both platforms.
 
-Now go ahead and use the new tag in your applications `package.json` as a dependency and you will get binaries rather than needing a source compile.
+Confirm the remote binaries are available with node-pre-gyp:
 
+    $ npm install node-pre-gyp # or use the copy in ./node_modules/.bin
+    $ node-pre-gyp info --loglevel silent | grep `node -e "console.log(require('./package.json').version)"`
+    osrm-v0.2.8-node-v11-darwin-x64.tar.gz
+    osrm-v0.2.8-node-v11-linux-x64.tar.gz
+    osrm-v0.2.8-v8-3.11-darwin-x64.tar.gz
+    osrm-v0.2.8-v8-3.11-linux-x64.tar.gz
+
+**9)** Publish node-osrm
+
+Publish `node-osrm`
+
+    npm publish
+
+Dependent apps can now pull from the npm registry like:
+
+    "dependencies": {
+        "osrm": "~0.2.8"
+    }
+
+Or can still pull from the github tag like:
+
+    "dependencies": {
+        "osrm": "https://github.com/DennisOSRM/node-osrm/tarball/v0.2.8"
+    }
