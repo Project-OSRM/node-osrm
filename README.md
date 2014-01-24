@@ -137,7 +137,7 @@ Releasing a new version of `node-osrm` is mostly automated using travis.ci.
 
 - If you create and push a new git tag Travis.ci will automatically publish both binaries and the package to the npm registry.
 
-- Before tagging you can test publishing of just binaries by including the keyword `[publish binary]` in your commit message. But until [this feature](https://github.com/springmeyer/node-pre-gyp/issues/28) is implementedand be very careful that the `version` in package.json has been incremented since the last tag. Otherwise existing binaries will get overwritten, which you likely don't want.
+- Before tagging you can test publishing of just the binaries by including the keyword `[publish binary]` in your commit message. Make sure to run `node-pre-gyp unpublish` before trying publish binaries for a version that has already been published as trying to publish over an existing binary will fail.
 
 ### Steps to release
 
@@ -149,10 +149,7 @@ See [Issue 36](https://github.com/DennisOSRM/node-osrm/issues/36) for further id
 
 **2)** Bump node-osrm version
 
-Update the `CHANGELOG.md` and the `package.json` version:
-
- - Add `-alpha` if you are testing experimental features or binary packaging.
- - Remove `-alpha` if you are preparting for a stable release and increment if needed.
+Update the `CHANGELOG.md` and the `package.json` version.
 
 **3)** Check Travis.ci
 

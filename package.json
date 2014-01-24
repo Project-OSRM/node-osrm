@@ -4,7 +4,7 @@
     "url": "https://github.com/DennisOSRM/Project-OSRM",
     "homepage": "http://project-osrm.org",
     "author": "Dane Springmeyer <springmeyer>",
-    "version": "0.2.5",
+    "version": "0.2.6",
     "main": "./lib/osrm.js",
     "bugs": {
         "email": "dane@mapbox.com",
@@ -25,7 +25,7 @@
         "template": "{module_name}-v{version}-{node_abi}-{platform}-{arch}.tar.gz"
     },
     "dependencies": {
-        "node-pre-gyp": "~0.3.1"
+        "node-pre-gyp": "~0.4.0"
     },
     "bundledDependencies":["node-pre-gyp"],
     "licenses": [
