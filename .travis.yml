@@ -44,7 +44,8 @@ before_script:
 before_script:
 # install from source, ensure this works first
 - npm install --build-from-source
-# if a static build then are safe to nuke the depedencies
+- if [[ `uname -s` == 'Darwin' ]]; then otool -L ./lib/binding/*;brew list boost; fi
+# if a static build then are safe to nuke the dependencies
 - if [[ $RUN_BUILD == "static_build" ]]; then which osrm-extract||true;rm -rf ${TMP_DEPS_DIR};which osrm-extract||true; fi;
 - make test
 
@@ -66,7 +67,7 @@ script:
 - INSTALL_RESULT=0
 - if [[ $PUBLISH_BINARY == true ]]; then INSTALL_RESULT=$(npm install --fallback-to-build=false)$? || true; fi
 # if install returned non zero (errored) then we first unpublish and then call false so travis will bail at this line
-- if [ $INSTALL_RESULT != 0 ]; then 'echo failed!';node-pre-gyp unpublish;false; fi
+- if [[ $INSTALL_RESULT != 0 ]]; then 'echo failed!';node-pre-gyp unpublish;false; fi
 # If success then we arrive here so lets clean up
 - node-pre-gyp clean
 
