@@ -82,4 +82,52 @@ describe('osrm', function() {
             done();
         });
     });
+
+    it('should return results for berlin using options', function(done) {
+        var opts = new osrm.Options("./test/data/berlin.ini");
+        var engine = new osrm.Engine(opts);
+        var query = new osrm.Query({
+            coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
+            zoomLevel: 17,
+            alternateRoute: false,
+            printInstructions: false
+        });
+        engine.run(query,function(err,async_result) {
+            var result_json = JSON.parse(async_result);
+            assert.equal(result_json.status_message,'Found route between points');
+            assert.equal(0, result_json.route_instructions.length, "instructions should be empty");
+            assert.equal(0, result_json.alternative_geometries.length, "alternative_geometries should be empty");
+            done();
+        });
+    });
+
+    it('should return results for berlin using hints', function(done) {
+        var opts = new osrm.Options("./test/data/berlin.ini");
+        var engine = new osrm.Engine(opts);
+        var query = new osrm.Query({
+            coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
+            alternateRoute: false,
+            printInstructions: false
+        });
+        engine.run(query,function(err,first_result) {
+            var result_json = JSON.parse(first_result);
+            assert.equal(result_json.status_message,'Found route between points');
+            var checksum = result_json.hint_data.checksum;
+            assert.equal("number", typeof(checksum), "checksum should be a number");
+
+            var query2 = new osrm.Query({
+                coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
+                hints: result_json.hint_data.locations,
+                alternateRoute: false,
+                printInstructions: false,
+                checksum: checksum
+            });
+            engine.run(query2,function(err,second_result) {
+                assert.equal(first_result,second_result);
+                var result_json = JSON.parse(second_result);
+                assert.equal(result_json.status_message,'Found route between points');
+                done();
+            });
+        });
+    });
 });
