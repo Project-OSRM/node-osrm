@@ -35,7 +35,7 @@ install:
 - if [[ $RUN_BUILD == "static_build" ]]; then PACKAGE_COMMAND_LINE_TOOLS=true; TMP_DEPS_DIR=`mktemp -d -t XXXXXXXXXXX`; fi;
 - NODE_MODULE_ROOT=`pwd`
 - export OSRM_BRANCH="develop"
-- export OSRM_COMMIT="40517e3010757bdbb"
+- export OSRM_COMMIT="d73f3ebd1bde36c2e5b41edb44a703cfb09cd7a0"
 # WARNING: this script modifies the environment
 - source ./scripts/${RUN_BUILD}.sh
 - cd ${NODE_MODULE_ROOT}
