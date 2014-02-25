@@ -37,8 +37,8 @@ void Query::Initialize(Handle<Object> target) {
     HandleScope scope;
     constructor = Persistent<FunctionTemplate>::New(FunctionTemplate::New(Query::New));
     constructor->InstanceTemplate()->SetInternalFieldCount(1);
-    constructor->SetClassName(String::New("Query"));
-    target->Set(String::New("Query"),constructor->GetFunction());
+    constructor->SetClassName(String::NewSymbol("Query"));
+    target->Set(String::NewSymbol("Query"),constructor->GetFunction());
 }
 
 Query::Query()
