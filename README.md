@@ -27,6 +27,10 @@ However other platforms will fall back to a source compile: see [Source Build](#
 
 # Usage
 
+See the `example/server.js` and `test/osrm.test.js` for examples of using OSRM through this Node.js API.
+
+# Setup
+
 The `node-osrm` module consumes data processed by OSRM core.
 
 This repository contains a Makefile that does this automatically:
