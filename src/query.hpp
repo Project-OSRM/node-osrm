@@ -37,8 +37,8 @@ void Query::Initialize(Handle<Object> target) {
     HandleScope scope;
     constructor = Persistent<FunctionTemplate>::New(FunctionTemplate::New(Query::New));
     constructor->InstanceTemplate()->SetInternalFieldCount(1);
-    constructor->SetClassName(String::NewSymbol("Query"));
-    target->Set(String::NewSymbol("Query"),constructor->GetFunction());
+    constructor->SetClassName(String::New("Query"));
+    target->Set(String::New("Query"),constructor->GetFunction());
 }
 
 Query::Query()
@@ -64,7 +64,7 @@ Handle<Value> Query::New(Arguments const& args)
         if (obj->IsNull() || obj->IsUndefined()) {
             return ThrowException(Exception::TypeError(String::New("first arg must be an object")));
         }
-        if (!obj->Has(String::NewSymbol("coordinates"))) {
+        if (!obj->Has(String::New("coordinates"))) {
             return ThrowException(Exception::TypeError(String::New("must provide a coordinates property")));
         }
         Local<Value> coordinates = obj->Get(String::New("coordinates"));
@@ -88,27 +88,27 @@ Handle<Value> Query::New(Arguments const& args)
         q->this_->jsonpParameter = ""; //set for jsonp wrapping
         q->this_->language = ""; //unused atm
 
-        if (obj->Has(String::NewSymbol("alternateRoute"))) {
+        if (obj->Has(String::New("alternateRoute"))) {
             q->this_->alternateRoute = obj->Get(String::New("alternateRoute"))->BooleanValue();
         }
 
-        if (obj->Has(String::NewSymbol("checksum"))) {
+        if (obj->Has(String::New("checksum"))) {
             q->this_->checkSum = static_cast<unsigned>(obj->Get(String::New("checksum"))->Uint32Value());
         }
 
-        if (obj->Has(String::NewSymbol("zoomLevel"))) {
+        if (obj->Has(String::New("zoomLevel"))) {
             q->this_->zoomLevel = static_cast<short>(obj->Get(String::New("zoomLevel"))->Int32Value());
         }
 
-        if (obj->Has(String::NewSymbol("printInstructions"))) {
+        if (obj->Has(String::New("printInstructions"))) {
             q->this_->printInstructions = obj->Get(String::New("printInstructions"))->BooleanValue();
         }
 
-        if (obj->Has(String::NewSymbol("jsonpParameter"))) {
+        if (obj->Has(String::New("jsonpParameter"))) {
             q->this_->jsonpParameter = *v8::String::Utf8Value(obj->Get(String::New("jsonpParameter")));
         }
 
-        if (obj->Has(String::NewSymbol("hints"))) {
+        if (obj->Has(String::New("hints"))) {
             Local<Value> hints = obj->Get(String::New("hints"));
             if (!hints->IsArray()) {
                 return ThrowException(Exception::TypeError(String::New("hints must be an array of strings/null")));
