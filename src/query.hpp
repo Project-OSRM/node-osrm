@@ -78,7 +78,7 @@ Handle<Value> Query::New(Arguments const& args)
 
         Query* q = new Query();
         q->this_->zoomLevel = 18; //no generalization
-        q->this_->printInstructions = true; //turn by turn instructions
+        q->this_->printInstructions = false; //turn by turn instructions
         q->this_->alternateRoute = true; //get an alternate route, too
         q->this_->geometry = true; //retrieve geometry of route
         q->this_->compression = true; //polyline encoding
@@ -90,6 +90,40 @@ Handle<Value> Query::New(Arguments const& args)
 
         if (obj->Has(String::NewSymbol("alternateRoute"))) {
             q->this_->alternateRoute = obj->Get(String::New("alternateRoute"))->BooleanValue();
+        }
+
+        if (obj->Has(String::NewSymbol("checksum"))) {
+            q->this_->checkSum = static_cast<unsigned>(obj->Get(String::New("checksum"))->Uint32Value());
+        }
+
+        if (obj->Has(String::NewSymbol("zoomLevel"))) {
+            q->this_->zoomLevel = static_cast<short>(obj->Get(String::New("zoomLevel"))->Int32Value());
+        }
+
+        if (obj->Has(String::NewSymbol("printInstructions"))) {
+            q->this_->printInstructions = obj->Get(String::New("printInstructions"))->BooleanValue();
+        }
+
+        if (obj->Has(String::NewSymbol("jsonpParameter"))) {
+            q->this_->jsonpParameter = *v8::String::Utf8Value(obj->Get(String::New("jsonpParameter")));
+        }
+
+        if (obj->Has(String::NewSymbol("hints"))) {
+            Local<Value> hints = obj->Get(String::New("hints"));
+            if (!hints->IsArray()) {
+                return ThrowException(Exception::TypeError(String::New("hints must be an array of strings/null")));
+            }
+            Local<Array> hints_array = Local<Array>::Cast(hints);
+            for (uint32_t i = 0; i < hints_array->Length(); ++i) {
+                Local<Value> hint = hints_array->Get(i);
+                if (hint->IsString()) {
+                    q->this_->hints.push_back(*v8::String::Utf8Value(hint));
+                } else if(hint->IsNull()){
+                    q->this_->hints.push_back("");
+                }else{
+                    return ThrowException(Exception::TypeError(String::New("hint must be null or string")));
+                }
+            }
         }
 
         for (uint32_t i = 0; i < coordinates_array->Length(); ++i) {
