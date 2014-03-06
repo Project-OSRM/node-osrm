@@ -20,7 +20,10 @@ if [ ${UNAME} = 'Linux' ]; then
     sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm
 fi
 build_osrm
+cd ${NODE_MODULE_ROOT}
 if [[ ${PACKAGE_COMMAND_LINE_TOOLS:-false} != false ]]; then
+    ls ${NODE_MODULE_ROOT}
+    ls ${NODE_MODULE_ROOT}/lib/binding/
     mkdir -p "${NODE_MODULE_ROOT}/lib/binding/"
     cp `which lua` "${NODE_MODULE_ROOT}/lib/binding/"
     cp `which osrm-extract` "${NODE_MODULE_ROOT}/lib/binding/"
