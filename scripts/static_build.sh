@@ -9,7 +9,7 @@ fi
 if [[ ${NODE_MODULE_ROOT:-false} == false ]]; then
     NODE_MODULE_ROOT=`pwd`
 fi
-git clone --depth=0 https://github.com/mapnik/mapnik-packaging.git  ${TMP_DEPS_DIR}/mapnik-packaging
+git clone --depth=1 https://github.com/mapnik/mapnik-packaging.git  ${TMP_DEPS_DIR}/mapnik-packaging
 cd ${TMP_DEPS_DIR}/mapnik-packaging
 export CXX11=false
 source build.sh

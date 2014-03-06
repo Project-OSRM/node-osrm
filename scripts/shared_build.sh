@@ -11,7 +11,7 @@ else
     sudo apt-get install -y build-essential git cmake libprotoc-dev libprotobuf7 protobuf-compiler libprotobuf-dev libbz2-dev libstxxl-dev libstxxl-doc libstxxl1 libxml2-dev libzip-dev lua5.1 liblua5.1-0-dev
 
     # install luabind
-    git clone --depth=0 https://github.com/DennisOSRM/luabind.git
+    git clone --depth=1 https://github.com/DennisOSRM/luabind.git
     cd luabind
     mkdir -p build
     cd build
@@ -21,7 +21,7 @@ else
     cd ../../
 
     # install osmpbf
-    git clone --depth=0 https://github.com/scrosby/OSM-binary.git
+    git clone --depth=1 https://github.com/scrosby/OSM-binary.git
     cd OSM-binary/src
     make
     sudo make install
@@ -30,7 +30,7 @@ else
 fi
 
 # install OSRM
-git clone --depth=0 https://github.com/DennisOSRM/Project-OSRM.git Project-OSRM -b develop
+git clone --depth=1 https://github.com/DennisOSRM/Project-OSRM.git Project-OSRM -b develop
 cd Project-OSRM
 mkdir -p build 
 cd build
