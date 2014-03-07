@@ -42,8 +42,6 @@ install:
 
 before_script:
 - npm install mocha
-
-before_script:
 # install from source, ensure this works first
 - npm install --build-from-source
 - if [[ `uname -s` == 'Darwin' ]]; then otool -L ./lib/binding/* || true; fi
