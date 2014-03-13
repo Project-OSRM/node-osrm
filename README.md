@@ -91,12 +91,6 @@ To build from source you will need:
  - OSRM build with `-DWITH_TOOLS=1` so that `libOSRM` is created
  - Lua, luabind, and stxxl headers
 
-To build with OS X Mavericks you need to ensure the bindings link to `libc++`. An easy way to do this is to set:
-
-    export CXXFLAGS=-mmacosx-version-min=10.9
-
-before building `node-osrm`.
-
 ### Building
 
 To build the bindings you need to first build and **install** the `develop` branch of `Project-OSRM`:
