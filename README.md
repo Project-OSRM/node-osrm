@@ -116,7 +116,7 @@ Then build `node-osrm` against `Project-OSRM` installed in `/usr/local`:
 
     git clone https://github.com/DennisOSRM/node-osrm.git
     cd node-osrm
-    npm install
+    npm install --build-from-source
 
 
 # Developing
