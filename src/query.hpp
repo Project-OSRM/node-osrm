@@ -10,7 +10,7 @@
 #include <node_object_wrap.h>
 
 // stl
-#include <string.h>
+#include <string>
 
 #include <osrm/OSRM.h>
 
@@ -76,7 +76,7 @@ Handle<Value> Query::New(Arguments const& args)
         }
 
         // Handle scenario in which caller explicitly specified service
-        std::string service = "";
+        std::string service;
         if (obj->Has(String::New("service"))) {
             Local<Value> serviceValue = obj->Get(String::New("service"));
             v8::String::Utf8Value serviceUtf8Value(serviceValue->ToString());
@@ -84,7 +84,7 @@ Handle<Value> Query::New(Arguments const& args)
         }
 
         // Handle 'nearest', otherwise assume 'viaroute' service.
-        if (service.compare("nearest") == 0 || service.compare("locate") == 0) {
+        if (service == "nearest" || service == "locate") {
             Local<Array> coordinates_array = Local<Array>::Cast(coordinates);
             if (coordinates_array->Length() != 1) {
                 return ThrowException(Exception::TypeError(String::New("coordinates array should only have one lat/long pair for 'nearest' or 'locate' queries")));
