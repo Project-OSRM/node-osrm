@@ -51,8 +51,19 @@ Once that is done then you can calculate routes in Javascript like:
 var osrm = require('osrm')
 var opts = new osrm.Options("./test/data/berlin.ini");
 var engine = new osrm.Engine(opts);
-var query = new osrm.Query({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]});
+
+var query = new osrm.Query({ service: "nearest", coordinates: [[52.4224,13.333086]] });
 var sync_result = engine.run(query);
+console.log(sync_result);
+// Output: {"status":0,"mapped_coordinate":[52.422590,13.333838],"name":"Mariannenstraße"}
+
+query = new osrm.Query({ service: "locate", coordinates: [[52.4224,13.333086]] });
+sync_result = engine.run(query);
+console.log(sync_result);
+// Output: {"status":0,"mapped_coordinate":[52.422442,13.332101]}
+
+query = new osrm.Query({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]});
+sync_result = engine.run(query);
 JSON.parse(engine.run(query));
 { status: 0,
   status_message: 'Found route between points',

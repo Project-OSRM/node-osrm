@@ -9,6 +9,9 @@
 #include <node_version.h>
 #include <node_object_wrap.h>
 
+// stl
+#include <string.h>
+
 #include <osrm/OSRM.h>
 
 using namespace v8;
@@ -71,6 +74,41 @@ Handle<Value> Query::New(Arguments const& args)
         if (!coordinates->IsArray()) {
             return ThrowException(Exception::TypeError(String::New("coordinates must be an array of (lat/long) pairs")));
         }
+
+        // Handle scenario in which caller explicitly specified service
+        std::string service = "";
+        if (obj->Has(String::New("service"))) {
+            Local<Value> serviceValue = obj->Get(String::New("service"));
+            v8::String::Utf8Value serviceUtf8Value(serviceValue->ToString());
+            service = std::string(*serviceUtf8Value);
+        }
+
+        // Handle 'nearest', otherwise assume 'viaroute' service.
+        if (service.compare("nearest") == 0 || service.compare("locate") == 0) {
+            Local<Array> coordinates_array = Local<Array>::Cast(coordinates);
+            if (coordinates_array->Length() != 1) {
+                return ThrowException(Exception::TypeError(String::New("coordinates array should only have one lat/long pair for 'nearest' or 'locate' queries")));
+            }
+            Local<Value> coordinate = coordinates_array->Get(0);
+            if (!coordinate->IsArray()) {
+                return ThrowException(Exception::TypeError(String::New("coordinates must be an array of (lat/long) pairs")));
+            }
+            Local<Array> coordinate_array = Local<Array>::Cast(coordinate);
+            if (coordinate_array->Length() != 2) {
+                return ThrowException(Exception::TypeError(String::New("coordinates must be an array of (lat/long) pairs")));
+            }
+
+            Query* q = new Query();
+            q->this_->service = service;
+            q->this_->coordinates.push_back(
+                FixedPointCoordinate(coordinate_array->Get(0)->NumberValue()*COORDINATE_PRECISION,
+                                     coordinate_array->Get(1)->NumberValue()*COORDINATE_PRECISION));
+
+            q->Wrap(args.This());
+            return args.This();
+        }
+
+
         Local<Array> coordinates_array = Local<Array>::Cast(coordinates);
         if (coordinates_array->Length() < 2) {
             return ThrowException(Exception::TypeError(String::New("at least two coordinates must be provided")));
