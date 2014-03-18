@@ -130,4 +130,35 @@ describe('osrm', function() {
             });
         });
     });
+
+    it('should return results for "nearest" using options', function(done) {
+        var opts = new osrm.Options("./test/data/berlin.ini");
+        var engine = new osrm.Engine(opts);
+        var query = new osrm.Query({
+            service: "nearest",
+            coordinates: [[52.4224,13.333086]]
+        });
+        engine.run(query,function(err,async_result) {
+            var result_json = JSON.parse(async_result);
+            assert.equal(result_json.status, 0,'status code should be 0');
+            assert.equal(result_json.mapped_coordinate.length, 2, "mapped coordinates should exist");
+            assert(result_json.hasOwnProperty('name'), "street name should exist")
+            done();
+        });
+    });
+
+    it('should return results for "locate" using options', function(done) {
+        var opts = new osrm.Options("./test/data/berlin.ini");
+        var engine = new osrm.Engine(opts);
+        var query = new osrm.Query({
+            service: "locate",
+            coordinates: [[52.4224,13.333086]]
+        });
+        engine.run(query,function(err,async_result) {
+            var result_json = JSON.parse(async_result);
+            assert.equal(result_json.status, 0,'status code should be 0');
+            assert.equal(result_json.mapped_coordinate.length, 2, "mapped coordinates should exist");
+            done();
+        });
+    });
 });
