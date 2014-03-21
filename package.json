@@ -21,7 +21,8 @@
     "binary": {
         "module_name": "osrm",
         "module_path": "./lib/binding/",
-        "host": "https://node-osrm.s3.amazonaws.com"
+        "host": "https://mapbox-node-binary.s3.amazonaws.com",
+        "remote_path" : "./{module_name}/"
     },
     "dependencies": {
         "node-pre-gyp": "0.5.x"
