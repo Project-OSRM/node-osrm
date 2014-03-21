@@ -21,11 +21,10 @@
     "binary": {
         "module_name": "osrm",
         "module_path": "./lib/binding/",
-        "remote_uri": "https://node-osrm.s3.amazonaws.com",
-        "template": "{module_name}-v{version}-{node_abi}-{platform}-{arch}.tar.gz"
+        "host": "https://node-osrm.s3.amazonaws.com"
     },
     "dependencies": {
-        "node-pre-gyp": "~0.4.0"
+        "node-pre-gyp": "0.5.x"
     },
     "bundledDependencies":["node-pre-gyp"],
     "licenses": [
