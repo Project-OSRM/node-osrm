@@ -36,6 +36,7 @@ install:
 - NODE_MODULE_ROOT=`pwd`
 - export OSRM_BRANCH="develop"
 - export OSRM_COMMIT="d73f3ebd1bde36c2e5b41edb44a703cfb09cd7a0"
+- export OSRM_REPO="https://github.com/DennisOSRM/Project-OSRM.git"
 # WARNING: this script modifies the environment
 - source ./scripts/${RUN_BUILD}.sh
 - cd ${NODE_MODULE_ROOT}
