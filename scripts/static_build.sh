@@ -13,12 +13,6 @@ git clone --depth=1 https://github.com/mapnik/mapnik-packaging.git  ${TMP_DEPS_D
 cd ${TMP_DEPS_DIR}/mapnik-packaging
 export CXX11=false
 source build.sh
-UNAME=$(uname -s);
-if [ ${UNAME} = 'Linux' ]; then
-    # fixes node/gyp install
-    # https://github.com/travis-ci/travis-cookbooks/issues/155
-    sudo rm -rf /dev/shm && sudo ln -s /run/shm /dev/shm
-fi
 build_osrm
 cd ${NODE_MODULE_ROOT}
 if [[ ${PACKAGE_COMMAND_LINE_TOOLS:-false} != false ]]; then
