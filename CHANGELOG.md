@@ -2,7 +2,16 @@
 
 ### master
 
-- Updated OSRM to a1ecab2f95b8bb157b (v0.3.9 release)
+ - Updated OSRM to a1ecab2f95b8bb157b (v0.3.9 release)
+ - Fixed the build with latest OSX / clang++
+ - Added `example/server.js` to demonstrate basic usage within an http server.
+ - Added more `osrm.Query` options: `service`, `printInstructions`, `checksum`, `zoomLevel`, `jsonpParameter`, and `hints`. @Cactusbone.
+ - The `service` option accepts a string of either `viaroute`, `nearest`, or `locate`.
+ - Removed auto-publish from travis.yml: now developers should manually npm publish when the binaries are ready
+
+### 0.2.8
+
+ - Test release: no code changes
 
 ### 0.2.7
 
