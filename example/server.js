@@ -2,9 +2,7 @@ var express = require('express');
 var osrm = require('../');
 
 var app = express();
-var use_shared_memory = true;
-var opts = new osrm.Options('test/data/berlin.ini', use_shared_memory);
-var engine = new osrm.Engine(opts);
+var engine = new osrm.Engine("berlin-latest.osrm");
 
 // Accepts a query like:
 // http://localhost:8888?start=52.519930,13.438640&end=52.513191,13.415852

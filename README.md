@@ -49,8 +49,7 @@ Once that is done then you can calculate routes in Javascript like:
 // Note: to require osrm locally do:
 // require('./lib/osrm.js')
 var osrm = require('osrm')
-var opts = new osrm.Options("./test/data/berlin.ini");
-var engine = new osrm.Engine(opts);
+var engine = new osrm.Engine("berlin-latest.osrm");
 
 var query = new osrm.Query({ service: "nearest", coordinates: [[52.4224,13.333086]] });
 var sync_result = engine.run(query);

@@ -10,7 +10,6 @@
 #include <node_version.h>
 #include <node_object_wrap.h>
 
-#include "options.hpp"
 #include "query.hpp"
 #include "engine.hpp"
 
@@ -20,7 +19,6 @@ using namespace v8;
 
 extern "C" {
     static void start(Handle<Object> target) {
-        Options::Initialize(target);
         Query::Initialize(target);
         Engine::Initialize(target);
     }

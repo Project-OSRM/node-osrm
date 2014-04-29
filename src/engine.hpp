@@ -12,12 +12,12 @@
 #include <osrm/OSRM.h>
 #include <boost/algorithm/string/join.hpp>
 #include "query.hpp"
-#include "options.hpp"
 
 using namespace v8;
 
 namespace node_osrm {
 
+typedef boost::shared_ptr<ServerPaths> server_paths_ptr;
 typedef boost::shared_ptr<OSRM> osrm_ptr;
 
 class Engine: public node::ObjectWrap {
@@ -29,12 +29,13 @@ public:
     static Handle<Value> runSync(Arguments const& args);
     static void AsyncRun(uv_work_t* req);
     static void AfterRun(uv_work_t* req);
-    Engine(Options * opts);
+    Engine(server_paths_ptr, bool use_shared_memory);
     inline osrm_ptr get() { return this_; }
     void _ref() { Ref(); }
     void _unref() { Unref(); }
 private:
     ~Engine();
+    server_paths_ptr paths_;
     osrm_ptr this_;
 };
 
@@ -50,9 +51,11 @@ void Engine::Initialize(Handle<Object> target) {
     target->Set(String::NewSymbol("Engine"),constructor->GetFunction());
 }
 
-Engine::Engine(Options * opts)
+Engine::Engine(server_paths_ptr paths, bool use_shared_memory)
   : ObjectWrap(),
-    this_(boost::make_shared<OSRM>(*opts->get(),opts->use_shared_memory_)) { }
+    paths_(paths),
+    this_(boost::make_shared<OSRM>(*paths, use_shared_memory))
+{ }
 
 Engine::~Engine() { }
 
@@ -63,21 +66,24 @@ Handle<Value> Engine::New(Arguments const& args)
         return ThrowException(Exception::Error(String::New("Cannot call constructor as function, you need to use 'new' keyword")));
     }
     try {
+        server_paths_ptr paths = boost::make_shared<ServerPaths>();
         if (args.Length() == 1) {
-            if (!args[0]->IsObject()) {
-                return ThrowException(Exception::TypeError(String::New("must provide an osrm.Options object")));
+            if (!args[0]->IsString()) {
+                return ThrowException(Exception::TypeError(String::New("Engine base path must be a string")));
             }
-            Local<Object> obj = args[0]->ToObject();
-            if (obj->IsNull() || obj->IsUndefined() || !Options::constructor->HasInstance(obj)) {
-                return ThrowException(Exception::TypeError(String::New("osrm.Options object expected for first argument")));
-            }
-            Options *opts = ObjectWrap::Unwrap<Options>(obj);
-            Engine* im = new Engine(opts);
-            im->Wrap(args.This());
-            return args.This();
-        } else {
-            return ThrowException(Exception::TypeError(String::New("please provide Engine width and height")));
+            std::string base = *String::Utf8Value(args[0]->ToString());
+            (*paths)["hsgrdata"] = base + ".hsgr";
+            (*paths)["nodesdata"] = base + ".nodes";
+            (*paths)["edgesdata"] = base + ".edges";
+            (*paths)["geometries"] = base + ".geometry";
+            (*paths)["ramindex"] = base + ".ramIndex";
+            (*paths)["fileindex"] = base + ".fileIndex";
+            (*paths)["namesdata"] = base + ".names";
+            (*paths)["timestamp"] = base + ".timestamp";
         }
+        Engine* im = new Engine(paths, args.Length() == 0);
+        im->Wrap(args.This());
+        return args.This();
     } catch (std::exception const& ex) {
         return ThrowException(Exception::Error(String::New(ex.what())));
     }
