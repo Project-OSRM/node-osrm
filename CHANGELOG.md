@@ -1,5 +1,9 @@
 ## node-osrm changelog
 
+### master
+
+- Updated OSRM to a1ecab2f95b8bb157b (v0.3.9 release)
+
 ### 0.2.7
 
  - Fixed tag validation

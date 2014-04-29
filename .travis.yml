@@ -35,7 +35,7 @@ install:
 - if [[ $RUN_BUILD == "static_build" ]]; then PACKAGE_COMMAND_LINE_TOOLS=true; TMP_DEPS_DIR=`mktemp -d -t XXXXXXXXXXX`; fi;
 - NODE_MODULE_ROOT=`pwd`
 - export OSRM_BRANCH="develop"
-- export OSRM_COMMIT="d73f3ebd1bde36c2e5b41edb44a703cfb09cd7a0"
+- export OSRM_COMMIT="a1ecab2f95b8bb157b03f49bd067099c9dc8664c"
 - export OSRM_REPO="https://github.com/DennisOSRM/Project-OSRM.git"
 # WARNING: this script modifies the environment
 - source ./scripts/${RUN_BUILD}.sh
