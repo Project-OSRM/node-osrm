@@ -2,6 +2,11 @@
 
 ### master
 
+ - New JS API:
+     var osrm = new OSRM([base path]);
+     osrm.route(options, callback);
+     osrm.locate(latLon, callback);
+     osrm.nearest(latLon, callback);
  - Updated OSRM to a1ecab2f95b8bb157b (v0.3.9 release)
  - Fixed the build with latest OSX / clang++
  - Added `example/server.js` to demonstrate basic usage within an http server.
