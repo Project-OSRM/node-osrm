@@ -25,7 +25,7 @@ typedef boost::shared_ptr<RouteParameters> route_parameters_ptr;
 class Engine: public node::ObjectWrap {
 public:
     static Persistent<FunctionTemplate> constructor;
-    static void Initialize(Handle<Object>, Handle<Object>);
+    static void Initialize(Handle<Object>);
     static Handle<Value> New(const Arguments&);
 
     static Handle<Value> route(const Arguments&);
@@ -50,7 +50,7 @@ public:
 
 Persistent<FunctionTemplate> Engine::constructor;
 
-void Engine::Initialize(Handle<Object> target, Handle<Object> module) {
+void Engine::Initialize(Handle<Object> target) {
     HandleScope scope;
 
     constructor = Persistent<FunctionTemplate>::New(FunctionTemplate::New(Engine::New));
@@ -61,7 +61,7 @@ void Engine::Initialize(Handle<Object> target, Handle<Object> module) {
     NODE_SET_PROTOTYPE_METHOD(constructor, "locate", locate);
     NODE_SET_PROTOTYPE_METHOD(constructor, "nearest", nearest);
 
-    module->Set(String::NewSymbol("exports"), constructor->GetFunction());
+    target->Set(String::NewSymbol("OSRM"), constructor->GetFunction());
 }
 
 Handle<Value> Engine::New(const Arguments& args)
@@ -331,8 +331,8 @@ void Engine::AfterRun(uv_work_t* req) {
 }
 
 extern "C" {
-    static void start(Handle<Object> target, Handle<Object> module) {
-        Engine::Initialize(target, module);
+    static void start(Handle<Object> target) {
+        Engine::Initialize(target);
     }
 }
 
