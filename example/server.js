@@ -1,8 +1,8 @@
 var express = require('express');
-var osrm = require('../');
+var OSRM = require('../');
 
 var app = express();
-var engine = new osrm.Engine("berlin-latest.osrm");
+var osrm = new OSRM("berlin-latest.osrm");
 
 // Accepts a query like:
 // http://localhost:8888?start=52.519930,13.438640&end=52.513191,13.415852
@@ -11,21 +11,17 @@ app.get('/', function(req, res) {
         return res.json({"error":"invalid start and end query"});
     }
     var coordinates = [];
-    var start = req.query.start.split(',')
+    var start = req.query.start.split(',');
     coordinates.push([+start[0],+start[1]]);
-    var end = req.query.end.split(',')
+    var end = req.query.end.split(',');
     coordinates.push([+end[0],+end[1]]);
-    var query = new osrm.Query({
+    var query = {
         coordinates: coordinates,
         alternateRoute: req.query.alternatives !== 'false'
-    });
-    engine.run(query, function(err, result) {
+    };
+    osrm.route(query, function(err, result) {
         if (err) return res.json({"error":err.message});
-        try {
-            return res.json(JSON.parse(result));
-        } catch (err) {
-            return res.send(result);
-        }
+        return res.json(result);
     });
 });
 

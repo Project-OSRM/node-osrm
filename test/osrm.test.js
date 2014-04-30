@@ -1,124 +1,99 @@
-var osrm = require('../');
+var OSRM = require('../');
 var assert = require('assert');
 
-describe('osrm', function() {
+it('throws if new keyword is not used', function(done) {
+    assert.throws(function() { OSRM(); },
+      /Cannot call constructor as function, you need to use 'new' keyword/);
+    done();
+});
 
-    it('should throw if new keyword is not used', function(done) {
-        assert.throws(function() { osrm.Query(); },
-          /Cannot call constructor as function, you need to use 'new' keyword/);
-        assert.throws(function() { osrm.Engine(); },
-          /Cannot call constructor as function, you need to use 'new' keyword/);
+it('throws if necessary files do not exist', function(done) {
+    assert.throws(function() { new OSRM("missing.osrm"); },
+        /hsgr file does not exist/);
+    done();
+});
+
+it('throws if insufficient coordinates given', function() {
+    var engine = new OSRM("berlin-latest.osrm");
+    assert.throws(function () { engine.route({coordinates: []}, function(err) {}) });
+});
+
+it('routes Berlin', function(done) {
+    var osrm = new OSRM("berlin-latest.osrm");
+    osrm.route({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]}, function(err, route) {
+        assert.ifError(err);
+        assert.equal(route.status_message, 'Found route between points');
         done();
     });
+});
 
-    it('should throw if necessary files do not exist', function(done) {
-        assert.throws(function() { new osrm.Engine("missing.osrm"); },
-            /hsgr file does not exist/);
+it.skip('routes Berlin using shared memory', function(done) {
+    var osrm = new OSRM();
+    osrm.route({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]}, function(err, route) {
+        assert.ifError(err);
+        assert.equal(route.status_message, 'Found route between points');
         done();
     });
+});
 
-    it('should throw if insufficient coordinates given', function() {
-        assert.throws(function() {
-            new osrm.Query({coordinates: []});
-        });
+it('routes Berlin with options', function(done) {
+    var osrm = new OSRM("berlin-latest.osrm");
+    var options = {
+        coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
+        zoomLevel: 17,
+        alternateRoute: false,
+        printInstructions: false
+    };
+    osrm.route(options, function(err, route) {
+        assert.ifError(err);
+        assert.equal(route.status_message,'Found route between points');
+        assert.equal(0, route.route_instructions.length);
+        assert.equal(0, route.alternative_geometries.length);
+        done();
     });
+});
 
-    it('should return results for berlin using sync api', function(done) {
-        var engine = new osrm.Engine("berlin-latest.osrm");
-        var query = new osrm.Query({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]});
-        var sync_result = engine.run(query);
-        engine.run(query,function(err,async_result) {
-            assert.equal(sync_result,async_result);
-            var result_json = JSON.parse(async_result);
-            assert.equal(result_json.status_message,'Found route between points');
+it('routes Berlin with hints', function(done) {
+    var osrm = new OSRM("berlin-latest.osrm");
+    var options = {
+        coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
+        alternateRoute: false,
+        printInstructions: false
+    };
+    osrm.route(options, function(err, first) {
+        assert.ifError(err);
+        assert.equal(first.status_message, 'Found route between points');
+        var checksum = first.hint_data.checksum;
+        assert.equal("number", typeof(checksum));
+
+        options.hints = first.hint_data.locations;
+        options.checksum = checksum;
+
+        osrm.route(options, function(err, second) {
+            assert.ifError(err);
+            assert.deepEqual(first, second);
             done();
         });
     });
+});
 
-    it.skip('should return results for berlin using sync api and shared memory', function(done) {
-        var engine = new osrm.Engine();
-        var query = new osrm.Query({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]});
-        var sync_result = engine.run(query);
-        engine.run(query,function(err,async_result) {
-            assert.equal(sync_result,async_result);
-            var result_json = JSON.parse(async_result);
-            assert.equal(result_json.status_message,'Found route between points');
-            done();
-        });
+it('nearest', function(done) {
+    var osrm = new OSRM("berlin-latest.osrm");
+    osrm.nearest([52.4224, 13.333086], function(err, result) {
+        assert.ifError(err);
+        assert.equal(result.status, 0);
+        assert.equal(result.mapped_coordinate.length, 2);
+        assert(result.hasOwnProperty('name'));
+        done();
     });
+});
 
-    it('should return results for berlin using options', function(done) {
-        var engine = new osrm.Engine("berlin-latest.osrm");
-        var query = new osrm.Query({
-            coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
-            zoomLevel: 17,
-            alternateRoute: false,
-            printInstructions: false
-        });
-        engine.run(query,function(err,async_result) {
-            var result_json = JSON.parse(async_result);
-            assert.equal(result_json.status_message,'Found route between points');
-            assert.equal(0, result_json.route_instructions.length, "instructions should be empty");
-            assert.equal(0, result_json.alternative_geometries.length, "alternative_geometries should be empty");
-            done();
-        });
-    });
-
-    it('should return results for berlin using hints', function(done) {
-        var engine = new osrm.Engine("berlin-latest.osrm");
-        var query = new osrm.Query({
-            coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
-            alternateRoute: false,
-            printInstructions: false
-        });
-        engine.run(query,function(err,first_result) {
-            var result_json = JSON.parse(first_result);
-            assert.equal(result_json.status_message,'Found route between points');
-            var checksum = result_json.hint_data.checksum;
-            assert.equal("number", typeof(checksum), "checksum should be a number");
-
-            var query2 = new osrm.Query({
-                coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
-                hints: result_json.hint_data.locations,
-                alternateRoute: false,
-                printInstructions: false,
-                checksum: checksum
-            });
-            engine.run(query2,function(err,second_result) {
-                assert.equal(first_result,second_result);
-                var result_json = JSON.parse(second_result);
-                assert.equal(result_json.status_message,'Found route between points');
-                done();
-            });
-        });
-    });
-
-    it('should return results for "nearest" using options', function(done) {
-        var engine = new osrm.Engine("berlin-latest.osrm");
-        var query = new osrm.Query({
-            service: "nearest",
-            coordinates: [[52.4224,13.333086]]
-        });
-        engine.run(query,function(err,async_result) {
-            var result_json = JSON.parse(async_result);
-            assert.equal(result_json.status, 0,'status code should be 0');
-            assert.equal(result_json.mapped_coordinate.length, 2, "mapped coordinates should exist");
-            assert(result_json.hasOwnProperty('name'), "street name should exist")
-            done();
-        });
-    });
-
-    it('should return results for "locate" using options', function(done) {
-        var engine = new osrm.Engine("berlin-latest.osrm");
-        var query = new osrm.Query({
-            service: "locate",
-            coordinates: [[52.4224,13.333086]]
-        });
-        engine.run(query,function(err,async_result) {
-            var result_json = JSON.parse(async_result);
-            assert.equal(result_json.status, 0,'status code should be 0');
-            assert.equal(result_json.mapped_coordinate.length, 2, "mapped coordinates should exist");
-            done();
-        });
+it('locate', function(done) {
+    var osrm = new OSRM("berlin-latest.osrm");
+    osrm.locate([52.4224, 13.333086], function(err, result) {
+        assert.ifError(err);
+        assert.equal(result.status, 0);
+        assert.equal(result.mapped_coordinate.length, 2);
+        done();
     });
 });
