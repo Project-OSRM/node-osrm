@@ -1,10 +1,13 @@
 language: cpp
 
+compiler:
+ - gcc
+
 env:
   matrix:
    # static_build == portable, statically linked OSRM and deps
    # shared_build == non-portable, shared libraries via package manager
-   - NODE_NVM_VERSION="0.10" RUN_BUILD="static_build"
+   - NODE_NVM_VERSION="0.10" RUN_BUILD="static_build" QUIET=true
    - NODE_NVM_VERSION="0.8" RUN_BUILD="static_build"
    - NODE_NVM_VERSION="0.10" RUN_BUILD="shared_build"
    - NODE_NVM_VERSION="0.8" RUN_BUILD="shared_build"
