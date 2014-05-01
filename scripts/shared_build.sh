@@ -29,7 +29,7 @@ else
     cd build
     cmake ../ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${DEPS_PREFIX}
     make
-    make install
+    sudo make install
     cd ../../
 
     # install osmpbf
