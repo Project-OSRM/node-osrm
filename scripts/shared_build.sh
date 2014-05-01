@@ -1,7 +1,7 @@
 #!/bin/bash
 
 UNAME=$(uname -s);
-if [ ${UNAME} = 'Darwin' ]; then
+if [[ ${UNAME} = 'Darwin' ]]; then
     brew install boost cmake protobuf libstxxl lua osm-pbf
     DEPS_PREFIX=$(brew --prefix)
     # install luabind
@@ -13,7 +13,6 @@ if [ ${UNAME} = 'Darwin' ]; then
     make
     make install
     cd ../../
-
 else
     # install packages
     sudo apt-add-repository --yes ppa:mapnik/boost # boost 1.49 (in future 1.55)
@@ -67,5 +66,9 @@ cmake ../ \
   -DCMAKE_BUILD_TYPE=Release
 
 make VERBOSE=1
-make install
+if [[ ${UNAME} == 'Darwin' ]]; then
+    make install
+else
+    sudo make install
+fi
 cd ../../
