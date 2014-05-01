@@ -156,8 +156,6 @@ Releasing a new version of `node-osrm` is mostly automated using travis.ci.
 
 This is configurable via the `OSRM_BRANCH` and `OSRM_COMMIT` variables in travis.ci.
 
-See [Issue 36](https://github.com/DennisOSRM/node-osrm/issues/36) for further ideas on streamlining this.
-
 **2)** Bump node-osrm version
 
 Update the `CHANGELOG.md` and the `package.json` version.
