@@ -34,6 +34,21 @@ fi
 # install OSRM
 git clone --depth=1 https://github.com/DennisOSRM/Project-OSRM.git Project-OSRM -b develop
 cd Project-OSRM
+# https://github.com/DennisOSRM/Project-OSRM/issues/1000
+echo '
+--- Algorithms/DouglasPeucker.cpp   2014-05-01 12:45:44.000000000 -0700
++++ Algorithms/DouglasPeucker.cpp  2014-05-01 12:45:41.000000000 -0700
+@@ -99,7 +99,7 @@
+                 input_geometry[i].location,
+                 input_geometry[pair.first].location,
+                 input_geometry[pair.second].location);
+-            const double distance = std::abs(temp_dist);
++            const double distance = std::fabs(temp_dist);
+             if (distance > DouglasPeuckerThresholds[zoom_level] && distance > max_distance)
+             {
+                 farthest_element_index = i;
+' > abs-patch.diff
+patch -N Algorithms/DouglasPeucker.cpp ./abs-patch.diff || true
 mkdir -p build
 cd build
 cmake ../ \
@@ -42,9 +57,5 @@ cmake ../ \
   -DCMAKE_BUILD_TYPE=Release
 
 make VERBOSE=1
-sudo make install
+make install
 cd ../../
-pkg-config libosrm --cflags
-pkg-config libosrm --libs
-pkg-config libosrm --libs --static
-cat /usr/local/lib/pkgconfig/*
