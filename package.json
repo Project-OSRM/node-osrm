@@ -34,7 +34,8 @@
         }
     ],
     "devDependencies": {
-        "mocha": "*"
+        "mocha": "*",
+        "aws-sdk":"2.0.0-rc.14"
     },
     "engines": {
         "node": "0.8.x || 0.10.x"
