@@ -14,7 +14,6 @@ env:
   global:
    - secure: KitzGZjoDblX/3heajcvssGz0JnJ/k02dr2tu03ksUV+6MogC3RSQudqyKY57+f8VyZrcllN/UOlJ0Q/3iG38Oz8DljC+7RZxtkVmE1SFBoOezKCdhcvWM12G3uqPs7hhrRxuUgIh0C//YXEkulUrqa2H1Aj2xeen4E3FAqEoy0=
    - secure: WLGmxl6VTVWhXGm6X83GYNYzPNsvTD+9usJOKM5YBLAdG7cnOBQBNiCCUKc9OZMMZVUr3ec2/iigakH5Y8Yc+U6AlWKzlORyqWLuk4nFuoedu62x6ocQkTkuOc7mHiYhKd21xTGMYauaZRS6kugv4xkpGES2UjI2T8cjZ+LN2jU=
-   - secure: Atz+Zcl9Faw1OvUEv5vK3aYXGWQS8dvDd4nLQ/2XU0doVKjsNvFxVWtBFvE91yvbnJnkSR6IrD6U4I3RQkmaEZ4s37nipHZ1nkuPlSucV0SamAwOcO4Wm+D0yrlPAt/bDQHlAojY1UE98U0oqDKfkBvLwdzIGvv0qISR/W/8rLI=
 
 before_install:
 # check if tag exists and matches package.json
