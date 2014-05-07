@@ -41,8 +41,9 @@ else
 fi
 
 # install OSRM
-git clone --depth=1 https://github.com/DennisOSRM/Project-OSRM.git Project-OSRM -b develop
+git clone --depth=1 ${OSRM_REPO} Project-OSRM -b ${OSRM_BRANCH}
 cd Project-OSRM
+git checkout ${OSRM_COMMIT}
 # https://github.com/DennisOSRM/Project-OSRM/issues/1000
 echo '
 --- Algorithms/DouglasPeucker.cpp   2014-05-01 12:45:44.000000000 -0700
