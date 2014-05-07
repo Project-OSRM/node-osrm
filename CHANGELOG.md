@@ -2,6 +2,12 @@
 
 ### master
 
+### 0.9.1
+
+ - Updated OSRM to 7b0b378abcfd9463d7 (v0.3.10 release)
+
+### 0.9.0
+
  - New JS API:
      var osrm = new OSRM([base path]);
      osrm.route(options, callback);
