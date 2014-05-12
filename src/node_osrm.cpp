@@ -13,6 +13,8 @@
 
 // OSRM
 #include <osrm/OSRM.h>
+#include <osrm/RouteParameters.h>
+#include <osrm/Reply.h>
 
 namespace node_osrm {
 
@@ -132,15 +134,15 @@ Handle<Value> Engine::route(const Arguments& args)
 
     route_parameters_ptr params = boost::make_shared<RouteParameters>();
 
-    params->zoomLevel = 18; //no generalization
-    params->printInstructions = false; //turn by turn instructions
-    params->alternateRoute = true; //get an alternate route, too
+    params->zoom_level = 18; //no generalization
+    params->print_instructions = false; //turn by turn instructions
+    params->alternate_route = true; //get an alternate route, too
     params->geometry = true; //retrieve geometry of route
     params->compression = true; //polyline encoding
-    params->checkSum = UINT_MAX; //see wiki
+    params->check_sum = UINT_MAX; //see wiki
     params->service = "viaroute"; //that's routing
-    params->outputFormat = "json";
-    params->jsonpParameter = ""; //set for jsonp wrapping
+    params->output_format = "json";
+    params->jsonp_parameter = ""; //set for jsonp wrapping
     params->language = ""; //unused atm
 
     if (!obj->Has(String::New("coordinates"))) {
@@ -178,23 +180,23 @@ Handle<Value> Engine::route(const Arguments& args)
     }
 
     if (obj->Has(String::New("alternateRoute"))) {
-        params->alternateRoute = obj->Get(String::New("alternateRoute"))->BooleanValue();
+        params->alternate_route = obj->Get(String::New("alternateRoute"))->BooleanValue();
     }
 
     if (obj->Has(String::New("checksum"))) {
-        params->checkSum = static_cast<unsigned>(obj->Get(String::New("checksum"))->Uint32Value());
+        params->check_sum = static_cast<unsigned>(obj->Get(String::New("checksum"))->Uint32Value());
     }
 
     if (obj->Has(String::New("zoomLevel"))) {
-        params->zoomLevel = static_cast<short>(obj->Get(String::New("zoomLevel"))->Int32Value());
+        params->zoom_level = static_cast<short>(obj->Get(String::New("zoomLevel"))->Int32Value());
     }
 
     if (obj->Has(String::New("printInstructions"))) {
-        params->printInstructions = obj->Get(String::New("printInstructions"))->BooleanValue();
+        params->print_instructions = obj->Get(String::New("printInstructions"))->BooleanValue();
     }
 
     if (obj->Has(String::New("jsonpParameter"))) {
-        params->jsonpParameter = *v8::String::Utf8Value(obj->Get(String::New("jsonpParameter")));
+        params->jsonp_parameter = *v8::String::Utf8Value(obj->Get(String::New("jsonpParameter")));
     }
 
     if (obj->Has(String::New("hints"))) {
