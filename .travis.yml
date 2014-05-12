@@ -34,6 +34,7 @@ install:
 # set a few env settings for the static build script
 - PACKAGE_COMMAND_LINE_TOOLS=true; TMP_DEPS_DIR=`mktemp -d -t XXXXXXXXXXX`;
 - NODE_MODULE_ROOT=`pwd`
+- export CXX11=true
 - export OSRM_BRANCH="master"
 - export OSRM_COMMIT="f7e09686e5fe0050b8766af4cd6691e1973b4983"
 - export OSRM_REPO="https://github.com/DennisOSRM/Project-OSRM.git"
