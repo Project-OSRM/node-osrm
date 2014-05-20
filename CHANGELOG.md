@@ -2,6 +2,8 @@
 
 ### master
 
+ - Updated OSRM to f7e09686e5fe0050b8 (v0.4.0 release)
+
 ### 0.9.1
 
  - Updated OSRM to 7b0b378abcfd9463d7 (v0.3.10 release)

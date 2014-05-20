@@ -11,7 +11,6 @@ if [[ ${NODE_MODULE_ROOT:-false} == false ]]; then
 fi
 git clone --depth=1 https://github.com/mapnik/mapnik-packaging.git  ${TMP_DEPS_DIR}/mapnik-packaging
 cd ${TMP_DEPS_DIR}/mapnik-packaging
-export CXX11=false
 source build.sh
 build_osrm
 cd ${NODE_MODULE_ROOT}
