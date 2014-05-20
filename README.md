@@ -190,7 +190,7 @@ Ensure Travis.ci [builds are passing](https://travis-ci.org/DennisOSRM/node-osrm
 Tag a new release:
 
     git add CHANGELOG.md package.json
-    git commit -m "Tagging v0.2.8"
+    git commit -m "Tagging v0.2.8 [publish binary]"
     git tag v0.2.8
 
 **5)** Push the tag to github:
