@@ -9,6 +9,27 @@ Provides bindings to the [Open Source Routing Machine - OSRM](https://github.com
 # Depends
 
  - Node.js v0.10.x or v0.8.x
+ - Modern C++ runtime libraries supporting C++11
+
+C++11 capable platforms include:
+
+  - Mac OS X >= 10.7
+  - Ubuntu Linux >= 14.04 or other Linux distributions with g++ >= 4.8 toolchain (>= GLIBC_2.17 from libc and >= GLIBCXX_3.4.17 from libstdc++)
+
+An installation error like below indicates your system does not have a modern enough g++ toolchain:
+
+```
+Error: /usr/lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.17' not found (required by /node_modules/osrm/lib/binding/osrm.node)
+```
+
+If you are running Ubuntu older than 14.04 you can easily upgrade your g++ toolchain like:
+
+```
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo apt-get update
+sudo apt-get install g++-4.8
+```
+
 
 # Installing
 
