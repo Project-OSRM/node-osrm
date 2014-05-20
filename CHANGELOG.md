@@ -1,6 +1,6 @@
 ## node-osrm changelog
 
-### master
+### 0.10.0
 
  - Updated OSRM to f7e09686e5fe0050b8 (v0.4.0 release)
 
