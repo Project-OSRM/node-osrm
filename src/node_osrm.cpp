@@ -1,11 +1,6 @@
 // v8
 #include <v8.h>
 
-// boost
-#include <boost/make_shared.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/algorithm/string/join.hpp>
-
 // node
 #include <node.h>
 #include <node_version.h>
@@ -16,13 +11,16 @@
 #include <osrm/RouteParameters.h>
 #include <osrm/Reply.h>
 
+// STL
+#include <memory>
+
 namespace node_osrm {
 
 using namespace v8;
 
-typedef boost::shared_ptr<OSRM> osrm_ptr;
-typedef boost::shared_ptr<ServerPaths> server_paths_ptr;
-typedef boost::shared_ptr<RouteParameters> route_parameters_ptr;
+typedef std::shared_ptr<OSRM> osrm_ptr;
+typedef std::shared_ptr<ServerPaths> server_paths_ptr;
+typedef std::shared_ptr<RouteParameters> route_parameters_ptr;
 
 class Engine: public node::ObjectWrap {
 public:
@@ -41,7 +39,7 @@ public:
     Engine(server_paths_ptr paths, bool use_shared_memory)
         : ObjectWrap(),
           paths_(paths),
-          this_(boost::make_shared<OSRM>(*paths, use_shared_memory))
+          this_(std::make_shared<OSRM>(*paths, use_shared_memory))
     {}
 
     ~Engine() {}
@@ -76,7 +74,7 @@ Handle<Value> Engine::New(const Arguments& args)
     }
 
     try {
-        server_paths_ptr paths = boost::make_shared<ServerPaths>();
+        server_paths_ptr paths = std::make_shared<ServerPaths>();
 
         if (args.Length() == 1) {
             if (!args[0]->IsString()) {
@@ -132,7 +130,7 @@ Handle<Value> Engine::route(const Arguments& args)
             "first arg must be an object")));
     }
 
-    route_parameters_ptr params = boost::make_shared<RouteParameters>();
+    route_parameters_ptr params = std::make_shared<RouteParameters>();
 
     params->zoom_level = 18; //no generalization
     params->print_instructions = false; //turn by turn instructions
@@ -241,7 +239,7 @@ Handle<Value> Engine::locate(const Arguments& args)
             "first argument must be an array of lat, long")));
     }
 
-    route_parameters_ptr params = boost::make_shared<RouteParameters>();
+    route_parameters_ptr params = std::make_shared<RouteParameters>();
 
     params->service = "locate";
     params->coordinates.push_back(
@@ -270,7 +268,7 @@ Handle<Value> Engine::nearest(const Arguments& args)
             "first argument must be an array of lat, long")));
     }
 
-    route_parameters_ptr params = boost::make_shared<RouteParameters>();
+    route_parameters_ptr params = std::make_shared<RouteParameters>();
 
     params->service = "nearest";
     params->coordinates.push_back(
@@ -305,7 +303,7 @@ void Engine::AsyncRun(uv_work_t* req) {
     try {
         http::Reply osrm_reply;
         closure->machine->this_->RunQuery(*closure->params, osrm_reply);
-        closure->result = boost::algorithm::join(osrm_reply.content,"");
+        closure->result = std::string(osrm_reply.content.begin(), osrm_reply.content.end());
     } catch(std::exception const& ex) {
         closure->error = true;
         closure->result = ex.what();

@@ -18,6 +18,9 @@
       ],
       'conditions': [
         [ 'OS=="linux"', {
+          'cflags_cc' : [
+              '-std=c++11',
+          ],
           'libraries':[
               '-Wl,-rpath=<!@(pkg-config libosrm --variable=prefix)/lib',
               '-lboost_program_options',
@@ -29,17 +32,14 @@
                 '<!@(pkg-config libosrm --libs --static)'
              ]
         }],
-        ['std == "c++11"', {
-            'cflags_cc' : [
-                '-std=c++11',
-            ],
-            'xcode_settings': {
-              'OTHER_CPLUSPLUSFLAGS':['-std=c++11','-stdlib=libc++'],
-              'OTHER_CPLUSPLUSFLAGS':['-stdlib=libc++'],
-              'OTHER_LDFLAGS':['-stdlib=libc++'],
-              'CLANG_CXX_LANGUAGE_STANDARD':'c++11',
-              'MACOSX_DEPLOYMENT_TARGET':'10.7'
-            }
+        ['OS=="mac"', {
+          'xcode_settings': {
+            'OTHER_CPLUSPLUSFLAGS':['-std=c++11','-stdlib=libc++'],
+            'OTHER_CPLUSPLUSFLAGS':['-stdlib=libc++'],
+            'OTHER_LDFLAGS':['-stdlib=libc++'],
+            'CLANG_CXX_LANGUAGE_STANDARD':'c++11',
+            'MACOSX_DEPLOYMENT_TARGET':'10.7'
+          }
         }
         ]
       ],
