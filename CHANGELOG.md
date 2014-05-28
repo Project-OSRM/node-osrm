@@ -1,5 +1,9 @@
 ## node-osrm changelog
 
+### 0.10.1
+
+ - Updated OSRM to 7d7cce5c7227c9f71a (v0.4.1 release)
+
 ### 0.10.0
 
  - Updated OSRM to f7e09686e5fe0050b8 (v0.4.0 release)
