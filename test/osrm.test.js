@@ -9,7 +9,7 @@ it('throws if new keyword is not used', function(done) {
 
 it('throws if necessary files do not exist', function(done) {
     assert.throws(function() { new OSRM("missing.osrm"); },
-        /hsgr file does not exist/);
+        /hsgr not found/);
     done();
 });
 
@@ -47,8 +47,8 @@ it('routes Berlin with options', function(done) {
     osrm.route(options, function(err, route) {
         assert.ifError(err);
         assert.equal(route.status_message,'Found route between points');
-        assert.equal(0, route.route_instructions.length);
-        assert.equal(0, route.alternative_geometries.length);
+        assert.equal(undefined, route.route_instructions);
+        assert.equal(undefined, route.alternative_geometries);
         done();
     });
 });
