@@ -10,6 +10,7 @@
 #include <osrm/OSRM.h>
 #include <osrm/RouteParameters.h>
 #include <osrm/Reply.h>
+#include <osrm/ServerPaths.h>
 
 // STL
 #include <memory>
