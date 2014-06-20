@@ -11,6 +11,7 @@ if [[ ${NODE_MODULE_ROOT:-false} == false ]]; then
 fi
 git clone --depth=1 https://github.com/mapnik/mapnik-packaging.git  ${TMP_DEPS_DIR}/mapnik-packaging
 cd ${TMP_DEPS_DIR}/mapnik-packaging
+export CXX11=true
 source build.sh
 build_osrm
 cd ${NODE_MODULE_ROOT}
@@ -18,6 +19,8 @@ if [[ ${PACKAGE_COMMAND_LINE_TOOLS:-false} != false ]]; then
     ls ${NODE_MODULE_ROOT}
     ls ${NODE_MODULE_ROOT}/lib/binding/
     mkdir -p "${NODE_MODULE_ROOT}/lib/binding/"
+    mkdir -p "${NODE_MODULE_ROOT}/lib/binding/tbb/"
+    cp ${BUILD}/lib/libtbb*so* "${NODE_MODULE_ROOT}/lib/binding/tbb/"
     cp `which lua` "${NODE_MODULE_ROOT}/lib/binding/"
     cp `which osrm-extract` "${NODE_MODULE_ROOT}/lib/binding/"
     cp `which osrm-prepare` "${NODE_MODULE_ROOT}/lib/binding/"

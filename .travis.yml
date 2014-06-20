@@ -34,12 +34,12 @@ install:
 # set a few env settings for the static build script
 - PACKAGE_COMMAND_LINE_TOOLS=true; TMP_DEPS_DIR=`mktemp -d -t XXXXXXXXXXX`;
 - NODE_MODULE_ROOT=`pwd`
-- export CXX11=true
 - export OSRM_BRANCH="master"
 - export OSRM_COMMIT="7d7cce5c7227c9f71abe5aa41df25415367c5b21"
 - export OSRM_REPO="https://github.com/DennisOSRM/Project-OSRM.git"
 # WARNING: this script modifies the environment
 - source ./scripts/static_build.sh
+- if [[ `uname -s` == 'Linux' ]]; then export LDFLAGS="-Wl,-z,origin -Wl,-rpath=\$$ORIGIN/tbb/ ${LDFLAGS}"; fi
 - cd ${NODE_MODULE_ROOT}
 
 before_script:
