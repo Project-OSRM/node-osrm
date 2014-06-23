@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ `uname -s` == 'Linux' ]]; then
-   export LDFLAGS="-Wl,-z,origin -Wl,-rpath=\$$ORIGIN/tbb/ ${LDFLAGS}"
+   export LDFLAGS='-Wl,-z,origin -Wl,-rpath=\$$ORIGIN'
 fi
 
 function move_tool() {
@@ -14,8 +14,14 @@ function move_tool() {
 
 function copy_tbb() {
     mkdir -p ./lib/binding/tbb/
-    cp ${BUILD}/lib/libtbb{*so*,*dylib*} ./lib/binding/tbb/
-    cp ${BUILD}/lib/libtbbmalloc{*so*,*dylib*} ./lib/binding/tbb/
+    if [[ `uname -s` == 'Darwin' ]]; then
+        cp ${BUILD}/lib/libtbb.dylib ./lib/binding/
+        cp ${BUILD}/lib/libtbbmalloc.dylib ./lib/binding/
+    else
+        cp ${BUILD}/lib/libtbb.so.2 ./lib/binding/
+        cp ${BUILD}/lib/libtbbmalloc.so.2 ./lib/binding/
+        cp ${BUILD}/lib/libtbbmalloc_proxy.so.2 ./lib/binding/
+    fi
 }
 
 function localize() {
