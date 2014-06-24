@@ -31,6 +31,7 @@ public:
     static Handle<Value> route(const Arguments&);
     static Handle<Value> locate(const Arguments&);
     static Handle<Value> nearest(const Arguments&);
+    static Handle<Value> table(const Arguments&);
 
     static Handle<Value> Run(const Arguments&, route_parameters_ptr);
     static void AsyncRun(uv_work_t*);
@@ -60,6 +61,7 @@ void Engine::Initialize(Handle<Object> target) {
     NODE_SET_PROTOTYPE_METHOD(constructor, "route", route);
     NODE_SET_PROTOTYPE_METHOD(constructor, "locate", locate);
     NODE_SET_PROTOTYPE_METHOD(constructor, "nearest", nearest);
+    NODE_SET_PROTOTYPE_METHOD(constructor, "table", table);
 
     target->Set(String::NewSymbol("OSRM"), constructor->GetFunction());
 }
@@ -137,7 +139,7 @@ Handle<Value> Engine::route(const Arguments& args)
     params->alternate_route = true; //get an alternate route, too
     params->geometry = true; //retrieve geometry of route
     params->compression = true; //polyline encoding
-    params->check_sum = UINT_MAX; //see wiki
+    params->check_sum = 0; //see wiki
     params->service = "viaroute"; //that's routing
     params->output_format = "json";
     params->jsonp_parameter = ""; //set for jsonp wrapping
@@ -167,14 +169,14 @@ Handle<Value> Engine::route(const Arguments& args)
             return ThrowException(Exception::TypeError(String::New("coordinates must be an array of (lat/long) pairs")));
         }
 
-        Local<Array> coordinate_array = Local<Array>::Cast(coordinate);
-        if (coordinate_array->Length() != 2) {
+        Local<Array> coordinate_pair = Local<Array>::Cast(coordinate);
+        if (coordinate_pair->Length() != 2) {
             return ThrowException(Exception::TypeError(String::New("coordinates must be an array of (lat/long) pairs")));
         }
 
         params->coordinates.push_back(
-            FixedPointCoordinate(coordinate_array->Get(0)->NumberValue()*COORDINATE_PRECISION,
-                                 coordinate_array->Get(1)->NumberValue()*COORDINATE_PRECISION));
+            FixedPointCoordinate(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION,
+                                 coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
     }
 
     if (obj->Has(String::New("alternateRoute"))) {
@@ -233,8 +235,8 @@ Handle<Value> Engine::locate(const Arguments& args)
             "first argument must be an array of lat, long")));
     }
 
-    Local<Array> coordinate_array = Local<Array>::Cast(coordinate);
-    if (coordinate_array->Length() != 2) {
+    Local<Array> coordinate_pair = Local<Array>::Cast(coordinate);
+    if (coordinate_pair->Length() != 2) {
         return ThrowException(Exception::TypeError(String::New(
             "first argument must be an array of lat, long")));
     }
@@ -243,8 +245,57 @@ Handle<Value> Engine::locate(const Arguments& args)
 
     params->service = "locate";
     params->coordinates.push_back(
-        FixedPointCoordinate(coordinate_array->Get(0)->NumberValue()*COORDINATE_PRECISION,
-                             coordinate_array->Get(1)->NumberValue()*COORDINATE_PRECISION));
+        FixedPointCoordinate(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION,
+                             coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
+
+    return Run(args, params);
+}
+
+Handle<Value> Engine::table(const Arguments& args)
+{
+    if (args.Length() < 2) {
+        return ThrowException(Exception::TypeError(
+            String::New("two arguments required")));
+    }
+
+    Local<Object> obj = args[0]->ToObject();
+    if (obj->IsNull() || obj->IsUndefined()) {
+        return ThrowException(Exception::TypeError(String::New(
+            "first arg must be an object")));
+    }
+
+    Local<Value> coordinates = obj->Get(String::New("coordinates"));
+    if (!coordinates->IsArray()) {
+        return ThrowException(Exception::TypeError(String::New(
+            "coordinates must be an array of (lat/long) pairs")));
+    }
+
+    Local<Array> coordinates_array = Local<Array>::Cast(coordinates);
+    if (coordinates_array->Length() < 2) {
+        return ThrowException(Exception::TypeError(String::New(
+            "at least two coordinates must be provided")));
+    }
+
+    route_parameters_ptr params = std::make_shared<RouteParameters>();
+    params->service = "table";
+
+    // add all coordinates
+    for (uint32_t i = 0; i < coordinates_array->Length(); ++i) {
+        Local<Value> coordinate = coordinates_array->Get(i);
+
+        if (!coordinate->IsArray()) {
+            return ThrowException(Exception::TypeError(String::New("coordinates must be an array of (lat/long) pairs")));
+        }
+
+        Local<Array> coordinate_pair = Local<Array>::Cast(coordinate);
+        if (coordinate_pair->Length() != 2) {
+            return ThrowException(Exception::TypeError(String::New("coordinates must be an array of (lat/long) pairs")));
+        }
+        
+        params->coordinates.push_back(
+            FixedPointCoordinate(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION,
+                                 coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
+    }
 
     return Run(args, params);
 }
@@ -262,8 +313,8 @@ Handle<Value> Engine::nearest(const Arguments& args)
             "first argument must be an array of lat, long")));
     }
 
-    Local<Array> coordinate_array = Local<Array>::Cast(coordinate);
-    if (coordinate_array->Length() != 2) {
+    Local<Array> coordinate_pair = Local<Array>::Cast(coordinate);
+    if (coordinate_pair->Length() != 2) {
         return ThrowException(Exception::TypeError(String::New(
             "first argument must be an array of lat, long")));
     }
@@ -272,8 +323,8 @@ Handle<Value> Engine::nearest(const Arguments& args)
 
     params->service = "nearest";
     params->coordinates.push_back(
-        FixedPointCoordinate(coordinate_array->Get(0)->NumberValue()*COORDINATE_PRECISION,
-                             coordinate_array->Get(1)->NumberValue()*COORDINATE_PRECISION));
+        FixedPointCoordinate(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION,
+                             coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
 
     return Run(args, params);
 }
