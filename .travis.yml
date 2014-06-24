@@ -7,8 +7,6 @@ env:
   matrix:
    - NODE_NVM_VERSION="0.10"
    - NODE_NVM_VERSION="0.8"
-   - NODE_NVM_VERSION="0.10"
-   - NODE_NVM_VERSION="0.8"
   global:
    - secure: KitzGZjoDblX/3heajcvssGz0JnJ/k02dr2tu03ksUV+6MogC3RSQudqyKY57+f8VyZrcllN/UOlJ0Q/3iG38Oz8DljC+7RZxtkVmE1SFBoOezKCdhcvWM12G3uqPs7hhrRxuUgIh0C//YXEkulUrqa2H1Aj2xeen4E3FAqEoy0=
    - secure: WLGmxl6VTVWhXGm6X83GYNYzPNsvTD+9usJOKM5YBLAdG7cnOBQBNiCCUKc9OZMMZVUr3ec2/iigakH5Y8Yc+U6AlWKzlORyqWLuk4nFuoedu62x6ocQkTkuOc7mHiYhKd21xTGMYauaZRS6kugv4xkpGES2UjI2T8cjZ+LN2jU=
@@ -34,7 +32,7 @@ install:
 # set a few env settings for the static build script
 - NODE_MODULE_ROOT=`pwd`
 - export OSRM_BRANCH="master"
-- export OSRM_COMMIT="7d7cce5c7227c9f71abe5aa41df25415367c5b21"
+- export OSRM_COMMIT="547455245e7fe6346386574f6c61e4863540dee9"
 - export OSRM_REPO="https://github.com/DennisOSRM/Project-OSRM.git"
 # WARNING: this script modifies the environment
 - source ./scripts/static_build.sh
