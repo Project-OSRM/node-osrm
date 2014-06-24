@@ -17,7 +17,6 @@ clean:
 
 rebuild:
 	@make clean
-	@./configure
 	@make
 
 berlin-latest.osm.pbf:
