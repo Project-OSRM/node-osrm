@@ -58,12 +58,11 @@ it('distance table in Berlin', function(done) {
     var options = {
         coordinates: [[52.519930,13.438640], [52.513191,13.415852]]
     };
-    osrm.table(options, function(err, table) {
+    osrm.table(options, function(err, result) {
         assert.ifError(err);
-        var JSONobject = JSON.parse(table);
-        var row_count = JSONobject.distance_table.length;
+        var row_count = result.distance_table.length;
         for (var i = 0; i < row_count; i++) {
-            var column = JSONobject.distance_table[i];
+            var column = result.distance_table[i];
             var column_count = column.length;
             assert.equal(row_count, column.length);
             for (var j = 0; j < column_count; ++j) {
@@ -75,10 +74,8 @@ it('distance table in Berlin', function(done) {
                     assert.notEqual(0, column[j]);
                 }
             }
-        };
-        assert.equal(options.coordinates.length, JSONobject.distance_table.length);
-        assert.equal(undefined, table.route_instructions);
-        assert.equal(undefined, table.alternative_geometries);
+        }
+        assert.equal(options.coordinates.length, result.distance_table.length);
         done();
     });
 });
