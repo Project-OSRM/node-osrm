@@ -53,6 +53,19 @@ it('routes Berlin with options', function(done) {
     });
 });
 
+it('distance table in Berlin', function(done) {
+    var osrm = new OSRM("berlin-latest.osrm");
+    var options = {
+        coordinates: [[52.519930,13.438640], [52.513191,13.415852]]
+    };
+    osrm.table(options, function(err, table) {
+        assert.ifError(err);
+        assert.equal(undefined, table.route_instructions);
+        assert.equal(undefined, table.alternative_geometries);
+        done();
+    });
+});
+
 it('routes Berlin with hints', function(done) {
     var osrm = new OSRM("berlin-latest.osrm");
     var options = {
