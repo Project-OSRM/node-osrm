@@ -60,6 +60,23 @@ it('distance table in Berlin', function(done) {
     };
     osrm.table(options, function(err, table) {
         assert.ifError(err);
+        var JSONobject = JSON.parse(table);
+        var row_count = JSONobject.distance_table.length;
+        for (var i = 0; i < row_count; i++) {
+            var column = JSONobject.distance_table[i];
+            var column_count = column.length;
+            assert.equal(row_count, column.length);
+            for (var j = 0; j < column_count; ++j) {
+                if (i == j) {
+                    // check that diagonal is zero
+                    assert.equal(0, column[j]);
+                } else {
+                    // diagonal is non-zero
+                    assert.notEqual(0, column[j]);
+                }
+            }
+        };
+        assert.equal(options.coordinates.length, JSONobject.distance_table.length);
         assert.equal(undefined, table.route_instructions);
         assert.equal(undefined, table.alternative_geometries);
         done();
