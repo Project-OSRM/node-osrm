@@ -165,41 +165,29 @@ Run the tests like:
 
 Releasing a new version of `node-osrm` is mostly automated using travis.ci.
 
-### Caveats
-
-- If you create and push a new git tag Travis.ci will automatically publish both binaries and the package to the npm registry.
-
-- Before tagging you can test publishing of just the binaries by including the keyword `[publish binary]` in your commit message. Make sure to run `node-pre-gyp unpublish` before trying publish binaries for a version that has already been published as trying to publish over an existing binary will fail.
-
 ### Steps to release
 
 **1)** Confirm the desired OSRM branch and commit.
 
-This is configurable via the `OSRM_BRANCH` and `OSRM_COMMIT` variables in travis.ci.
+This is configurable via the `OSRM_BRANCH` and `OSRM_COMMIT` variables in the `.travis.yml`.
 
 **2)** Bump node-osrm version
 
-Update the `CHANGELOG.md` and the `package.json` version.
+Update the `CHANGELOG.md` and the `package.json` version if needed.
 
 **3)** Check Travis.ci
 
-Ensure Travis.ci [builds are passing](https://travis-ci.org/DennisOSRM/node-osrm) after your last commit. This is important because upstream OSRM is being pulled in and may have changed.
+Ensure Travis.ci [builds are passing](https://travis-ci.org/DennisOSRM/node-osrm) after your last commit.
 
-**4)** Tag
+**4)** Publishing binaries
 
-Tag a new release:
+If travis builds are passing then it's time to publish binaries by committing with a message containing `[publish binary]`. If you don't have anything to commit then you can do:
 
-    git add CHANGELOG.md package.json
-    git commit -m "Tagging v0.2.8 [publish binary]"
-    git tag v0.2.8
+    git commit --allow-empty -m "[publish binary]"
 
-**5)** Push the tag to github:
+**5)** Merge into the `osx` branch
 
-    git push origin master v0.2.8
-
-This will trigger travis.ci to build Ubuntu binaries and publish the entire package to the npm registry upon success. The publishing will use the s3 and npm auth credentials of @springmeyer currently - this needs to be made more configurable in the future.
-
-**6)** Merge into the `osx` branch
+Now we need to do the same for the `osx` branch:
 
     git checkout osx
     git merge v0.2.8 -m "[publish binary]"
@@ -207,11 +195,7 @@ This will trigger travis.ci to build Ubuntu binaries and publish the entire pack
 
 This will build and publish OS X binaries on travis.ci. Be prepared to watch the travis run and re-start builds that fail due to timeouts (the OS X machines are underpowered).
 
-**7)** Check published binaries
-
-If travis builds passed for both the `master` branch and the `osx` branch then binaries should be published for both platforms.
-
-Confirm the remote binaries are available with node-pre-gyp:
+Confirm the remote binaries are available by running node-pre-gyp locally:
 
     $ ./node_modules/.bin/node-pre-gyp info --loglevel silent | grep `node -e "console.log(require('./package.json').version)"`
     osrm-v0.2.8-node-v11-darwin-x64.tar.gz
@@ -219,7 +203,14 @@ Confirm the remote binaries are available with node-pre-gyp:
     osrm-v0.2.8-v8-3.11-darwin-x64.tar.gz
     osrm-v0.2.8-v8-3.11-linux-x64.tar.gz
 
-**9)** Publish node-osrm
+**6)** Tag
+
+Once binaries are published for Linux and OS X then its time to tag a new release:
+
+    git tag v0.2.8 -m "Tagging v0.2.8"
+    git push --tags
+
+**7)** Publish node-osrm
 
 Publish `node-osrm`
 

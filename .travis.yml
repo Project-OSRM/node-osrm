@@ -47,11 +47,9 @@ before_script:
 - make test
 
 script:
-# now we publish the binary, if needed
+# now we publish the binary, if requested
 - PUBLISH_BINARY=false
-# or check if we are manually requesting binary publishing via a commit keyword
 - if test "${COMMIT_MESSAGE#*'[publish binary]'}" != "$COMMIT_MESSAGE"; then echo PUBLISH_BINARY;PUBLISH_BINARY=true; fi;
-# if either are true, then publish the binary
 # Note: this publishing is done here, in the 'script' section, instead of the 'after_success'
 # since we want any failure here to stop the build immediately
 - if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package publish; fi
