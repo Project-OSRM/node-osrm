@@ -121,37 +121,43 @@ osrm.route(query, function (err, result) {
 
 To build from source you will need:
 
- - OSRM `develop` branch, cloned from github.
- - OSRM build with `-DWITH_TOOLS=1` so that `libOSRM` is created
- - Lua, luabind, and stxxl headers
+ - OSRM >= 0.4.2
 
-### Building
+See [Project-OSRM wiki](https://github.com/DennisOSRM/Project-OSRM/wiki/Building%20OSRM) for details.
 
-To build the bindings you need to first build and **install** the `develop` branch of `Project-OSRM`:
+Once Project-OSRM is built you should be able to run:
 
-    # grab develop branch
-    git clone -b develop https://github.com/DennisOSRM/Project-OSRM.git
-    cd Project-OSRM
-    mkdir build;
-    cd build;
-    cmake ../ -DWITH_TOOLS=1
-    make
-    sudo make install
+    pkg-config libosrm --variable=prefix
 
-NOTE: If you hit problems building Project-OSRM see [the wiki](https://github.com/DennisOSRM/Project-OSRM/wiki/Building%20OSRM) for details.
+Which should return the path to where you installed Project-OSRM.
 
-Then build `node-osrm` against `Project-OSRM` installed in `/usr/local`:
+Now you can build `node-osrm`:
 
     git clone https://github.com/DennisOSRM/node-osrm.git
     cd node-osrm
     npm install --build-from-source
 
-
 # Developing
 
-Developers of `node-osrm` should set up a [Source Build](#source-build) and after changes to the code run:
+After setting up a [Source Build](#source-build) you can make changes to the code and rebuild like:
+
+    npm install --build-from-source
+
+But that will trigger a full re-configure if any changes occurred to dependencies.
+
+However you can optionally use the Makefile which simplifies some common needs.
+
+To rebuild using cached data:
 
     make
+
+If you want to see all the arguments sent to the compiler do:
+
+    make verbose
+
+If you want to build in debug mode (-DDEBUG -O0) then do:
+
+    make debug
 
 Under the hood this uses [node-pre-gyp](https://github.com/mapbox/node-pre-gyp) (which itself used [node-gyp](https://github.com/TooTallNate/node-gyp)) to compile the source code.
 
