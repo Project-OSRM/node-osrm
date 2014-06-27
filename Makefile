@@ -1,18 +1,21 @@
 all: osrm.node
 
-./node_modules/.bin/node-gyp:
-	npm install node-gyp
+./node_modules:
 	npm install --build-from-source
 
-./build: binding.gyp ./node_modules/.bin/node-gyp ./node_modules/.bin/node-pre-gyp
-	./node_modules/.bin/node-gyp configure
+osrm.node: ./node_modules
+	./node_modules/.bin/node-pre-gyp build --loglevel=silent
 
-osrm.node: Makefile ./build
-	./node_modules/.bin/node-pre-gyp build
+debug:
+	./node_modules/.bin/node-pre-gyp rebuild --debug
+
+verbose:
+	./node_modules/.bin/node-pre-gyp rebuild --loglevel=verbose
 
 clean:
 	@rm -rf ./build
-	rm -rf lib/binding/
+	rm -rf ./lib/binding/
+	rm -rf ./node_modules
 	rm -f *.osrm*
 
 rebuild:

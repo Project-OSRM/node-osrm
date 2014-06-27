@@ -212,7 +212,18 @@ Once binaries are published for Linux and OS X then its time to tag a new releas
 
 **7)** Publish node-osrm
 
-Publish `node-osrm`
+First ensure your local node-pre-gyp is up to date:
+
+    npm ls
+
+This is important because it is bundled during packaging.
+
+If you see any errors then do:
+
+    rm -rf node_modules/node-pre-gyp
+    npm install node-pre-gyp
+
+Now we're ready to publish `node-osrm` to <https://www.npmjs.org/package/osrm>:
 
     npm publish
 
