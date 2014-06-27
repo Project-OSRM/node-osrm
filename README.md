@@ -153,7 +153,7 @@ Developers of `node-osrm` should set up a [Source Build](#source-build) and afte
 
     make
 
-Under the hood this uses [node-gyp](https://github.com/TooTallNate/node-gyp) to compile the source code.
+Under the hood this uses [node-pre-gyp](https://github.com/mapbox/node-pre-gyp) (which itself used [node-gyp](https://github.com/TooTallNate/node-gyp)) to compile the source code.
 
 # Testing
 
