@@ -42,6 +42,9 @@ install:
 - export OSRM_REPO="https://github.com/Project-OSRM/osrm-backend.git"
 # WARNING: this script modifies the environment
 - source ./scripts/static_build.sh
+# reset nvm version otherwise now one pre-installed by travis
+# on the homebrew path may be picked up instead
+- nvm use $NODE_NVM_VERSION
 - cd ${NODE_MODULE_ROOT}
 
 before_script:
