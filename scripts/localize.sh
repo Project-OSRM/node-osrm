@@ -7,8 +7,8 @@ fi
 function move_tool() {
     cp `which $1` "./lib/binding/"
     if [[ `uname -s` == 'Darwin' ]]; then
-        install_name_tool -change libtbb.dylib @loader_path/tbb/libtbb.dylib ./lib/binding/$1
-        install_name_tool -change libtbbmalloc.dylib @loader_path/tbb/libtbbmalloc.dylib ./lib/binding/$1
+        install_name_tool -change libtbb.dylib @loader_path/libtbb.dylib ./lib/binding/$1
+        install_name_tool -change libtbbmalloc.dylib @loader_path/libtbbmalloc.dylib ./lib/binding/$1
     fi
 }
 
