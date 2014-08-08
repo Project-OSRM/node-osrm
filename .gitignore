@@ -7,3 +7,4 @@ berlin-latest.osrm*
 stxxl.errlog
 stxxl.log
 *.sublime-*
+/lib/osrm.node
