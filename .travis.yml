@@ -32,7 +32,7 @@ install:
 # set a few env settings for the static build script
 - NODE_MODULE_ROOT=`pwd`
 - export OSRM_BRANCH="develop"
-- export OSRM_COMMIT="27d729baf053cee2731c12b6ad8f7eeca50f7c2a"
+- export OSRM_COMMIT="ad5cd564ab16f78a24acba23c99f1229734d9962"
 - export OSRM_REPO="https://github.com/Project-OSRM/osrm-backend.git"
 # WARNING: this script modifies the environment
 - source ./scripts/static_build.sh
