@@ -1,14 +1,14 @@
 {
     "name": "osrm",
-    "description": "open source routing machine",
-    "url": "https://github.com/DennisOSRM/Project-OSRM",
+    "description": "Open Source Routing Machine",
+    "url": "https://github.com/Project-OSRM/node-osrm",
     "homepage": "http://project-osrm.org",
     "author": "Dane Springmeyer <springmeyer>",
-    "version": "0.11.2",
+    "version": "0.11.3",
     "main": "./lib/osrm.js",
     "bugs": {
         "email": "dane@mapbox.com",
-        "url": "https://github.com/DennisOSRM/Project-OSRM/issues"
+        "url": "https://github.com/Project-OSRM/node-osrm/issues"
     },
     "keywords": [
         "routing",
@@ -16,7 +16,7 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git://github.com/DennisOSRM/Project-OSRM.git"
+        "url": "git://github.com/Project-OSRM/osrm-backend.git"
     },
     "binary": {
         "module_name": "osrm",
