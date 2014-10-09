@@ -37,6 +37,8 @@ install:
 # WARNING: this script modifies the environment
 - source ./scripts/static_build.sh
 - cd ${NODE_MODULE_ROOT}
+# upgrade cmake
+- curl -s https://gist.githubusercontent.com/DennisOSRM/5fad9bee5c7f09fd7fc9/raw/ | sudo bash
 
 before_script:
 # install from source, ensure this works first
