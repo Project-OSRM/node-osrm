@@ -209,14 +209,23 @@ Confirm the remote binaries are available by running node-pre-gyp locally:
     osrm-v0.2.8-v8-3.11-darwin-x64.tar.gz
     osrm-v0.2.8-v8-3.11-linux-x64.tar.gz
 
-**6)** Tag
+**6)** Test
+
+Locally you can now test binaries. Cleanup, re-install, and run the tests like:
+
+    make clean
+    npm install # will pull remote binaries
+    npm ls # confirm deps are correct
+    make test
+
+**7)** Tag
 
 Once binaries are published for Linux and OS X then its time to tag a new release:
 
     git tag v0.2.8 -m "Tagging v0.2.8"
     git push --tags
 
-**7)** Publish node-osrm
+**8)** Publish node-osrm
 
 First ensure your local node-pre-gyp is up to date:
 
