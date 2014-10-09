@@ -34,11 +34,11 @@ install:
 - export OSRM_BRANCH="develop"
 - export OSRM_COMMIT="2f65f8322c255df07a0817690c18f383a9b796d8"
 - export OSRM_REPO="https://github.com/Project-OSRM/osrm-backend.git"
+# upgrade cmake
+- curl -s https://gist.githubusercontent.com/DennisOSRM/5fad9bee5c7f09fd7fc9/raw/ | sudo bash
 # WARNING: this script modifies the environment
 - source ./scripts/static_build.sh
 - cd ${NODE_MODULE_ROOT}
-# upgrade cmake
-- curl -s https://gist.githubusercontent.com/DennisOSRM/5fad9bee5c7f09fd7fc9/raw/ | sudo bash
 
 before_script:
 # install from source, ensure this works first
