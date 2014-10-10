@@ -26,12 +26,15 @@ before_install:
 - nvm use $NODE_NVM_VERSION
 - node --version
 - npm --version
+- echo "yes" | sudo add-apt-repository ppa:kalakris/cmake
+- sudo apt-get update -qq
+- sudo apt-get install cmake
 
 install:
 # set a few env settings for the static build script
 - NODE_MODULE_ROOT=`pwd`
 - export OSRM_BRANCH="develop"
-- export OSRM_COMMIT="ad5cd564ab16f78a24acba23c99f1229734d9962"
+- export OSRM_COMMIT="2f65f8322c255df07a0817690c18f383a9b796d8"
 - export OSRM_REPO="https://github.com/Project-OSRM/osrm-backend.git"
 # WARNING: this script modifies the environment
 - source ./scripts/static_build.sh

@@ -14,8 +14,8 @@ it('throws if necessary files do not exist', function(done) {
 });
 
 it('throws if insufficient coordinates given', function() {
-    var engine = new OSRM("berlin-latest.osrm");
-    assert.throws(function () { engine.route({coordinates: []}, function(err) {}) });
+    var osrm = new OSRM("berlin-latest.osrm");
+    assert.throws(function () { osrm.route({coordinates: []}, function(err) {}) });
 });
 
 it('routes Berlin', function(done) {

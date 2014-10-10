@@ -84,14 +84,7 @@ Handle<Value> Engine::New(const Arguments& args)
                 return ThrowException(Exception::TypeError(String::New("OSRM base path must be a string")));
             }
             std::string base = *String::Utf8Value(args[0]->ToString());
-            (*paths)["hsgrdata"] = base + ".hsgr";
-            (*paths)["nodesdata"] = base + ".nodes";
-            (*paths)["edgesdata"] = base + ".edges";
-            (*paths)["geometries"] = base + ".geometry";
-            (*paths)["ramindex"] = base + ".ramIndex";
-            (*paths)["fileindex"] = base + ".fileIndex";
-            (*paths)["namesdata"] = base + ".names";
-            (*paths)["timestamp"] = base + ".timestamp";
+            (*paths)["base"] = base;
         }
 
         Engine* im = new Engine(paths, args.Length() == 0);
@@ -292,7 +285,7 @@ Handle<Value> Engine::table(const Arguments& args)
         if (coordinate_pair->Length() != 2) {
             return ThrowException(Exception::TypeError(String::New("coordinates must be an array of (lat/long) pairs")));
         }
-        
+
         params->coordinates.push_back(
             FixedPointCoordinate(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION,
                                  coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
