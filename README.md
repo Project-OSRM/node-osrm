@@ -8,7 +8,7 @@ Provides bindings to the [Open Source Routing Machine - OSRM](https://github.com
 
 # Depends
 
- - Node.js v0.10.x or v0.8.x
+ - Node.js v0.10.x
  - Modern C++ runtime libraries supporting C++11
 
 C++11 capable platforms include:
@@ -36,7 +36,7 @@ sudo apt-get install g++-4.8
 By default, binaries are provided for:
 
  - 64 bit OS X and 64 bit Linux
- - Node v0.8.x and v0.10.x
+ - Node v0.10.x
 
 On those platforms no external dependencies are needed.
 
