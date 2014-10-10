@@ -173,83 +173,65 @@ Releasing a new version of `node-osrm` is mostly automated using travis.ci.
 
 ### Steps to release
 
-**1)** Confirm the desired OSRM branch and commit.
+1. Confirm the desired OSRM branch and commit.
 
-This is configurable via the `OSRM_BRANCH` and `OSRM_COMMIT` variables in the `.travis.yml`.
+   This is configurable via the `OSRM_BRANCH` and `OSRM_COMMIT` variables in the `.travis.yml`.
 
-**2)** Bump node-osrm version
+1. Bump node-osrm version
 
-Update the `CHANGELOG.md` and the `package.json` version if needed.
+   Update the `CHANGELOG.md` and the `package.json` version if needed.
 
-**3)** Check Travis.ci
+1. Check Travis.ci
 
-Ensure Travis.ci [builds are passing](https://travis-ci.org/DennisOSRM/node-osrm) after your last commit.
+   Ensure Travis.ci [builds are passing](https://travis-ci.org/DennisOSRM/node-osrm) after your last commit.
 
-**4)** Publishing binaries
+1. Publishing binaries
 
-If travis builds are passing then it's time to publish binaries by committing with a message containing `[publish binary]`. If you don't have anything to commit then you can do:
+   If travis builds are passing then it's time to publish binaries by committing with a message containing `[publish binary]`. If you don't have anything to commit then you can do:
 
-    git commit --allow-empty -m "[publish binary]"
+       git commit --allow-empty -m "[publish binary]"
 
-**5)** Merge into the `osx` branch
+1. Test
 
-Now we need to do the same for the `osx` branch:
+   Locally you can now test binaries. Cleanup, re-install, and run the tests like:
 
-    git checkout osx
-    git merge v0.2.8 -m "[publish binary]"
-    git push origin osx
+       make clean
+       npm install # will pull remote binaries
+       npm ls # confirm deps are correct
+       make test
 
-This will build and publish OS X binaries on travis.ci. Be prepared to watch the travis run and re-start builds that fail due to timeouts (the OS X machines are underpowered).
+1. Tag
 
-Confirm the remote binaries are available by running node-pre-gyp locally:
+   Once binaries are published for Linux and OS X then its time to tag a new release:
 
-    $ ./node_modules/.bin/node-pre-gyp info --loglevel silent | grep `node -e "console.log(require('./package.json').version)"`
-    osrm-v0.2.8-node-v11-darwin-x64.tar.gz
-    osrm-v0.2.8-node-v11-linux-x64.tar.gz
-    osrm-v0.2.8-v8-3.11-darwin-x64.tar.gz
-    osrm-v0.2.8-v8-3.11-linux-x64.tar.gz
+       git tag v0.2.8 -m "Tagging v0.2.8"
+       git push --tags
 
-**6)** Test
+1. Publish node-osrm
 
-Locally you can now test binaries. Cleanup, re-install, and run the tests like:
+   First ensure your local node-pre-gyp is up to date:
 
-    make clean
-    npm install # will pull remote binaries
-    npm ls # confirm deps are correct
-    make test
+       npm ls
 
-**7)** Tag
+   This is important because it is bundled during packaging.
 
-Once binaries are published for Linux and OS X then its time to tag a new release:
+   If you see any errors then do:
 
-    git tag v0.2.8 -m "Tagging v0.2.8"
-    git push --tags
+       rm -rf node_modules/node-pre-gyp
+       npm install node-pre-gyp
 
-**8)** Publish node-osrm
+   Now we're ready to publish `node-osrm` to <https://www.npmjs.org/package/osrm>:
 
-First ensure your local node-pre-gyp is up to date:
+       npm publish
 
-    npm ls
+   Dependent apps can now pull from the npm registry like:
 
-This is important because it is bundled during packaging.
+       "dependencies": {
+           "osrm": "~0.2.8"
+       }
 
-If you see any errors then do:
+   Or can still pull from the github tag like:
 
-    rm -rf node_modules/node-pre-gyp
-    npm install node-pre-gyp
-
-Now we're ready to publish `node-osrm` to <https://www.npmjs.org/package/osrm>:
-
-    npm publish
-
-Dependent apps can now pull from the npm registry like:
-
-    "dependencies": {
-        "osrm": "~0.2.8"
-    }
-
-Or can still pull from the github tag like:
-
-    "dependencies": {
-        "osrm": "https://github.com/DennisOSRM/node-osrm/tarball/v0.2.8"
-    }
+       "dependencies": {
+           "osrm": "https://github.com/DennisOSRM/node-osrm/tarball/v0.2.8"
+       }
