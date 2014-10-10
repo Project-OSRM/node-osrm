@@ -4,8 +4,8 @@ set -u -e
 make clean
 source ~/.nvm/nvm.sh
 nvm use 0.10
+npm install aws-sdk node-pre-gyp
 ./node_modules/.bin/node-pre-gyp info
-npm install aws-sdk
 rm -rf berlin-latest.osrm*
 rm -rf node_modules/
 rm -rf lib/binding/

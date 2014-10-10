@@ -25,7 +25,7 @@
         "remote_path" : "./{module_name}/"
     },
     "dependencies": {
-        "node-pre-gyp": "~0.5.10"
+        "node-pre-gyp": "~0.5.27"
     },
     "bundledDependencies":["node-pre-gyp"],
     "licenses": [
