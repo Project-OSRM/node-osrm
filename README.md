@@ -204,6 +204,14 @@ Releasing a new version of `node-osrm` is mostly automated using travis.ci.
    make test
    ```
 
+   Confirm the remote binaries are available by running node-pre-gyp locally:
+
+   ```
+   $ ./node_modules/.bin/node-pre-gyp info --loglevel silent | grep `node -e "console.log(require('./package.json').version)"`
+   osrm-v0.2.8-node-v11-darwin-x64.tar.gz
+   osrm-v0.2.8-node-v11-linux-x64.tar.gz
+   ```
+
 1. Tag
 
    Once binaries are published for Linux and OS X then its time to tag a new release:
