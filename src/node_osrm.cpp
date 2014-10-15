@@ -19,9 +19,17 @@ namespace node_osrm {
 
 using namespace v8;
 
-typedef std::shared_ptr<OSRM> osrm_ptr;
+typedef std::unique_ptr<OSRM> osrm_ptr;
 typedef std::shared_ptr<ServerPaths> server_paths_ptr;
 typedef std::shared_ptr<RouteParameters> route_parameters_ptr;
+
+namespace {
+template <class T, class... Types>
+std::unique_ptr<T> make_unique(Types &&... Args)
+{
+    return (std::unique_ptr<T>(new T(std::forward<Types>(Args)...)));
+}
+}
 
 class Engine: public node::ObjectWrap {
 public:
@@ -41,7 +49,7 @@ public:
     Engine(server_paths_ptr paths, bool use_shared_memory)
         : ObjectWrap(),
           paths_(paths),
-          this_(std::make_shared<OSRM>(*paths, use_shared_memory))
+          this_(make_unique<OSRM>(*paths, use_shared_memory))
     {}
 
     ~Engine() {}
