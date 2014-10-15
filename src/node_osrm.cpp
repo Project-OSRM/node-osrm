@@ -97,14 +97,14 @@ Handle<Value> Engine::New(const Arguments& args)
     return Undefined();
 }
 
-typedef struct {
+struct run_query_baton_t {
     uv_work_t request;
     Engine * machine;
     route_parameters_ptr params;
     bool error;
     std::string result;
     Persistent<Function> cb;
-} run_query_baton_t;
+};
 
 Handle<Value> Engine::route(const Arguments& args)
 {
