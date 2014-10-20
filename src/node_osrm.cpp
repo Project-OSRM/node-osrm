@@ -20,8 +20,8 @@ namespace node_osrm {
 using namespace v8;
 
 typedef std::unique_ptr<OSRM> osrm_ptr;
-typedef std::shared_ptr<ServerPaths> server_paths_ptr;
-typedef std::shared_ptr<RouteParameters> route_parameters_ptr;
+typedef std::unique_ptr<ServerPaths> server_paths_ptr;
+typedef std::unique_ptr<RouteParameters> route_parameters_ptr;
 
 namespace {
 template <class T, class... Types>
@@ -48,7 +48,7 @@ public:
 
     Engine(server_paths_ptr paths, bool use_shared_memory)
         : ObjectWrap(),
-          paths_(paths),
+          paths_(std::move(paths)),
           this_(make_unique<OSRM>(*paths, use_shared_memory))
     {}
 
@@ -85,7 +85,7 @@ Handle<Value> Engine::New(const Arguments& args)
     }
 
     try {
-        server_paths_ptr paths = std::make_shared<ServerPaths>();
+        server_paths_ptr paths = make_unique<ServerPaths>();
 
         if (args.Length() == 1) {
             if (!args[0]->IsString()) {
@@ -95,7 +95,7 @@ Handle<Value> Engine::New(const Arguments& args)
             (*paths)["base"] = base;
         }
 
-        Engine* im = new Engine(paths, args.Length() == 0);
+        Engine* im = new Engine(std::move(paths), args.Length() == 0);
         im->Wrap(args.This());
         return args.This();
     } catch (std::exception const& ex) {
@@ -134,7 +134,7 @@ Handle<Value> Engine::route(const Arguments& args)
             "first arg must be an object")));
     }
 
-    route_parameters_ptr params = std::make_shared<RouteParameters>();
+    route_parameters_ptr params = make_unique<RouteParameters>();
 
     params->zoom_level = 18; //no generalization
     params->print_instructions = false; //turn by turn instructions
@@ -221,7 +221,7 @@ Handle<Value> Engine::route(const Arguments& args)
         }
     }
 
-    return Run(args, params);
+    return Run(args, std::move(params));
 }
 
 Handle<Value> Engine::locate(const Arguments& args)
@@ -243,14 +243,14 @@ Handle<Value> Engine::locate(const Arguments& args)
             "first argument must be an array of lat, long")));
     }
 
-    route_parameters_ptr params = std::make_shared<RouteParameters>();
+    route_parameters_ptr params = make_unique<RouteParameters>();
 
     params->service = "locate";
     params->coordinates.push_back(
         FixedPointCoordinate(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION,
                              coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
 
-    return Run(args, params);
+    return Run(args, std::move(params));
 }
 
 Handle<Value> Engine::table(const Arguments& args)
@@ -278,7 +278,7 @@ Handle<Value> Engine::table(const Arguments& args)
             "at least two coordinates must be provided")));
     }
 
-    route_parameters_ptr params = std::make_shared<RouteParameters>();
+    route_parameters_ptr params = make_unique<RouteParameters>();
     params->service = "table";
 
     // add all coordinates
@@ -299,7 +299,7 @@ Handle<Value> Engine::table(const Arguments& args)
                                  coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
     }
 
-    return Run(args, params);
+    return Run(args, std::move(params));
 }
 
 Handle<Value> Engine::nearest(const Arguments& args)
@@ -321,14 +321,14 @@ Handle<Value> Engine::nearest(const Arguments& args)
             "first argument must be an array of lat, long")));
     }
 
-    route_parameters_ptr params = std::make_shared<RouteParameters>();
+    route_parameters_ptr params = make_unique<RouteParameters>();
 
     params->service = "nearest";
     params->coordinates.push_back(
         FixedPointCoordinate(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION,
                              coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
 
-    return Run(args, params);
+    return Run(args, std::move(params));
 }
 
 Handle<Value> Engine::Run(const Arguments& args, route_parameters_ptr params)
@@ -341,7 +341,7 @@ Handle<Value> Engine::Run(const Arguments& args, route_parameters_ptr params)
     run_query_baton_t *closure = new run_query_baton_t();
     closure->request.data = closure;
     closure->machine = ObjectWrap::Unwrap<Engine>(args.This());
-    closure->params = params;
+    closure->params = std::move(params);
     closure->error = false;
     closure->cb = Persistent<Function>::New(Handle<Function>::Cast(args[1]));
 
