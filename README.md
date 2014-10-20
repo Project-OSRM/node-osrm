@@ -1,8 +1,6 @@
 # node-osrm
 
-Routing engine for OpenStreetMap data implementing high-performance algorithms for shortest paths in road networks.
-
-Provides bindings to the [Open Source Routing Machine - OSRM](https://github.com/DennisOSRM/Project-OSRM).
+Provides read-only bindings to the [Open Source Routing Machine - OSRM](https://github.com/Project-OSRM/osrm-backend), a routing engine for OpenStreetMap data implementing high-performance algorithms for shortest paths in road networks.
 
 [![Build Status](https://travis-ci.org/Project-OSRM/node-osrm.svg?branch=master)](https://travis-ci.org/Project-OSRM/node-osrm)
 
@@ -123,7 +121,7 @@ To build from source you will need:
 
  - OSRM >= 0.4.2
 
-See [Project-OSRM wiki](https://github.com/DennisOSRM/Project-OSRM/wiki/Building%20OSRM) for details.
+See [Project-OSRM wiki](https://github.com/Project-OSRM/osrm-backend/wiki/Building%20OSRM) for details.
 
 Once Project-OSRM is built you should be able to run:
 
@@ -133,7 +131,7 @@ Which should return the path to where you installed Project-OSRM.
 
 Now you can build `node-osrm`:
 
-    git clone https://github.com/DennisOSRM/node-osrm.git
+    git clone https://github.com/Project-OSRM/node-osrm.git
     cd node-osrm
     npm install --build-from-source
 
@@ -183,7 +181,7 @@ Releasing a new version of `node-osrm` is mostly automated using travis.ci.
 
 1. Check Travis.ci
 
-   Ensure Travis.ci [builds are passing](https://travis-ci.org/DennisOSRM/node-osrm) after your last commit.
+   Ensure Travis.ci [builds are passing](https://travis-ci.org/Project-OSRM/node-osrm) after your last commit.
 
 1. Publishing binaries
 
@@ -237,13 +235,13 @@ Releasing a new version of `node-osrm` is mostly automated using travis.ci.
    rm -rf node_modules/node-pre-gyp
    npm install node-pre-gyp
    ```
-   
+
    Now we're ready to publish `node-osrm` to <https://www.npmjs.org/package/osrm>:
 
    ```
    npm publish
    ```
-   
+
    Dependent apps can now pull from the npm registry like:
 
    ```
@@ -251,11 +249,11 @@ Releasing a new version of `node-osrm` is mostly automated using travis.ci.
        "osrm": "~0.2.8"
    }
    ```
-   
+
    Or can still pull from the github tag like:
 
    ```
    "dependencies": {
-       "osrm": "https://github.com/DennisOSRM/node-osrm/tarball/v0.2.8"
+       "osrm": "https://github.com/Project-OSRM/node-osrm/tarball/v0.2.8"
    }
    ```
