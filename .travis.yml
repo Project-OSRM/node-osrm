@@ -37,9 +37,7 @@ before_install:
 install:
 # set a few env settings for the static build script
 - NODE_MODULE_ROOT=`pwd`
-- export OSRM_BRANCH="develop"
-- export OSRM_COMMIT="d42772a26163ae38cfd948d8362f1d4b5ce2066f"
-- export OSRM_REPO="https://github.com/Project-OSRM/osrm-backend.git"
+- export OSRM_RELEASE="v4.4.0"
 # WARNING: this script modifies the environment
 - source ./scripts/static_build.sh
 # reset nvm version otherwise now one pre-installed by travis
