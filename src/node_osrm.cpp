@@ -17,10 +17,7 @@
 
 namespace node_osrm {
 
-using namespace v8;
-
 typedef std::unique_ptr<OSRM> osrm_ptr;
-typedef std::unique_ptr<ServerPaths> server_paths_ptr;
 typedef std::unique_ptr<RouteParameters> route_parameters_ptr;
 
 namespace {
@@ -31,7 +28,9 @@ std::unique_ptr<T> make_unique(Types &&... Args)
 }
 }
 
-class Engine: public node::ObjectWrap {
+using namespace v8;
+
+class Engine final : public node::ObjectWrap {
 public:
     static Persistent<FunctionTemplate> constructor;
     static void Initialize(Handle<Object>);
@@ -46,15 +45,12 @@ public:
     static void AsyncRun(uv_work_t*);
     static void AfterRun(uv_work_t*);
 
-    Engine(server_paths_ptr paths, bool use_shared_memory)
+private:
+    Engine(const ServerPaths &paths, bool use_shared_memory)
         : ObjectWrap(),
-          paths_(std::move(paths)),
-          this_(make_unique<OSRM>(*paths, use_shared_memory))
+          this_(make_unique<OSRM>(paths, use_shared_memory))
     {}
 
-    ~Engine() {}
-
-    server_paths_ptr paths_;
     osrm_ptr this_;
 };
 
@@ -85,33 +81,30 @@ Handle<Value> Engine::New(const Arguments& args)
     }
 
     try {
-        server_paths_ptr paths = make_unique<ServerPaths>();
-
+        ServerPaths paths;
         if (args.Length() == 1) {
             if (!args[0]->IsString()) {
                 return ThrowException(Exception::TypeError(String::New("OSRM base path must be a string")));
             }
             std::string base = *String::Utf8Value(args[0]->ToString());
-            (*paths)["base"] = base;
+            paths["base"] = base;
         }
 
-        Engine* im = new Engine(std::move(paths), args.Length() == 0);
+        auto  im = new Engine(paths, args.Length() == 0);
         im->Wrap(args.This());
         return args.This();
     } catch (std::exception const& ex) {
         return ThrowException(Exception::Error(String::New(ex.what())));
     }
-
-    return Undefined();
 }
 
-struct run_query_baton_t {
+struct RunQueryBaton {
     uv_work_t request;
     Engine * machine;
-    route_parameters_ptr params;
-    bool error;
     std::string result;
+    route_parameters_ptr params;
     Persistent<Function> cb;
+    bool error;
 };
 
 Handle<Value> Engine::route(const Arguments& args)
@@ -176,9 +169,8 @@ Handle<Value> Engine::route(const Arguments& args)
             return ThrowException(Exception::TypeError(String::New("coordinates must be an array of (lat/long) pairs")));
         }
 
-        params->coordinates.push_back(
-            FixedPointCoordinate(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION,
-                                 coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
+        params->coordinates.emplace_back(static_cast<int>(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION),
+                                         static_cast<int>(coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
     }
 
     if (obj->Has(String::New("alternateRoute"))) {
@@ -246,9 +238,8 @@ Handle<Value> Engine::locate(const Arguments& args)
     route_parameters_ptr params = make_unique<RouteParameters>();
 
     params->service = "locate";
-    params->coordinates.push_back(
-        FixedPointCoordinate(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION,
-                             coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
+    params->coordinates.emplace_back(static_cast<int>(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION),
+                                     static_cast<int>(coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
 
     return Run(args, std::move(params));
 }
@@ -294,9 +285,8 @@ Handle<Value> Engine::table(const Arguments& args)
             return ThrowException(Exception::TypeError(String::New("coordinates must be an array of (lat/long) pairs")));
         }
 
-        params->coordinates.push_back(
-            FixedPointCoordinate(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION,
-                                 coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
+        params->coordinates.emplace_back(static_cast<int>(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION),
+                                         static_cast<int>(coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
     }
 
     return Run(args, std::move(params));
@@ -324,10 +314,8 @@ Handle<Value> Engine::nearest(const Arguments& args)
     route_parameters_ptr params = make_unique<RouteParameters>();
 
     params->service = "nearest";
-    params->coordinates.push_back(
-        FixedPointCoordinate(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION,
-                             coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
-
+    params->coordinates.emplace_back(static_cast<int>(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION),
+                                     static_cast<int>(coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
     return Run(args, std::move(params));
 }
 
@@ -338,21 +326,21 @@ Handle<Value> Engine::Run(const Arguments& args, route_parameters_ptr params)
             "second argument must be a callback function")));
     }
 
-    run_query_baton_t *closure = new run_query_baton_t();
+    auto closure = new RunQueryBaton();
     closure->request.data = closure;
     closure->machine = ObjectWrap::Unwrap<Engine>(args.This());
     closure->params = std::move(params);
     closure->error = false;
     closure->cb = Persistent<Function>::New(Handle<Function>::Cast(args[1]));
 
-    uv_queue_work(uv_default_loop(), &closure->request, AsyncRun, (uv_after_work_cb)AfterRun);
+    uv_queue_work(uv_default_loop(), &closure->request, AsyncRun, reinterpret_cast<uv_after_work_cb>(AfterRun));
     closure->machine->Ref();
 
     return Undefined();
 }
 
 void Engine::AsyncRun(uv_work_t* req) {
-    run_query_baton_t *closure = static_cast<run_query_baton_t *>(req->data);
+    RunQueryBaton *closure = static_cast<RunQueryBaton *>(req->data);
     try {
         http::Reply osrm_reply;
         closure->machine->this_->RunQuery(*closure->params, osrm_reply);
@@ -365,7 +353,7 @@ void Engine::AsyncRun(uv_work_t* req) {
 
 void Engine::AfterRun(uv_work_t* req) {
     HandleScope scope;
-    run_query_baton_t *closure = static_cast<run_query_baton_t *>(req->data);
+    RunQueryBaton *closure = static_cast<RunQueryBaton *>(req->data);
     TryCatch try_catch;
     if (closure->error) {
         Local<Value> argv[1] = { Exception::Error(String::New(closure->result.c_str())) };
