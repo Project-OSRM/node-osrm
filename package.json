@@ -4,7 +4,7 @@
     "url": "https://github.com/Project-OSRM/node-osrm",
     "homepage": "http://project-osrm.org",
     "author": "Dane Springmeyer <springmeyer>",
-    "version": "4.4.0",
+    "version": "4.4.0-final",
     "main": "./lib/osrm.js",
     "bugs": {
         "email": "dane@mapbox.com",
@@ -41,6 +41,7 @@
         "node": "0.10.x"
     },
     "scripts": {
+        "prepublish":"npm ls",
         "install": "node-pre-gyp install --fallback-to-build",
         "test": "mocha -R spec"
     }
