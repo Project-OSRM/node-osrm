@@ -41,6 +41,7 @@
         "node": "0.10.x"
     },
     "scripts": {
+        "prepublish":"npm ls",
         "install": "node-pre-gyp install --fallback-to-build",
         "test": "mocha -R spec"
     }
