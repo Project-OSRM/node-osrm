@@ -47,8 +47,6 @@ install:
 - cd ${NODE_MODULE_ROOT}
 
 before_script:
-# install from source, ensure this works first
-- npm install --build-from-source
 - if [[ `uname -s` == 'Darwin' ]]; then otool -L ./lib/binding/* || true; fi
 - if [[ `uname -s` == 'Linux' ]]; then readelf -d ./lib/binding/* || true; fi
 - which osrm-extract||true;rm -rf ${TMP_DEPS_DIR};which osrm-extract||true;
