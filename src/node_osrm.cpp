@@ -13,6 +13,7 @@
 #include <osrm/ServerPaths.h>
 
 // STL
+#include <iostream>
 #include <memory>
 
 namespace node_osrm {
@@ -335,7 +336,6 @@ Handle<Value> Engine::Run(const Arguments& args, route_parameters_ptr params)
 
     uv_queue_work(uv_default_loop(), &closure->request, AsyncRun, reinterpret_cast<uv_after_work_cb>(AfterRun));
     closure->machine->Ref();
-
     return Undefined();
 }
 
@@ -344,7 +344,7 @@ void Engine::AsyncRun(uv_work_t* req) {
     try {
         http::Reply osrm_reply;
         closure->machine->this_->RunQuery(*closure->params, osrm_reply);
-        closure->result = std::string(osrm_reply.content.begin(), osrm_reply.content.end());
+        closure->result = std::string(std::begin(osrm_reply.content), std::end(osrm_reply.content));
     } catch(std::exception const& ex) {
         closure->error = true;
         closure->result = ex.what();

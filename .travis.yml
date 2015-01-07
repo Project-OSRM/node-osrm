@@ -1,8 +1,6 @@
 language: cpp
 
 matrix:
-  exclude:
-    - os: linux
   include:
     - os: linux
       compiler: gcc
@@ -10,9 +8,8 @@ matrix:
       compiler: clang
 
 env:
-  matrix:
-   - NODE_NVM_VERSION="0.10"
   global:
+   - NODE_NVM_VERSION="0.10"
    - secure: KitzGZjoDblX/3heajcvssGz0JnJ/k02dr2tu03ksUV+6MogC3RSQudqyKY57+f8VyZrcllN/UOlJ0Q/3iG38Oz8DljC+7RZxtkVmE1SFBoOezKCdhcvWM12G3uqPs7hhrRxuUgIh0C//YXEkulUrqa2H1Aj2xeen4E3FAqEoy0=
    - secure: WLGmxl6VTVWhXGm6X83GYNYzPNsvTD+9usJOKM5YBLAdG7cnOBQBNiCCUKc9OZMMZVUr3ec2/iigakH5Y8Yc+U6AlWKzlORyqWLuk4nFuoedu62x6ocQkTkuOc7mHiYhKd21xTGMYauaZRS6kugv4xkpGES2UjI2T8cjZ+LN2jU=
 
@@ -47,8 +44,6 @@ install:
 - cd ${NODE_MODULE_ROOT}
 
 before_script:
-# install from source, ensure this works first
-- npm install --build-from-source
 - if [[ `uname -s` == 'Darwin' ]]; then otool -L ./lib/binding/* || true; fi
 - if [[ `uname -s` == 'Linux' ]]; then readelf -d ./lib/binding/* || true; fi
 - which osrm-extract||true;rm -rf ${TMP_DEPS_DIR};which osrm-extract||true;
