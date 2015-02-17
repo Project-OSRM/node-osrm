@@ -9,7 +9,9 @@ matrix:
 
 env:
   global:
-   - NODE_NVM_VERSION="0.10"
+   - NODE_VERSION="0.10.36"
+   - NODE_VERSION="0.12.0"
+   - NODE_VERSION="iojs-v1.2.0"
    - secure: KitzGZjoDblX/3heajcvssGz0JnJ/k02dr2tu03ksUV+6MogC3RSQudqyKY57+f8VyZrcllN/UOlJ0Q/3iG38Oz8DljC+7RZxtkVmE1SFBoOezKCdhcvWM12G3uqPs7hhrRxuUgIh0C//YXEkulUrqa2H1Aj2xeen4E3FAqEoy0=
    - secure: WLGmxl6VTVWhXGm6X83GYNYzPNsvTD+9usJOKM5YBLAdG7cnOBQBNiCCUKc9OZMMZVUr3ec2/iigakH5Y8Yc+U6AlWKzlORyqWLuk4nFuoedu62x6ocQkTkuOc7mHiYhKd21xTGMYauaZRS6kugv4xkpGES2UjI2T8cjZ+LN2jU=
 
@@ -25,8 +27,8 @@ before_install:
 # objective-c in another branch (to run the same travis.yml on OS X)
 - git clone https://github.com/creationix/nvm.git ../.nvm
 - source ../.nvm/nvm.sh
-- nvm install $NODE_NVM_VERSION
-- nvm use $NODE_NVM_VERSION
+- nvm install $NODE_VERSION
+- nvm use $NODE_VERSION
 - node --version
 - npm --version
 - "if [[ `uname -s` == 'Linux' ]]; then sudo add-apt-repository -y ppa:kalakris/cmake && sudo apt-get update -qq && sudo apt-get install cmake pkg-config; fi"
@@ -40,7 +42,7 @@ install:
 - source ./scripts/static_build.sh
 # reset nvm version otherwise now one pre-installed by travis
 # on the homebrew path may be picked up instead
-- nvm use $NODE_NVM_VERSION
+- nvm use $NODE_VERSION
 - cd ${NODE_MODULE_ROOT}
 
 before_script:
