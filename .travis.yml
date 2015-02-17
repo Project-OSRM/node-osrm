@@ -23,8 +23,8 @@ before_install:
 # here we set up the node version on the fly based on the matrix value.
 # This is done manually so that it is easy to flip the 'language' to
 # objective-c in another branch (to run the same travis.yml on OS X)
-- git clone https://github.com/creationix/nvm.git ../.nvm
-- source ../.nvm/nvm.sh
+- rm -rf ~/.nvm/ && git clone --depth 1 https://github.com/creationix/nvm.git ~/.nvm
+- source ~/.nvm/nvm.sh
 - nvm install $NODE_VERSION
 - nvm use $NODE_VERSION
 - node --version
