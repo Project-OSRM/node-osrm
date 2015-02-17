@@ -1,10 +1,5 @@
 // v8
-#include <v8.h>
-
-// node
-#include <node.h>
-#include <node_version.h>
-#include <node_object_wrap.h>
+#include <nan.h>
 
 // OSRM
 #include <osrm/OSRM.h>
@@ -35,14 +30,13 @@ class Engine final : public node::ObjectWrap {
 public:
     static Persistent<FunctionTemplate> constructor;
     static void Initialize(Handle<Object>);
-    static Handle<Value> New(const Arguments&);
+    static NAN_METHOD(New);
+    static NAN_METHOD(route);
+    static NAN_METHOD(locate);
+    static NAN_METHOD(nearest);
+    static NAN_METHOD(table);
 
-    static Handle<Value> route(const Arguments&);
-    static Handle<Value> locate(const Arguments&);
-    static Handle<Value> nearest(const Arguments&);
-    static Handle<Value> table(const Arguments&);
-
-    static Handle<Value> Run(const Arguments&, route_parameters_ptr);
+    static void Run(_NAN_METHOD_ARGS, route_parameters_ptr);
     static void AsyncRun(uv_work_t*);
     static void AfterRun(uv_work_t*);
 
@@ -58,34 +52,33 @@ private:
 Persistent<FunctionTemplate> Engine::constructor;
 
 void Engine::Initialize(Handle<Object> target) {
-    HandleScope scope;
-
-    constructor = Persistent<FunctionTemplate>::New(FunctionTemplate::New(Engine::New));
-    constructor->InstanceTemplate()->SetInternalFieldCount(1);
-    constructor->SetClassName(String::NewSymbol("OSRM"));
-
-    NODE_SET_PROTOTYPE_METHOD(constructor, "route", route);
-    NODE_SET_PROTOTYPE_METHOD(constructor, "locate", locate);
-    NODE_SET_PROTOTYPE_METHOD(constructor, "nearest", nearest);
-    NODE_SET_PROTOTYPE_METHOD(constructor, "table", table);
-
-    target->Set(String::NewSymbol("OSRM"), constructor->GetFunction());
+    NanScope();
+    Local<FunctionTemplate> lcons = NanNew<FunctionTemplate>(Engine::New);
+    lcons->InstanceTemplate()->SetInternalFieldCount(1);
+    lcons->SetClassName(NanNew("OSRM"));
+    NODE_SET_PROTOTYPE_METHOD(lcons, "route", route);
+    NODE_SET_PROTOTYPE_METHOD(lcons, "locate", locate);
+    NODE_SET_PROTOTYPE_METHOD(lcons, "nearest", nearest);
+    NODE_SET_PROTOTYPE_METHOD(lcons, "table", table);
+    target->Set(NanNew("OSRM"), lcons->GetFunction());
+    NanAssignPersistent(constructor, lcons);
 }
 
-Handle<Value> Engine::New(const Arguments& args)
+NAN_METHOD(Engine::New)
 {
-    HandleScope scope;
+    NanScope();
 
     if (!args.IsConstructCall()) {
-        return ThrowException(Exception::Error(String::New(
-            "Cannot call constructor as function, you need to use 'new' keyword")));
+        NanThrowTypeError("Cannot call constructor as function, you need to use 'new' keyword");
+        NanReturnUndefined();
     }
 
     try {
         ServerPaths paths;
         if (args.Length() == 1) {
             if (!args[0]->IsString()) {
-                return ThrowException(Exception::TypeError(String::New("OSRM base path must be a string")));
+                NanThrowError("OSRM base path must be a string");
+                NanReturnUndefined();
             }
             std::string base = *String::Utf8Value(args[0]->ToString());
             paths["base"] = base;
@@ -93,9 +86,10 @@ Handle<Value> Engine::New(const Arguments& args)
 
         auto  im = new Engine(paths, args.Length() == 0);
         im->Wrap(args.This());
-        return args.This();
+        NanReturnValue(args.This());
     } catch (std::exception const& ex) {
-        return ThrowException(Exception::Error(String::New(ex.what())));
+         NanThrowTypeError(ex.what());
+         NanReturnUndefined();
     }
 }
 
@@ -108,24 +102,24 @@ struct RunQueryBaton {
     bool error;
 };
 
-Handle<Value> Engine::route(const Arguments& args)
+NAN_METHOD(Engine::route)
 {
-    HandleScope scope;
+    NanScope();
 
     if (args.Length() < 2) {
-        return ThrowException(Exception::TypeError(
-            String::New("two arguments required")));
+        NanThrowTypeError("two arguments required");
+        NanReturnUndefined();
     }
 
     if (!args[0]->IsObject()) {
-        return ThrowException(Exception::TypeError(
-            String::New("first argument must be an object")));
+        NanThrowTypeError("two arguments required");
+        NanReturnUndefined();
     }
 
     Local<Object> obj = args[0]->ToObject();
     if (obj->IsNull() || obj->IsUndefined()) {
-        return ThrowException(Exception::TypeError(String::New(
-            "first arg must be an object")));
+        NanThrowError("first arg must be an object");
+        NanReturnUndefined();
     }
 
     route_parameters_ptr params = make_unique<RouteParameters>();
@@ -141,64 +135,67 @@ Handle<Value> Engine::route(const Arguments& args)
     params->jsonp_parameter = ""; //set for jsonp wrapping
     params->language = ""; //unused atm
 
-    if (!obj->Has(String::New("coordinates"))) {
-        return ThrowException(Exception::TypeError(String::New(
-            "must provide a coordinates property")));
+    if (!obj->Has(NanNew("coordinates"))) {
+        NanThrowError("must provide a coordinates property");
+        NanReturnUndefined();
     }
 
-    Local<Value> coordinates = obj->Get(String::New("coordinates"));
+    Local<Value> coordinates = obj->Get(NanNew("coordinates"));
     if (!coordinates->IsArray()) {
-        return ThrowException(Exception::TypeError(String::New(
-            "coordinates must be an array of (lat/long) pairs")));
+        NanThrowError("coordinates must be an array of (lat/long) pairs");
+        NanReturnUndefined();
     }
 
     Local<Array> coordinates_array = Local<Array>::Cast(coordinates);
     if (coordinates_array->Length() < 2) {
-        return ThrowException(Exception::TypeError(String::New(
-            "at least two coordinates must be provided")));
+        NanThrowError("at least two coordinates must be provided");
+        NanReturnUndefined();
     }
 
     for (uint32_t i = 0; i < coordinates_array->Length(); ++i) {
         Local<Value> coordinate = coordinates_array->Get(i);
 
         if (!coordinate->IsArray()) {
-            return ThrowException(Exception::TypeError(String::New("coordinates must be an array of (lat/long) pairs")));
+            NanThrowError("coordinates must be an array of (lat/long) pairs");
+            NanReturnUndefined();
         }
 
         Local<Array> coordinate_pair = Local<Array>::Cast(coordinate);
         if (coordinate_pair->Length() != 2) {
-            return ThrowException(Exception::TypeError(String::New("coordinates must be an array of (lat/long) pairs")));
+            NanThrowError("coordinates must be an array of (lat/long) pairs");
+            NanReturnUndefined();
         }
 
         params->coordinates.emplace_back(static_cast<int>(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION),
                                          static_cast<int>(coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
     }
 
-    if (obj->Has(String::New("alternateRoute"))) {
-        params->alternate_route = obj->Get(String::New("alternateRoute"))->BooleanValue();
+    if (obj->Has(NanNew("alternateRoute"))) {
+        params->alternate_route = obj->Get(NanNew("alternateRoute"))->BooleanValue();
     }
 
-    if (obj->Has(String::New("checksum"))) {
-        params->check_sum = static_cast<unsigned>(obj->Get(String::New("checksum"))->Uint32Value());
+    if (obj->Has(NanNew("checksum"))) {
+        params->check_sum = static_cast<unsigned>(obj->Get(NanNew("checksum"))->Uint32Value());
     }
 
-    if (obj->Has(String::New("zoomLevel"))) {
-        params->zoom_level = static_cast<short>(obj->Get(String::New("zoomLevel"))->Int32Value());
+    if (obj->Has(NanNew("zoomLevel"))) {
+        params->zoom_level = static_cast<short>(obj->Get(NanNew("zoomLevel"))->Int32Value());
     }
 
-    if (obj->Has(String::New("printInstructions"))) {
-        params->print_instructions = obj->Get(String::New("printInstructions"))->BooleanValue();
+    if (obj->Has(NanNew("printInstructions"))) {
+        params->print_instructions = obj->Get(NanNew("printInstructions"))->BooleanValue();
     }
 
-    if (obj->Has(String::New("jsonpParameter"))) {
-        params->jsonp_parameter = *v8::String::Utf8Value(obj->Get(String::New("jsonpParameter")));
+    if (obj->Has(NanNew("jsonpParameter"))) {
+        params->jsonp_parameter = *v8::String::Utf8Value(obj->Get(NanNew("jsonpParameter")));
     }
 
-    if (obj->Has(String::New("hints"))) {
-        Local<Value> hints = obj->Get(String::New("hints"));
+    if (obj->Has(NanNew("hints"))) {
+        Local<Value> hints = obj->Get(NanNew("hints"));
 
         if (!hints->IsArray()) {
-            return ThrowException(Exception::TypeError(String::New("hints must be an array of strings/null")));
+            NanThrowError("hints must be an array of strings/null");
+            NanReturnUndefined();
         }
 
         Local<Array> hints_array = Local<Array>::Cast(hints);
@@ -209,31 +206,34 @@ Handle<Value> Engine::route(const Arguments& args)
             } else if(hint->IsNull()){
                 params->hints.push_back("");
             }else{
-                return ThrowException(Exception::TypeError(String::New("hint must be null or string")));
+                NanThrowError("hint must be null or string");
+                NanReturnUndefined();
             }
         }
     }
 
-    return Run(args, std::move(params));
+    Run(args, std::move(params));
+    NanReturnUndefined();
 }
 
-Handle<Value> Engine::locate(const Arguments& args)
+NAN_METHOD(Engine::locate)
 {
+    NanScope();
     if (args.Length() < 2) {
-        return ThrowException(Exception::TypeError(
-            String::New("two arguments required")));
+        NanThrowTypeError("two arguments required");
+        NanReturnUndefined();
     }
 
     Local<Value> coordinate = args[0];
     if (!coordinate->IsArray()) {
-        return ThrowException(Exception::TypeError(String::New(
-            "first argument must be an array of lat, long")));
+        NanThrowError("first argument must be an array of lat, long");
+        NanReturnUndefined();
     }
 
     Local<Array> coordinate_pair = Local<Array>::Cast(coordinate);
     if (coordinate_pair->Length() != 2) {
-        return ThrowException(Exception::TypeError(String::New(
-            "first argument must be an array of lat, long")));
+        NanThrowError("first argument must be an array of lat, long");
+        NanReturnUndefined();
     }
 
     route_parameters_ptr params = make_unique<RouteParameters>();
@@ -242,32 +242,34 @@ Handle<Value> Engine::locate(const Arguments& args)
     params->coordinates.emplace_back(static_cast<int>(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION),
                                      static_cast<int>(coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
 
-    return Run(args, std::move(params));
+    Run(args, std::move(params));
+    NanReturnUndefined();
 }
 
-Handle<Value> Engine::table(const Arguments& args)
+NAN_METHOD(Engine::table)
 {
+    NanScope();
     if (args.Length() < 2) {
-        return ThrowException(Exception::TypeError(
-            String::New("two arguments required")));
+        NanThrowTypeError("two arguments required");
+        NanReturnUndefined();
     }
 
     Local<Object> obj = args[0]->ToObject();
     if (obj->IsNull() || obj->IsUndefined()) {
-        return ThrowException(Exception::TypeError(String::New(
-            "first arg must be an object")));
+        NanThrowError("first arg must be an object");
+        NanReturnUndefined();
     }
 
-    Local<Value> coordinates = obj->Get(String::New("coordinates"));
+    Local<Value> coordinates = obj->Get(NanNew("coordinates"));
     if (!coordinates->IsArray()) {
-        return ThrowException(Exception::TypeError(String::New(
-            "coordinates must be an array of (lat/long) pairs")));
+        NanThrowError("coordinates must be an array of (lat/long) pairs");
+        NanReturnUndefined();
     }
 
     Local<Array> coordinates_array = Local<Array>::Cast(coordinates);
     if (coordinates_array->Length() < 2) {
-        return ThrowException(Exception::TypeError(String::New(
-            "at least two coordinates must be provided")));
+        NanThrowError("at least two coordinates must be provided");
+        NanReturnUndefined();
     }
 
     route_parameters_ptr params = make_unique<RouteParameters>();
@@ -278,38 +280,42 @@ Handle<Value> Engine::table(const Arguments& args)
         Local<Value> coordinate = coordinates_array->Get(i);
 
         if (!coordinate->IsArray()) {
-            return ThrowException(Exception::TypeError(String::New("coordinates must be an array of (lat/long) pairs")));
+            NanThrowError("coordinates must be an array of (lat/long) pairs");
+            NanReturnUndefined();
         }
 
         Local<Array> coordinate_pair = Local<Array>::Cast(coordinate);
         if (coordinate_pair->Length() != 2) {
-            return ThrowException(Exception::TypeError(String::New("coordinates must be an array of (lat/long) pairs")));
+            NanThrowError("coordinates must be an array of (lat/long) pairs");
+            NanReturnUndefined();
         }
 
         params->coordinates.emplace_back(static_cast<int>(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION),
                                          static_cast<int>(coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
     }
 
-    return Run(args, std::move(params));
+    Run(args, std::move(params));
+    NanReturnUndefined();
 }
 
-Handle<Value> Engine::nearest(const Arguments& args)
+NAN_METHOD(Engine::nearest)
 {
+    NanScope();
     if (args.Length() < 2) {
-        return ThrowException(Exception::TypeError(
-            String::New("two arguments required")));
+        NanThrowTypeError("two arguments required");
+        NanReturnUndefined();
     }
 
     Local<Value> coordinate = args[0];
     if (!coordinate->IsArray()) {
-        return ThrowException(Exception::TypeError(String::New(
-            "first argument must be an array of lat, long")));
+        NanThrowError("first argument must be an array of lat, long");
+        NanReturnUndefined();
     }
 
     Local<Array> coordinate_pair = Local<Array>::Cast(coordinate);
     if (coordinate_pair->Length() != 2) {
-        return ThrowException(Exception::TypeError(String::New(
-            "first argument must be an array of lat, long")));
+        NanThrowError("first argument must be an array of lat, long");
+        NanReturnUndefined();
     }
 
     route_parameters_ptr params = make_unique<RouteParameters>();
@@ -317,14 +323,18 @@ Handle<Value> Engine::nearest(const Arguments& args)
     params->service = "nearest";
     params->coordinates.emplace_back(static_cast<int>(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION),
                                      static_cast<int>(coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
-    return Run(args, std::move(params));
+    Run(args, std::move(params));
+    NanReturnUndefined();
 }
 
-Handle<Value> Engine::Run(const Arguments& args, route_parameters_ptr params)
+void Engine::Run(_NAN_METHOD_ARGS, route_parameters_ptr params)
 {
-    if (!args[1]->IsFunction()) {
-        return ThrowException(Exception::TypeError(String::New(
-            "second argument must be a callback function")));
+    NanScope();
+    Local<Value> callback = args[args.Length()-1];
+
+    if (!callback->IsFunction()) {
+        NanThrowTypeError("last argument must be a callback function");
+        NanReturnUndefined();
     }
 
     auto closure = new RunQueryBaton();
@@ -332,11 +342,11 @@ Handle<Value> Engine::Run(const Arguments& args, route_parameters_ptr params)
     closure->machine = ObjectWrap::Unwrap<Engine>(args.This());
     closure->params = std::move(params);
     closure->error = false;
-    closure->cb = Persistent<Function>::New(Handle<Function>::Cast(args[1]));
+    NanAssignPersistent(closure->cb, callback.As<Function>());
 
     uv_queue_work(uv_default_loop(), &closure->request, AsyncRun, reinterpret_cast<uv_after_work_cb>(AfterRun));
     closure->machine->Ref();
-    return Undefined();
+    NanReturnUndefined();
 }
 
 void Engine::AsyncRun(uv_work_t* req) {
@@ -352,22 +362,22 @@ void Engine::AsyncRun(uv_work_t* req) {
 }
 
 void Engine::AfterRun(uv_work_t* req) {
-    HandleScope scope;
+    NanScope();
     RunQueryBaton *closure = static_cast<RunQueryBaton *>(req->data);
     TryCatch try_catch;
     if (closure->error) {
-        Local<Value> argv[1] = { Exception::Error(String::New(closure->result.c_str())) };
-        closure->cb->Call(Context::GetCurrent()->Global(), 1, argv);
+        Local<Value> argv[1] = { NanError(closure->result.c_str()) };
+        NanMakeCallback(NanGetCurrentContext()->Global(), NanNew(closure->cb), 1, argv);
     } else {
-        Local<Value> argv[2] = { Local<Value>::New(Null()),
-                                 String::New(closure->result.c_str()) };
-        closure->cb->Call(Context::GetCurrent()->Global(), 2, argv);
+        Local<Value> argv[2] = { NanNull(),
+                                 NanNew(closure->result.c_str()) };
+        NanMakeCallback(NanGetCurrentContext()->Global(), NanNew(closure->cb), 2, argv);
     }
     if (try_catch.HasCaught()) {
         node::FatalException(try_catch);
     }
     closure->machine->Unref();
-    closure->cb.Dispose();
+    NanDisposePersistent(closure->cb);
     delete closure;
 }
 
