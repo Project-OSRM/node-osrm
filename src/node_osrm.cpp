@@ -334,7 +334,7 @@ void Engine::Run(_NAN_METHOD_ARGS, route_parameters_ptr params)
 
     if (!callback->IsFunction()) {
         NanThrowTypeError("last argument must be a callback function");
-        NanReturnUndefined();
+        return;
     }
 
     auto closure = new RunQueryBaton();
@@ -343,10 +343,9 @@ void Engine::Run(_NAN_METHOD_ARGS, route_parameters_ptr params)
     closure->params = std::move(params);
     closure->error = false;
     NanAssignPersistent(closure->cb, callback.As<Function>());
-
     uv_queue_work(uv_default_loop(), &closure->request, AsyncRun, reinterpret_cast<uv_after_work_cb>(AfterRun));
     closure->machine->Ref();
-    NanReturnUndefined();
+    return;
 }
 
 void Engine::AsyncRun(uv_work_t* req) {
