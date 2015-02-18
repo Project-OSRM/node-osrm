@@ -1,12 +1,13 @@
+#include "json_v8_renderer.hpp"
+
 // v8
 #include <nan.h>
 
 // OSRM
-#include <osrm/OSRM.h>
-#include <osrm/RouteParameters.h>
-#include <osrm/Reply.h>
-#include <osrm/ServerPaths.h>
-
+#include <osrm/json_container.hpp>
+#include <osrm/libosrm_config.hpp>
+#include <osrm/osrm.hpp>
+#include <osrm/route_parameters.hpp>
 // STL
 #include <iostream>
 #include <memory>
@@ -41,9 +42,9 @@ public:
     static void AfterRun(uv_work_t*);
 
 private:
-    Engine(const ServerPaths &paths, bool use_shared_memory)
+    Engine(libosrm_config &lib_config)
         : ObjectWrap(),
-          this_(make_unique<OSRM>(paths, use_shared_memory))
+          this_(make_unique<OSRM>(lib_config))
     {}
 
     osrm_ptr this_;
@@ -74,17 +75,19 @@ NAN_METHOD(Engine::New)
     }
 
     try {
-        ServerPaths paths;
+        libosrm_config lib_config;
         if (args.Length() == 1) {
             if (!args[0]->IsString()) {
                 NanThrowError("OSRM base path must be a string");
                 NanReturnUndefined();
             }
             std::string base = *String::Utf8Value(args[0]->ToString());
-            paths["base"] = base;
+            lib_config.server_paths["base"] = base;
         }
 
-        auto  im = new Engine(paths, args.Length() == 0);
+        lib_config.use_shared_memory = args.Length() == 0;
+
+        auto im = new Engine(lib_config);
         im->Wrap(args.This());
         NanReturnValue(args.This());
     } catch (std::exception const& ex) {
@@ -351,9 +354,10 @@ void Engine::Run(_NAN_METHOD_ARGS, route_parameters_ptr params)
 void Engine::AsyncRun(uv_work_t* req) {
     RunQueryBaton *closure = static_cast<RunQueryBaton *>(req->data);
     try {
-        http::Reply osrm_reply;
+        osrm::json::Object osrm_reply;
         closure->machine->this_->RunQuery(*closure->params, osrm_reply);
-        closure->result = std::string(std::begin(osrm_reply.content), std::end(osrm_reply.content));
+        // TODO: render into a native V8 json object.
+        osrm::json::render(closure->result, osrm_reply);
     } catch(std::exception const& ex) {
         closure->error = true;
         closure->result = ex.what();
