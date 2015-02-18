@@ -1,10 +1,19 @@
 language: cpp
 
+os:
+  - linux
+  - osx
+
+compiler:
+ - clang
+ - gcc
+
 matrix:
- - os: osx
-   compiler: clang
- - os: linux
-   compiler: gcc
+  exclude:
+     - os: osx
+       compiler: gcc
+     - os: linux
+       compiler: clang
 
 env:
   matrix:
