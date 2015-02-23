@@ -1,6 +1,6 @@
 /*
 
-Copyright (c) 2015, Project OSRM, Dennis Luxen, others
+Copyright (c) 2015, Project OSRM contributors
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -28,113 +28,68 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // based on
 // https://svn.apache.org/repos/asf/mesos/tags/release-0.9.0-incubating-RC0/src/common/json.hpp
 
-#ifndef JSON_RENDERER_HPP
-#define JSON_RENDERER_HPP
+#ifndef JSON_V8_RENDERER_HPP
+#define JSON_V8_RENDERER_HPP
 
 #include <osrm/json_container.hpp>
+
+// v8
+#include <nan.h>
 
 namespace osrm
 {
 namespace json
 {
-namespace detail {
-std::string double_fixed_to_string(const double value)
+
+struct v8_renderer : mapbox::util::static_visitor<>
 {
-    std::string output = std::to_string(value);
-    if (output.size() >= 2 && output[output.size() - 2] == '.' &&
-        output[output.size() - 1] == '0')
-    {
-        output.resize(output.size() - 2);
-    }
-    return output;
-}
+    explicit v8_renderer(v8::Local<v8::Value>& _out) : out(_out) {}
 
-}
+    void operator()(const String &string) const { out = NanNew(string.value.c_str()); }
 
-
-template<class output_container>
-struct renderer : mapbox::util::static_visitor<>
-{
-    explicit renderer(output_container &_out) : out(_out) {}
-
-    void operator()(const String &string) const
-    {
-        out.push_back('\"');
-        out.insert(out.end(), string.value.begin(), string.value.end());
-        out.push_back('\"');
-    }
-
-    void operator()(const Number &number) const
-    {
-        const std::string number_string = detail::double_fixed_to_string(number.value);
-        out.insert(out.end(), number_string.begin(), number_string.end());
-    }
+    void operator()(const Number &number) const { out = NanNew(number.value); }
 
     void operator()(const Object &object) const
     {
-        out.push_back('{');
-        auto iterator = object.values.begin();
-        while (iterator != object.values.end())
+        v8::Local<v8::Object> obj = NanNew<v8::Object>();
+        for (const auto& keyValue : object.values)
         {
-            out.push_back('\"');
-            out.insert(out.end(), (*iterator).first.begin(), (*iterator).first.end());
-            out.push_back('\"');
-            out.push_back(':');
-
-            mapbox::util::apply_visitor(renderer(out), (*iterator).second);
-            if (++iterator != object.values.end())
-            {
-                out.push_back(',');
-            }
+            v8::Local<v8::Value> child;
+            mapbox::util::apply_visitor(v8_renderer(child), keyValue.second);
+            obj->Set(NanNew(keyValue.first.c_str()), child);
         }
-        out.push_back('}');
+        out = obj;
     }
 
     void operator()(const Array &array) const
     {
-        out.push_back('[');
-        std::vector<Value>::const_iterator iterator;
-        iterator = array.values.begin();
-        while (iterator != array.values.end())
+        v8::Local<v8::Array> a = NanNew<v8::Array>(array.values.size());
+        for (auto i = 0u; i < array.values.size(); ++i)
         {
-            mapbox::util::apply_visitor(renderer(out), *iterator);
-            if (++iterator != array.values.end())
-            {
-                out.push_back(',');
-            }
+            v8::Local<v8::Value> child;
+            mapbox::util::apply_visitor(v8_renderer(child), array.values[i]);
+            a->Set(i, child);
         }
-        out.push_back(']');
+        out = a;
     }
 
-    void operator()(const True &) const
-    {
-        const std::string temp("true");
-        out.insert(out.end(), temp.begin(), temp.end());
-    }
+    void operator()(const True &) const { out = NanNew(true); }
 
-    void operator()(const False &) const
-    {
-        const std::string temp("false");
-        out.insert(out.end(), temp.begin(), temp.end());
-    }
+    void operator()(const False &) const { out = NanNew(false); }
 
-    void operator()(const Null &) const
-    {
-        const std::string temp("null");
-        out.insert(out.end(), temp.begin(), temp.end());
-    }
+    void operator()(const Null &) const { out = NanNull(); }
 
   private:
-    output_container &out;
+    v8::Local<v8::Value> &out;
 };
 
-template<class output_container>
-void render(output_container &out, const Object &object)
+inline void render(v8::Local<v8::Value> &out, const Object &object)
 {
+    // FIXME this should be a cast?
     Value value = object;
-    mapbox::util::apply_visitor(renderer<output_container>(out), value);
+    mapbox::util::apply_visitor(v8_renderer(out), value);
 }
 
 } // namespace json
 } // namespace osrm
-#endif // JSON_RENDERER_HPP
+#endif // JSON_V8_RENDERER_HPP
