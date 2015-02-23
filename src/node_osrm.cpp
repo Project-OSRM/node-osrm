@@ -36,6 +36,7 @@ public:
     static NAN_METHOD(locate);
     static NAN_METHOD(nearest);
     static NAN_METHOD(table);
+    static NAN_METHOD(match);
 
     static void Run(_NAN_METHOD_ARGS, route_parameters_ptr);
     static void AsyncRun(uv_work_t*);
@@ -61,6 +62,7 @@ void Engine::Initialize(Handle<Object> target) {
     NODE_SET_PROTOTYPE_METHOD(lcons, "locate", locate);
     NODE_SET_PROTOTYPE_METHOD(lcons, "nearest", nearest);
     NODE_SET_PROTOTYPE_METHOD(lcons, "table", table);
+    NODE_SET_PROTOTYPE_METHOD(lcons, "match", match);
     target->Set(NanNew("OSRM"), lcons->GetFunction());
     NanAssignPersistent(constructor, lcons);
 }
@@ -245,6 +247,78 @@ NAN_METHOD(Engine::locate)
     params->service = "locate";
     params->coordinates.emplace_back(static_cast<int>(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION),
                                      static_cast<int>(coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
+
+    Run(args, std::move(params));
+    NanReturnUndefined();
+}
+
+NAN_METHOD(Engine::match)
+{
+    NanScope();
+    if (args.Length() < 2) {
+        NanThrowTypeError("two arguments required");
+        NanReturnUndefined();
+    }
+
+    Local<Object> obj = args[0]->ToObject();
+    if (obj->IsNull() || obj->IsUndefined()) {
+        NanThrowError("first arg must be an object");
+        NanReturnUndefined();
+    }
+
+    Local<Value> coordinates = obj->Get(NanNew("coordinates"));
+    if (!coordinates->IsArray()) {
+        NanThrowError("coordinates must be an array of (lat/long) pairs");
+        NanReturnUndefined();
+    }
+
+    Local<Array> coordinates_array = Local<Array>::Cast(coordinates);
+    if (coordinates_array->Length() < 2) {
+        NanThrowError("at least two coordinates must be provided");
+        NanReturnUndefined();
+    }
+
+    Local<Value> timestamps = obj->Get(NanNew("timestamps"));
+    if (!coordinates->IsArray() && !timestamps->IsUndefined()) {
+        NanThrowError("timestamps must be an array of integers (or undefined)");
+        NanReturnUndefined();
+    }
+
+    route_parameters_ptr params = make_unique<RouteParameters>();
+    params->service = "match";
+
+    if (timestamps->IsArray()) {
+        Local<Array> timestamps_array = Local<Array>::Cast(timestamps);
+        if (coordinates_array->Length() != timestamps_array->Length()) {
+            NanThrowError("timestamp array must have the same size as the coordinates array");
+            NanReturnUndefined();
+        }
+
+        // add all timestamps
+        for (uint32_t i = 0; i < timestamps_array->Length(); ++i) {
+            params->timestamps.emplace_back(static_cast<unsigned>(timestamps_array->Get(i)->NumberValue()));
+        }
+    }
+
+    // add all coordinates
+    for (uint32_t i = 0; i < coordinates_array->Length(); ++i) {
+        Local<Value> coordinate = coordinates_array->Get(i);
+
+        if (!coordinate->IsArray()) {
+            NanThrowError("coordinates must be an array of (lat/long) pairs");
+            NanReturnUndefined();
+        }
+
+        Local<Array> coordinate_pair = Local<Array>::Cast(coordinate);
+        if (coordinate_pair->Length() != 2) {
+            NanThrowError("coordinates must be an array of (lat/long) pairs");
+            NanReturnUndefined();
+        }
+
+        params->coordinates.emplace_back(static_cast<int>(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION),
+                                         static_cast<int>(coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
+
+    }
 
     Run(args, std::move(params));
     NanReturnUndefined();
