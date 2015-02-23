@@ -8,6 +8,7 @@
 #include <osrm/libosrm_config.hpp>
 #include <osrm/osrm.hpp>
 #include <osrm/route_parameters.hpp>
+
 // STL
 #include <iostream>
 #include <memory>
@@ -16,7 +17,6 @@ namespace node_osrm {
 
 typedef std::unique_ptr<OSRM> osrm_ptr;
 typedef std::unique_ptr<RouteParameters> route_parameters_ptr;
-
 namespace {
 template <class T, class... Types>
 std::unique_ptr<T> make_unique(Types &&... Args)
@@ -77,15 +77,16 @@ NAN_METHOD(Engine::New)
     try {
         libosrm_config lib_config;
         if (args.Length() == 1) {
-            if (!args[0]->IsString()) {
-                NanThrowError("OSRM base path must be a string");
-                NanReturnUndefined();
-            }
             std::string base = *String::Utf8Value(args[0]->ToString());
             lib_config.server_paths["base"] = base;
+            lib_config.use_shared_memory = false;
+        } else if (args.Length() >= 2) {
+            if (!args[1]->IsUint32()) {
+                NanThrowError("the maximum number of locations in the distance table must be an unsigned integer");
+                NanReturnUndefined();
+            }
+            lib_config.max_locations_distance_table = args[1]->ToUint32()->Value();
         }
-
-        lib_config.use_shared_memory = args.Length() == 0;
 
         auto im = new Engine(lib_config);
         im->Wrap(args.This());
@@ -99,10 +100,10 @@ NAN_METHOD(Engine::New)
 struct RunQueryBaton {
     uv_work_t request;
     Engine * machine;
-    std::string result;
+    osrm::json::Object result;
     route_parameters_ptr params;
     Persistent<Function> cb;
-    bool error;
+    std::string error;
 };
 
 NAN_METHOD(Engine::route)
@@ -344,7 +345,7 @@ void Engine::Run(_NAN_METHOD_ARGS, route_parameters_ptr params)
     closure->request.data = closure;
     closure->machine = ObjectWrap::Unwrap<Engine>(args.This());
     closure->params = std::move(params);
-    closure->error = false;
+    closure->error = "";
     NanAssignPersistent(closure->cb, callback.As<Function>());
     uv_queue_work(uv_default_loop(), &closure->request, AsyncRun, reinterpret_cast<uv_after_work_cb>(AfterRun));
     closure->machine->Ref();
@@ -354,13 +355,9 @@ void Engine::Run(_NAN_METHOD_ARGS, route_parameters_ptr params)
 void Engine::AsyncRun(uv_work_t* req) {
     RunQueryBaton *closure = static_cast<RunQueryBaton *>(req->data);
     try {
-        osrm::json::Object osrm_reply;
-        closure->machine->this_->RunQuery(*closure->params, osrm_reply);
-        // TODO: render into a native V8 json object.
-        osrm::json::render(closure->result, osrm_reply);
+        closure->machine->this_->RunQuery(*closure->params, closure->result);
     } catch(std::exception const& ex) {
-        closure->error = true;
-        closure->result = ex.what();
+        closure->error = ex.what();
     }
 }
 
@@ -368,12 +365,13 @@ void Engine::AfterRun(uv_work_t* req) {
     NanScope();
     RunQueryBaton *closure = static_cast<RunQueryBaton *>(req->data);
     TryCatch try_catch;
-    if (closure->error) {
-        Local<Value> argv[1] = { NanError(closure->result.c_str()) };
+    if (closure->error.size() > 0) {
+        Local<Value> argv[1] = { NanError(closure->error.c_str()) };
         NanMakeCallback(NanGetCurrentContext()->Global(), NanNew(closure->cb), 1, argv);
     } else {
-        Local<Value> argv[2] = { NanNull(),
-                                 NanNew(closure->result.c_str()) };
+        Local<Value> result;
+        osrm::json::render(result, closure->result);
+        Local<Value> argv[2] = { NanNull(), result };
         NanMakeCallback(NanGetCurrentContext()->Global(), NanNew(closure->cb), 2, argv);
     }
     if (try_catch.HasCaught()) {
