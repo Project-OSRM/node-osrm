@@ -60,18 +60,19 @@ it('distance table in Berlin', function(done) {
     };
     osrm.table(options, function(err, table) {
         assert.ifError(err);
+        assert(Array.isArray(table.distance_table), 'result must be an array');
         var row_count = table.distance_table.length;
-        for (var i = 0; i < row_count; i++) {
+        for (var i = 0; i < row_count; ++i) {
             var column = table.distance_table[i];
             var column_count = column.length;
-            assert.equal(row_count, column.length);
+            assert.equal(row_count, column_count);
             for (var j = 0; j < column_count; ++j) {
                 if (i == j) {
                     // check that diagonal is zero
-                    assert.equal(0, column[j]);
+                    assert.equal(0, column[j], "diagonal must be zero");
                 } else {
-                    // diagonal is non-zero
-                    assert.notEqual(0, column[j]);
+                    // everything else is non-zero
+                    assert.notEqual(0, column[j], "other entries must be non-zero");
                 }
             }
         }
