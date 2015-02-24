@@ -60,9 +60,9 @@ it('distance table in Berlin', function(done) {
     };
     osrm.table(options, function(err, table) {
         assert.ifError(err);
-        var row_count = table.length;
+        var row_count = table.distance_table.length;
         for (var i = 0; i < row_count; i++) {
-            var column = table[i];
+            var column = table.distance_table[i];
             var column_count = column.length;
             assert.equal(row_count, column.length);
             for (var j = 0; j < column_count; ++j) {
@@ -75,7 +75,7 @@ it('distance table in Berlin', function(done) {
                 }
             }
         }
-        assert.equal(options.coordinates.length, table.length);
+        assert.equal(options.coordinates.length, row_count);
         done();
     });
 });
