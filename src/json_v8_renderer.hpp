@@ -36,6 +36,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // v8
 #include <nan.h>
 
+#include <functional>
+
 namespace osrm
 {
 namespace json
