@@ -45,7 +45,7 @@ struct v8_renderer : mapbox::util::static_visitor<>
 {
     explicit v8_renderer(v8::Local<v8::Value>& _out) : out(_out) {}
 
-    void operator()(const String &string) const { out = NanNew(string.value.c_str()); }
+    void operator()(const String &string) const { out = NanNew(std::cref(string.value)); }
 
     void operator()(const Number &number) const { out = NanNew(number.value); }
 
@@ -56,7 +56,7 @@ struct v8_renderer : mapbox::util::static_visitor<>
         {
             v8::Local<v8::Value> child;
             mapbox::util::apply_visitor(v8_renderer(child), keyValue.second);
-            obj->Set(NanNew(keyValue.first.c_str()), child);
+            obj->Set(NanNew(keyValue.first), child);
         }
         out = obj;
     }
