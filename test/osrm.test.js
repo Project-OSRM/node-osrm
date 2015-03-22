@@ -106,6 +106,23 @@ it('match in Berlin without timestamps', function(done) {
     });
 });
 
+it('match in Berlin with all options', function(done) {
+    var osrm = new OSRM("berlin-latest.osrm");
+    var options = {
+        coordinates: [[52.542648,13.393252], [52.543079,13.394780], [52.542107,13.397389]],
+        timestamps: [1424684612, 1424684616, 1424684620],
+        classify: true,
+        gps_precision: 4.07,
+        matching_beta: 10.0,
+    };
+    osrm.match(options, function(err, response) {
+        assert.ifError(err);
+        assert.equal(response.matchings.length, 1);
+        assert.equal(response.matchings[0].confidence > 0, true);
+        done();
+    });
+});
+
 it('routes Berlin with hints', function(done) {
     var osrm = new OSRM("berlin-latest.osrm");
     var options = {

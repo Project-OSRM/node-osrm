@@ -287,6 +287,16 @@ NAN_METHOD(Engine::match)
     route_parameters_ptr params = make_unique<RouteParameters>();
     params->service = "match";
 
+    if (obj->Has(NanNew("classify"))) {
+        params->classify = obj->Get(NanNew("classify"))->BooleanValue();
+    }
+    if (obj->Has(NanNew("gps_precision"))) {
+        params->gps_precision = obj->Get(NanNew("gps_precision"))->NumberValue();
+    }
+    if (obj->Has(NanNew("matching_beta"))) {
+        params->matching_beta = obj->Get(NanNew("matching_beta"))->NumberValue();
+    }
+
     if (timestamps->IsArray()) {
         Local<Array> timestamps_array = Local<Array>::Cast(timestamps);
         if (coordinates_array->Length() != timestamps_array->Length()) {
