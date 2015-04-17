@@ -11,7 +11,7 @@
       'target_name': '<(module_name)',
       'include_dirs': [
           "<!(node -e \"require('nan')\")",
-          '<!@(pkg-config libosrm --cflags)',
+          '<!@(pkg-config libosrm --variable=prefix)/include',
           './src/'
       ],
       'libraries': [
