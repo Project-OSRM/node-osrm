@@ -46,6 +46,7 @@ function copy_tbb() {
 }
 
 function localize() {
+    mkdir -p ${TARGET_DIR}
     copy_tbb
     cp ${MASON_HOME}/bin/lua ${TARGET_DIR}
     move_tool osrm-extract
