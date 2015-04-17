@@ -6,24 +6,25 @@ function dep() {
 }
 
 function all_deps() {
-    dep lua 5.3.0
-    dep luabind dev
-    dep boost 1.57.0
-    dep boost_libsystem 1.57.0
-    dep boost_libthread 1.57.0
-    dep boost_libfilesystem 1.57.0
-    dep boost_libprogram_options 1.57.0
-    dep boost_libregex 1.57.0
-    dep boost_libiostreams 1.57.0
-    dep boost_libtest 1.57.0
-    dep boost_libdate_time 1.57.0
-    dep expat 2.1.0
-    dep stxxl 1.4.1
-    dep osmpbf 1.3.3
-    dep protobuf 2.6.1
-    dep bzip 1.0.6
-    dep zlib system
-    dep tbb 43_20150316    
+    dep lua 5.3.0 &
+    dep luabind dev &
+    dep boost 1.57.0 &
+    dep boost_libsystem 1.57.0 &
+    dep boost_libthread 1.57.0 &
+    dep boost_libfilesystem 1.57.0 &
+    dep boost_libprogram_options 1.57.0 &
+    dep boost_libregex 1.57.0 &
+    dep boost_libiostreams 1.57.0 &
+    dep boost_libtest 1.57.0 &
+    dep boost_libdate_time 1.57.0 &
+    dep expat 2.1.0 &
+    dep stxxl 1.4.1 &
+    dep osmpbf 1.3.3 &
+    dep protobuf 2.6.1 &
+    dep bzip 1.0.6 &
+    dep zlib system &
+    dep tbb 43_20150316 &
+    wait
 }
 
 function move_tool() {
