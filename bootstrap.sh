@@ -101,6 +101,8 @@ function main() {
           -DCMAKE_LIBRARY_PATH=${MASON_HOME}/lib \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}"
+        make -${JOBS}
+        make install
 
         cd ../../
     fi
