@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -u
-
 function dep() {
     ~/.mason/mason install $1 $2
     ~/.mason/mason link $1 $2
@@ -60,6 +58,9 @@ function main() {
     fi
     ~/.mason/mason install cmake 3.2.2;
     all_deps
+    if [[ `uname -s` == 'Darwin' ]]; then
+        brew install pkg-config || true
+    fi
     export PATH=$(~/.mason/mason prefix cmake 3.2.2)/bin:$PATH;
     export MASON_HOME=$(pwd)/mason_packages/.link
     export PKG_CONFIG_PATH=${MASON_HOME}/lib/pkgconfig
