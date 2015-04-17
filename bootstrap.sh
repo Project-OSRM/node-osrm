@@ -21,6 +21,8 @@ function all_deps() {
     dep stxxl 1.4.1
     dep osmpbf 1.3.3
     dep protobuf 2.6.1
+    dep bzip 1.0.6
+    dep zlib system
     dep tbb 43_20150316    
 }
 
