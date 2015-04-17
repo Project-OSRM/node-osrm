@@ -1,5 +1,12 @@
 ## node-osrm changelog
 
+### 4.6.0
+
+ - Update OSRM to v4.6.0
+ - New js API:
+    osrm.match(options, callback)
+ - Behaviour of osrm.table changed! Now returns full json response from OSRM.
+
 ### 0.12.0
 
  - Updated OSRM to 3d3ba86be4af6bcf68 (v0.4.3 release + extras)
