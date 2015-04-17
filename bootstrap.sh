@@ -74,6 +74,7 @@ function main() {
     if [[ $(uname -s) == 'Linux' ]]; then
         LINK_FLAGS="${LINK_FLAGS} "'-Wl,-z,origin -Wl,-rpath=\$ORIGIN'
         export LDFLAGS="${LINK_FLAGS}"
+        source ~/.mason/scripts/setup_cpp11_toolchain.sh
     fi
 
     if [[ ! -d ./osrm-backend ]]; then
