@@ -58,6 +58,7 @@ function main() {
         git clone --depth 1 https://github.com/mapbox/mason.git ~/.mason
     fi
     ~/.mason/mason install cmake 3.2.2;
+    all_deps
     export PATH=$(~/.mason/mason prefix cmake 3.2.2)/bin:$PATH;
     export MASON_HOME=$(pwd)/mason_packages/.link
     export PKG_CONFIG_PATH=${MASON_HOME}/lib/pkgconfig
