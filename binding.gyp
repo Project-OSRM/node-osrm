@@ -20,7 +20,7 @@
       'conditions': [
         [ 'OS=="linux"', {
           'cflags_cc' : [
-              '-std=c++11',
+              '-std=c++11', '-flto'
           ],
           'libraries':[
               '-Wl,-rpath=<!@(pkg-config libosrm --variable=prefix)/lib',

@@ -60,22 +60,65 @@ it('distance table in Berlin', function(done) {
     };
     osrm.table(options, function(err, table) {
         assert.ifError(err);
-        var row_count = table.length;
-        for (var i = 0; i < row_count; i++) {
-            var column = table[i];
+        assert(Array.isArray(table.distance_table), 'result must be an array');
+        var row_count = table.distance_table.length;
+        for (var i = 0; i < row_count; ++i) {
+            var column = table.distance_table[i];
             var column_count = column.length;
-            assert.equal(row_count, column.length);
+            assert.equal(row_count, column_count);
             for (var j = 0; j < column_count; ++j) {
                 if (i == j) {
                     // check that diagonal is zero
-                    assert.equal(0, column[j]);
+                    assert.equal(0, column[j], "diagonal must be zero");
                 } else {
-                    // diagonal is non-zero
-                    assert.notEqual(0, column[j]);
+                    // everything else is non-zero
+                    assert.notEqual(0, column[j], "other entries must be non-zero");
                 }
             }
         }
-        assert.equal(options.coordinates.length, table.length);
+        assert.equal(options.coordinates.length, row_count);
+        done();
+    });
+});
+
+it('match in Berlin', function(done) {
+    var osrm = new OSRM("berlin-latest.osrm");
+    var options = {
+        coordinates: [[52.542648,13.393252], [52.543079,13.394780], [52.542107,13.397389]],
+        timestamps: [1424684612, 1424684616, 1424684620]
+    };
+    osrm.match(options, function(err, response) {
+        assert.ifError(err);
+        assert.equal(response.matchings.length, 1);
+        done();
+    });
+});
+
+it('match in Berlin without timestamps', function(done) {
+    var osrm = new OSRM("berlin-latest.osrm");
+    var options = {
+        coordinates: [[52.542648,13.393252], [52.543079,13.394780], [52.542107,13.397389]]
+    };
+    osrm.match(options, function(err, response) {
+        assert.ifError(err);
+        assert.equal(response.matchings.length, 1);
+        done();
+    });
+});
+
+it('match in Berlin with all options', function(done) {
+    var osrm = new OSRM("berlin-latest.osrm");
+    var options = {
+        coordinates: [[52.542648,13.393252], [52.543079,13.394780], [52.542107,13.397389]],
+        timestamps: [1424684612, 1424684616, 1424684620],
+        classify: true,
+        gps_precision: 4.07,
+        matching_beta: 10.0,
+    };
+    osrm.match(options, function(err, response) {
+        assert.ifError(err);
+        assert.equal(response.matchings.length, 1);
+        assert.equal(response.matchings[0].confidence > 0, true);
         done();
     });
 });
