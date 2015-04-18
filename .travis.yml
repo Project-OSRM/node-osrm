@@ -17,9 +17,8 @@ matrix:
 
 env:
   matrix:
-   - NODE_VERSION="0.10.36"
-   - NODE_VERSION="0.12.0"
-   - NODE_VERSION="iojs-v1.2.0"
+   - NVM_NODE_VERSION="0.10.36"
+   - NVM_NODE_VERSION="0.12.0"
   global:
    - secure: KitzGZjoDblX/3heajcvssGz0JnJ/k02dr2tu03ksUV+6MogC3RSQudqyKY57+f8VyZrcllN/UOlJ0Q/3iG38Oz8DljC+7RZxtkVmE1SFBoOezKCdhcvWM12G3uqPs7hhrRxuUgIh0C//YXEkulUrqa2H1Aj2xeen4E3FAqEoy0=
    - secure: WLGmxl6VTVWhXGm6X83GYNYzPNsvTD+9usJOKM5YBLAdG7cnOBQBNiCCUKc9OZMMZVUr3ec2/iigakH5Y8Yc+U6AlWKzlORyqWLuk4nFuoedu62x6ocQkTkuOc7mHiYhKd21xTGMYauaZRS6kugv4xkpGES2UjI2T8cjZ+LN2jU=
@@ -36,8 +35,8 @@ before_install:
 # objective-c in another branch (to run the same travis.yml on OS X)
 - rm -rf ~/.nvm/ && git clone --depth 1 https://github.com/creationix/nvm.git ~/.nvm
 - source ~/.nvm/nvm.sh
-- nvm install $NODE_VERSION
-- nvm use $NODE_VERSION
+- nvm install $NVM_NODE_VERSION
+- nvm use $NVM_NODE_VERSION
 - node --version
 - npm --version
 - which node
@@ -53,12 +52,12 @@ install:
 # reset nvm version otherwise now one pre-installed by travis
 # on the homebrew path may be picked up instead
 - source ~/.nvm/nvm.sh
-- echo $NODE_VERSION
+- echo $NVM_NODE_VERSION
 - which node
 - node --version
 - npm --version
 - set +u
-- nvm use $NODE_VERSION || true
+- nvm use $NVM_NODE_VERSION || true
 - which node
 - node --version
 - npm --version
@@ -71,19 +70,10 @@ before_script:
 - make test
 
 script:
-# now we publish the binary, if requested
-- PUBLISH_BINARY=false
-- if test "${COMMIT_MESSAGE#*'[publish binary]'}" != "$COMMIT_MESSAGE"; then echo PUBLISH_BINARY;PUBLISH_BINARY=true; fi;
-# Note: this publishing is done here, in the 'script' section, instead of the 'after_success'
-# since we want any failure here to stop the build immediately
-- if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package publish; fi
-# now clean up to prepare to re-install from remote binary
-- node-pre-gyp clean
-# now install from published binary
-# Note: we capture the error here so that if the install fails we can unpublish
-- INSTALL_RESULT=0
-- if [[ $PUBLISH_BINARY == true ]]; then INSTALL_RESULT=$(npm install --fallback-to-build=false > /dev/null)$? || true; fi
-# if install returned non zero (errored) then we first unpublish and then call false so travis will bail at this line
-- if [[ $INSTALL_RESULT != 0 ]]; then echo "returned $INSTALL_RESULT";node-pre-gyp unpublish;false; fi
-# If success then we arrive here so lets clean up
-- node-pre-gyp clean
+- node-pre-gyp package
+- if [[ ${COMMIT_MESSAGE} =~ "[publish binary]" ]]; then
+    node-pre-gyp publish;
+  fi;
+- if [[ ${COMMIT_MESSAGE} =~ "[republish binary]" ]]; then
+    node-pre-gyp unpublish publish;
+  fi;
