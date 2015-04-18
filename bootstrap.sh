@@ -82,7 +82,7 @@ function main() {
         source ~/.mason/scripts/setup_cpp11_toolchain.sh
     fi
 
-    if [[ ! -d ./osrm-backend ]]; then
+    if [[ ! -d ./osrm-backend ]] || [[ ! -f ${MASON_HOME}/bin/osrm-extract ]]; then
         if [[ "${OSRM_RELEASE:-false}" == false ]]; then
             OSRM_RELEASE=.
         fi
@@ -107,7 +107,7 @@ function main() {
           -DCMAKE_LIBRARY_PATH=${MASON_HOME}/lib \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}"
-        make -${JOBS}
+        make -j${JOBS}
         make install
 
         cd ../../
