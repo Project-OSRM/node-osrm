@@ -49,19 +49,6 @@ install:
 - export OSRM_RELEASE="v4.6.0"
 # WARNING: this script modifies the environment
 - source ./scripts/static_build.sh
-# reset nvm version otherwise now one pre-installed by travis
-# on the homebrew path may be picked up instead
-- source ~/.nvm/nvm.sh
-- echo $NVM_NODE_VERSION
-- which node
-- node --version
-- npm --version
-- set +u
-- nvm use $NVM_NODE_VERSION || true
-- which node
-- node --version
-- npm --version
-- cd ${NODE_MODULE_ROOT}
 
 before_script:
 - if [[ `uname -s` == 'Darwin' ]]; then otool -L ./lib/binding/* || true; fi

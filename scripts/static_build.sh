@@ -20,6 +20,20 @@ source build.sh
 build_osrm
 
 cd ${NODE_MODULE_ROOT}
+
+# reset nvm version otherwise now one pre-installed by travis
+# on the homebrew path may be picked up instead
+source ~/.nvm/nvm.sh
+echo $NVM_NODE_VERSION
+which node
+node --version
+npm --version
+set +u
+nvm use $NVM_NODE_VERSION || true
+which node
+node --version
+npm --version
+cd ${NODE_MODULE_ROOT}
 source $(dirname "$BASH_SOURCE")/localize.sh
 localize
 npm install --build-from-source
