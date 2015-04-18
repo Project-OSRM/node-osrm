@@ -15,13 +15,12 @@
           './src/'
       ],
       'libraries': [
-        '<!@(pkg-config libosrm --libs)',
-        '-flto'
+        '<!@(pkg-config libosrm --libs)'
       ],
       'conditions': [
         [ 'OS=="linux"', {
           'cflags_cc' : [
-              '-std=c++11', '-flto'
+              '-std=c++11',
           ],
           'libraries':[
               '-Wl,-rpath=<!@(pkg-config libosrm --variable=prefix)/lib',
