@@ -33,7 +33,7 @@ before_install:
 
 install:
 - source ./bootstrap.sh
-- npm install --build-from-source --clang=1
+- npm install --build-from-source --clang=1 --verbose
 
 before_script:
 - make test
