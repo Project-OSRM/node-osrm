@@ -48,10 +48,10 @@ berlin-latest.osm.pbf:
 	wget http://download.geofabrik.de/europe/germany/berlin-latest.osm.pbf
 
 berlin-latest.osrm: berlin-latest.osm.pbf
-	PATH="./lib/binding:${PATH}" && time osrm-extract berlin-latest.osm.pbf -p osrm-backend/profiles/foot.lua
+	PATH="./lib/binding:${PATH}" && osrm-extract berlin-latest.osm.pbf -p test/data/car.lua
 
 berlin-latest.osrm.hsgr: berlin-latest.osrm
-	PATH="./lib/binding:${PATH}" && time osrm-prepare berlin-latest.osrm -p osrm-backend/profiles/foot.lua
+	PATH="./lib/binding:${PATH}" && osrm-prepare berlin-latest.osrm -p test/data/car.lua
 
 ifndef only
 test: berlin-latest.osrm.hsgr
