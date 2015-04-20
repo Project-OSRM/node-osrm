@@ -5,6 +5,9 @@ function dep() {
     ~/.mason/mason link $1 $2
 }
 
+# default to clang
+CXX=${CXX:-clang++}
+
 function all_deps() {
     dep lua 5.3.0 &
     dep luabind dev &
