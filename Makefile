@@ -32,6 +32,7 @@ berlin-latest.osrm.hsgr: berlin-latest.osrm
 	PATH="./lib/binding:${PATH}" && osrm-prepare berlin-latest.osrm -p test/data/car.lua
 
 test: berlin-latest.osrm.hsgr
+	PATH="./lib/binding:${PATH}" && osrm-datastore berlin-latest.osrm
 	npm test
 
 check: test
