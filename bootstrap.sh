@@ -87,7 +87,8 @@ function main() {
 
     if [[ ! -d ./osrm-backend ]] || [[ ! -f ${MASON_HOME}/bin/osrm-extract ]]; then
         if [[ "${OSRM_RELEASE:-false}" == false ]]; then
-            OSRM_RELEASE=.
+            OSRM_RELEASE=v4.6.0
+            echo "defaulting to OSRM ${OSRM_RELEASE}"
         fi
 
         if [[ "${OSRM_REPO:-false}" == false ]]; then
