@@ -2,27 +2,30 @@
 
 all: build-all
 
+pkgconfig:
+	@if [[ `which pkg-config` ]]; then echo "Success: Found pkg-config"; else "echo you need pkg-config installed" && exit 1; fi;
+
 ./node_modules/node-pre-gyp:
 	npm install node-pre-gyp
 
 ./node_modules: ./node_modules/node-pre-gyp
-	npm install `node -e "console.log(Object.keys(require('./package.json').dependencies).join(' '))"` \
+	source ./bootstrap.sh && npm install `node -e "console.log(Object.keys(require('./package.json').dependencies).join(' '))"` \
 	`node -e "console.log(Object.keys(require('./package.json').devDependencies).join(' '))"` --clang=1
 
 ./build:
-	./node_modules/.bin/node-pre-gyp configure --loglevel=error --clang=1
+	source ./bootstrap.sh && ./node_modules/.bin/node-pre-gyp configure --loglevel=error --clang=1
 
-build-all: ./node_modules ./build
-	./node_modules/.bin/node-pre-gyp build --loglevel=error --clang=1
+build-all: pkgconfig ./node_modules ./build
+	source ./bootstrap.sh && ./node_modules/.bin/node-pre-gyp build --loglevel=error --clang=1
 
 debug: ./node_modules ./build
-	./node_modules/.bin/node-pre-gyp build --debug --clang=1
+	source ./bootstrap.sh && ./node_modules/.bin/node-pre-gyp build --debug --clang=1
 
 coverage: ./node_modules ./build
-	./node_modules/.bin/node-pre-gyp build --debug --clang=1 --coverage=true
+	source ./bootstrap.sh && ./node_modules/.bin/node-pre-gyp build --debug --clang=1 --coverage=true
 
 verbose: ./node_modules
-	./node_modules/.bin/node-pre-gyp build --loglevel=verbose --clang=1
+	source ./bootstrap.sh && ./node_modules/.bin/node-pre-gyp build --loglevel=verbose --clang=1
 
 clean:
 	@rm -rf ./build
@@ -30,6 +33,7 @@ clean:
 	rm -rf ./node_modules/
 	rm -f ./*tgz
 	rm -f ./*.osrm*
+	rm -rf ./mason_packages
 
 grind:
 	valgrind --leak-check=full node node_modules/.bin/_mocha

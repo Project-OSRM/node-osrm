@@ -1,8 +1,8 @@
 #!/bin/bash
 
 function dep() {
-    ~/.mason/mason install $1 $2
-    ~/.mason/mason link $1 $2
+    ./.mason/mason install $1 $2
+    ./.mason/mason link $1 $2
 }
 
 # default to clang
@@ -59,15 +59,17 @@ function localize() {
 }
 
 function main() {
-    if [[ ! -d ~/.mason ]]; then
-        git clone --depth 1 https://github.com/mapbox/mason.git ~/.mason
+    if [[ ! -d ./.mason ]]; then
+        git clone --depth 1 https://github.com/mapbox/mason.git ./.mason
+    else
+        (cd ./.mason && git pull)
     fi
-    ~/.mason/mason install cmake 3.2.2;
+    ./.mason/mason install cmake 3.2.2;
     all_deps
     if [[ `uname -s` == 'Darwin' ]]; then
         brew install pkg-config || true
     fi
-    export PATH=$(~/.mason/mason prefix cmake 3.2.2)/bin:$PATH;
+    export PATH=$(./.mason/mason prefix cmake 3.2.2)/bin:$PATH;
     export MASON_HOME=$(pwd)/mason_packages/.link
     export PKG_CONFIG_PATH=${MASON_HOME}/lib/pkgconfig
 
@@ -82,10 +84,12 @@ function main() {
     if [[ $(uname -s) == 'Linux' ]]; then
         LINK_FLAGS="${LINK_FLAGS} "'-Wl,-z,origin -Wl,-rpath=\$ORIGIN'
         export LDFLAGS="${LINK_FLAGS}"
-        source ~/.mason/scripts/setup_cpp11_toolchain.sh
+        source ./.mason/scripts/setup_cpp11_toolchain.sh
     fi
 
-    if [[ ! -d ./osrm-backend ]] || [[ ! -f ${MASON_HOME}/bin/osrm-extract ]]; then
+    if [[ ! -d ./build/osrm-backend ]] || [[ ! -f ${MASON_HOME}/bin/osrm-extract ]]; then
+        mkdir -p build
+        cd build/
         if [[ "${OSRM_RELEASE:-false}" == false ]]; then
             OSRM_RELEASE=v4.6.0
             echo "defaulting to OSRM ${OSRM_RELEASE}"
@@ -114,7 +118,7 @@ function main() {
         make -j${JOBS}
         make install
 
-        cd ../../
+        cd ../../../
     fi
 
     localize
