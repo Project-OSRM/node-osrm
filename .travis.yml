@@ -1,6 +1,11 @@
 language: cpp
 
-sudo: false
+addons:
+  apt:
+    packages:
+      - gdb
+
+sudo: required
 
 matrix:
   include:
@@ -32,11 +37,21 @@ before_install:
 - source ./scripts/install_node.sh ${NODE_VERSION}
 
 install:
+- ulimit -c
 - source ./bootstrap.sh
 - npm install --build-from-source --clang=1 --verbose
 
 before_script:
-- make test
+- ulimit -c unlimited -S
 
 script:
 - ./scripts/publish.sh
+- RESULT=0
+- make test || RESULT=$?
+- for DUMP in $(find ./ -maxdepth 1 -name 'core*' -print); do
+-   gdb ${CMD} ${DUMP} -ex "thread apply all bt" -ex "set pagination 0" -batch
+-   rm -rf ${DUMP}
+- done
+- if [[ ${RESULT} != 0 ]]; then
+-   exit $RESULT
+- fi
