@@ -39,7 +39,7 @@ before_install:
 install:
 - ulimit -c
 - source ./bootstrap.sh
-- npm install --build-from-source --clang=1 --verbose
+- npm install --build-from-source --clang=1 --verbose -debug
 
 before_script:
 - ulimit -c unlimited -S
