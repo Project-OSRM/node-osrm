@@ -64,6 +64,7 @@ function main() {
     else
         (cd ./.mason && git pull)
     fi
+    export MASON_DIR=$(pwd)/.mason
     ./.mason/mason install cmake 3.2.2;
     all_deps
     if [[ `uname -s` == 'Darwin' ]]; then
