@@ -9,6 +9,7 @@ function dep() {
 CXX=${CXX:-clang++}
 
 function all_deps() {
+    dep cmake 3.2.2 &
     dep lua 5.3.0 &
     dep luabind dev &
     dep boost 1.57.0 &
@@ -61,17 +62,13 @@ function localize() {
 function main() {
     if [[ ! -d ./.mason ]]; then
         git clone --depth 1 https://github.com/mapbox/mason.git ./.mason
-    else
-        (cd ./.mason && git pull)
     fi
     export MASON_DIR=$(pwd)/.mason
-    ./.mason/mason install cmake 3.2.2;
-    all_deps
-    if [[ `uname -s` == 'Darwin' ]]; then
-        brew install pkg-config || true
-    fi
-    export PATH=$(./.mason/mason prefix cmake 3.2.2)/bin:$PATH;
     export MASON_HOME=$(pwd)/mason_packages/.link
+    if [[ ! -d ${MASON_HOME} ]]; then
+        all_deps
+    fi
+    export PATH=${MASON_HOME}/bin:$PATH
     export PKG_CONFIG_PATH=${MASON_HOME}/lib/pkgconfig
 
     if [[ ! -d ./node_modules/node-pre-gyp ]]; then
