@@ -48,5 +48,5 @@ script:
 - ./scripts/publish.sh
 - RESULT=0
 - make test || RESULT=$?
-- for i in $(find ./ -maxdepth 1 -name 'core*' -print); do gdb $(pwd)/test $i -ex "thread apply all bt" -ex "set pagination 0" -batch; done;
+- for i in $(find ./ -maxdepth 1 -name 'core*' -print); do gdb $(which node) $i -ex "thread apply all bt" -ex "set pagination 0" -batch; done;
 - if [[ ${RESULT} != 0 ]]; then exit $RESULT; fi
