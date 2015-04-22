@@ -27,14 +27,19 @@ it('routes Berlin', function(done) {
     });
 });
 
-it('routes Berlin using shared memory', function(done) {
-    var osrm = new OSRM();
-    osrm.route({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]}, function(err, route) {
-        assert.ifError(err);
-        assert.equal(route.status_message, 'Found route between points');
-        done();
-    });
-});
+if (process.platform === 'darwin') {
+  // shared memory does not work on Mac OS for now.
+  it.skip('routes Berlin using shared memory', function(done) {});
+} else {
+  it('routes Berlin using shared memory', function(done) {
+      var osrm = new OSRM();
+      osrm.route({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]}, function(err, route) {
+          assert.ifError(err);
+          assert.equal(route.status_message, 'Found route between points');
+          done();
+      });
+  });
+}
 
 it('routes Berlin with options', function(done) {
     var osrm = new OSRM("berlin-latest.osrm");
