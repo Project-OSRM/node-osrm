@@ -42,7 +42,6 @@ before_install:
 - export COVERAGE=${COVERAGE:-false}
 - source ./scripts/install_node.sh ${NODE_VERSION}
 - if [[ ${COVERAGE} == true ]]; then
-    brew update;
     brew install pyenv;
     eval "$(pyenv init -)";
     pyenv install 2.7.6;
