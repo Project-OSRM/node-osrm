@@ -67,6 +67,6 @@ script:
 - ./scripts/publish.sh
 - RESULT=0
 - make test || RESULT=$?
-- if [[ ${COVERAGE} == true ]]; then cpp-coveralls --exclude node_modules --exclude tests --build-root build --gcov-options '\-lp' --exclude doc --exclude build/Release/obj/gen; fi;
+- if [[ ${COVERAGE} == true ]]; then cd ../; cpp-coveralls --exclude node_modules --exclude tests --build-root build --gcov-options '\-lp' --exclude doc --exclude build/Release/obj/gen; fi;
 - for i in $(find ./ -maxdepth 1 -name 'core*' -print); do gdb $(which node) $i -ex "thread apply all bt" -ex "set pagination 0" -batch; done;
 - if [[ ${RESULT} != 0 ]]; then exit $RESULT; fi
