@@ -5,6 +5,7 @@ addons:
     packages:
       - gdb
 
+# TODO: ideally use sudo:false https://github.com/travis-ci/travis-ci/issues/3754
 sudo: required
 
 matrix:
@@ -19,7 +20,7 @@ matrix:
      # Coverage
      - os: osx
        compiler: clang
-       env: NODE_VERSION="0.10" COVERAGE=true
+       env: NODE_VERSION="0.10" COVERAGE=true LDFLAGS="--coverage" CXXFLAGS="--coverage"
      # OS X
      - os: osx
        compiler: clang
@@ -52,12 +53,11 @@ before_install:
   fi;
 
 install:
-- ulimit -c
 - source ./bootstrap.sh
 - if [[ ${COVERAGE} == true ]]; then
-    export LDFLAGS="--coverage" && export CXXFLAGS="--coverage" && npm install --build-from-source --debug --clang=1;
+    npm install --build-from-source --debug --clang=1;
   else
-    npm install --build-from-source --clang=1 --verbose --debug;
+    npm install --build-from-source --clang=1;
   fi;
 
 before_script:
@@ -67,6 +67,6 @@ script:
 - ./scripts/publish.sh
 - RESULT=0
 - make test || RESULT=$?
-- if [[ ${COVERAGE} == true ]]; then cpp-coveralls --exclude node_modules --exclude tests --build-root build --gcov-options '\-lp' --exclude doc --exclude build/Release/obj/gen; fi;
+- if [[ ${COVERAGE} == true ]]; then cpp-coveralls --exclude node_modules --exclude mason_packages --exclude tests --build-root build --gcov-options '\-lp' --exclude doc --exclude build/Release/obj/gen; fi;
 - for i in $(find ./ -maxdepth 1 -name 'core*' -print); do gdb $(which node) $i -ex "thread apply all bt" -ex "set pagination 0" -batch; done;
 - if [[ ${RESULT} != 0 ]]; then exit $RESULT; fi
