@@ -20,7 +20,7 @@ matrix:
      # Coverage
      - os: osx
        compiler: clang
-       env: NODE_VERSION="0.10" COVERAGE=true LDFLAGS="--coverage" CXXFLAGS="--coverage"
+       env: NODE_VERSION="0.10" COVERAGE=true
      # OS X
      - os: osx
        compiler: clang
@@ -54,7 +54,7 @@ before_install:
 install:
 - source ./bootstrap.sh
 - if [[ ${COVERAGE} == true ]]; then
-    npm install --build-from-source --debug --clang=1;
+    LDFLAGS="--coverage" CXXFLAGS="--coverage" npm install --build-from-source --debug --clang=1;
   else
     npm install --build-from-source --clang=1;
   fi;
