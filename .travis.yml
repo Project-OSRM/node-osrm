@@ -9,10 +9,6 @@ sudo: required
 
 matrix:
   include:
-     # Coverage
-     - os: osx
-       compiler: clang
-       env: NODE_VERSION="0.10" COVERAGE=true
      # Linux
      - os: linux
        compiler: clang
@@ -20,6 +16,10 @@ matrix:
      - os: linux
        compiler: clang
        env: NODE_VERSION="0.10.36"
+     # Coverage
+     - os: osx
+       compiler: clang
+       env: NODE_VERSION="0.10" COVERAGE=true
      # OS X
      - os: osx
        compiler: clang
