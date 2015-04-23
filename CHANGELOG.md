@@ -1,5 +1,10 @@
 ## node-osrm changelog
 
+### 4.6.1
+
+ - Update OSRM to v4.6.1
+ - Fixes crash when using shared memory
+
 ### 4.6.0
 
  - Update OSRM to v4.6.0
