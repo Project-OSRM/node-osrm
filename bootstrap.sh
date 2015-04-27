@@ -71,6 +71,16 @@ function main() {
     export PATH=${MASON_HOME}/bin:$PATH
     export PKG_CONFIG_PATH=${MASON_HOME}/lib/pkgconfig
 
+    # environment variables to tell the compiler and linker
+    # to prefer mason paths over other paths when finding
+    # headers and libraries. This should allow the build to
+    # work even when conflicting versions of dependencies
+    # exist on global paths
+    # stopgap until c++17 :) (http://www.open-std.org/JTC1/SC22/WG21/docs/papers/2014/n4214.pdf)
+    export C_INCLUDE_PATH="${MASON_HOME}/include"
+    export CPLUS_INCLUDE_PATH="${MASON_HOME}/include"
+    export LIBRARY_PATH="${MASON_HOME}/lib"
+
     if [[ ! -d ./node_modules/node-pre-gyp ]]; then
         npm install node-pre-gyp
     fi
