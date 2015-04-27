@@ -12,8 +12,8 @@ addons:
      - clang-3.6
      - gdb
 
-# TODO: ideally use sudo:false https://github.com/travis-ci/travis-ci/issues/3754
-sudo: required
+# TODO: no core files on sudo:false machines until https://github.com/travis-ci/travis-ci/issues/3754 is resolved
+sudo: false
 
 matrix:
   include:
@@ -47,7 +47,7 @@ env:
 before_install:
 - scripts/validate_tag.sh
 - export COVERAGE=${COVERAGE:-false}
- - if [[ $(uname -s) == 'Linux' ]]; then
+- if [[ $(uname -s) == 'Linux' ]]; then
     export CXX="clang++-3.6";
     export CC="clang-3.6";
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python2.7/site-packages;
@@ -59,7 +59,7 @@ before_install:
 install:
 - source ./bootstrap.sh
 - if [[ ${COVERAGE} == true ]]; then
-    PYTHONUSERBASE=$(pwd)/mason_packages/.link pip install --user cpp-coveralls
+    PYTHONUSERBASE=$(pwd)/mason_packages/.link pip install --user cpp-coveralls;
     LDFLAGS="--coverage" CXXFLAGS="--coverage" npm install --build-from-source --debug --clang=1;
   else
     npm install --build-from-source --clang=1;
