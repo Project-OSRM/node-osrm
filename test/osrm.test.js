@@ -40,7 +40,7 @@ it('route: throws with too few or invalid args', function(done) {
     assert.throws(function() { osrm.route({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]}) },
         /two arguments required/);
     assert.throws(function() { osrm.route(null, function(err, route) {}) },
-        /two arguments required/);
+        /first arg must be an object/);
     done();
 });
 
@@ -286,7 +286,7 @@ it('match: throws on invalid timestamps param', function(done) {
         "timestamps must be an array of integers (or undefined)");
     options.timestamps = ['invalid', 'timestamp', 'array'];
     assert.throws(function() { osrm.match(options, function(err, response) {}) },
-        /timestamps array items must be integers/);
+        /timestamps array items must be numbers/);
     options.timestamps = ['invalid', 'timestamp', 'array'];
     assert.throws(function() { osrm.match(options, function(err, response) {}) },
         /timestamp array must have the same size as the coordinates array/);
