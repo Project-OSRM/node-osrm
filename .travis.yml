@@ -45,24 +45,21 @@ env:
    - secure: WLGmxl6VTVWhXGm6X83GYNYzPNsvTD+9usJOKM5YBLAdG7cnOBQBNiCCUKc9OZMMZVUr3ec2/iigakH5Y8Yc+U6AlWKzlORyqWLuk4nFuoedu62x6ocQkTkuOc7mHiYhKd21xTGMYauaZRS6kugv4xkpGES2UjI2T8cjZ+LN2jU=
 
 before_install:
-- export CXX="clang++-3.6";
-- export CC="clang-3.6";
 - scripts/validate_tag.sh
 - export COVERAGE=${COVERAGE:-false}
+ - if [[ $(uname -s) == 'Linux' ]]; then
+    export CXX="clang++-3.6";
+    export CC="clang-3.6";
+    export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python2.7/site-packages;
+   else
+    export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python/site-packages;
+   fi;
 - source ./scripts/install_node.sh ${NODE_VERSION}
-- if [[ ${COVERAGE} == true ]]; then
-    brew install pyenv;
-    eval "$(pyenv init -)";
-    pyenv install 2.7.6;
-    pyenv global 2.7.6;
-    pyenv rehash;
-    pip install cpp-coveralls;
-    pyenv rehash;
-  fi;
 
 install:
 - source ./bootstrap.sh
 - if [[ ${COVERAGE} == true ]]; then
+    PYTHONUSERBASE=$(pwd)/mason_packages/.link pip install --user cpp-coveralls
     LDFLAGS="--coverage" CXXFLAGS="--coverage" npm install --build-from-source --debug --clang=1;
   else
     npm install --build-from-source --clang=1;
@@ -76,5 +73,5 @@ script:
 - make test || RESULT=$?
 - for i in $(find ./ -maxdepth 1 -name 'core*' -print); do gdb $(which node) $i -ex "thread apply all bt" -ex "set pagination 0" -batch; done;
 - if [[ ${RESULT} != 0 ]]; then exit $RESULT; fi
-- if [[ ${COVERAGE} == true ]]; then cpp-coveralls --exclude node_modules --exclude mason_packages --exclude tests --build-root build --gcov-options '\-lp' --exclude doc --exclude build/Release/obj/gen; fi;
+- if [[ ${COVERAGE} == true ]]; then ./mason_packages/.link/bin/cpp-coveralls --exclude node_modules --exclude mason_packages --exclude tests --build-root build --gcov-options '\-lp' --exclude doc --exclude build/Release/obj/gen; fi;
 - ./scripts/publish.sh
