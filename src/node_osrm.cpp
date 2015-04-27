@@ -118,15 +118,11 @@ NAN_METHOD(Engine::route)
     }
 
     if (!args[0]->IsObject()) {
-        NanThrowTypeError("two arguments required");
+        NanThrowTypeError("first arg must be an object");
         NanReturnUndefined();
     }
 
     Local<Object> obj = args[0]->ToObject();
-    if (obj->IsNull() || obj->IsUndefined()) {
-        NanThrowError("first arg must be an object");
-        NanReturnUndefined();
-    }
 
     route_parameters_ptr params = make_unique<RouteParameters>();
 
@@ -260,11 +256,11 @@ NAN_METHOD(Engine::match)
         NanReturnUndefined();
     }
 
-    Local<Object> obj = args[0]->ToObject();
-    if (obj->IsNull() || obj->IsUndefined()) {
+    if (args[0]->IsNull() || args[0]->IsUndefined()) {
         NanThrowError("first arg must be an object");
         NanReturnUndefined();
     }
+    Local<Object> obj = args[0]->ToObject();
 
     Local<Value> coordinates = obj->Get(NanNew("coordinates"));
     if (!coordinates->IsArray()) {
@@ -279,7 +275,7 @@ NAN_METHOD(Engine::match)
     }
 
     Local<Value> timestamps = obj->Get(NanNew("timestamps"));
-    if (!coordinates->IsArray() && !timestamps->IsUndefined()) {
+    if (!timestamps->IsArray() && !timestamps->IsUndefined()) {
         NanThrowError("timestamps must be an array of integers (or undefined)");
         NanReturnUndefined();
     }
@@ -306,6 +302,10 @@ NAN_METHOD(Engine::match)
 
         // add all timestamps
         for (uint32_t i = 0; i < timestamps_array->Length(); ++i) {
+            if (!timestamps_array->Get(i)->IsNumber()) {
+                NanThrowError("timestamps array items must be numbers");
+                NanReturnUndefined();
+            }
             params->timestamps.emplace_back(static_cast<unsigned>(timestamps_array->Get(i)->NumberValue()));
         }
     }
@@ -342,11 +342,11 @@ NAN_METHOD(Engine::table)
         NanReturnUndefined();
     }
 
-    Local<Object> obj = args[0]->ToObject();
-    if (obj->IsNull() || obj->IsUndefined()) {
+    if (args[0]->IsNull() || args[0]->IsUndefined()) {
         NanThrowError("first arg must be an object");
         NanReturnUndefined();
     }
+    Local<Object> obj = args[0]->ToObject();
 
     Local<Value> coordinates = obj->Get(NanNew("coordinates"));
     if (!coordinates->IsArray()) {
