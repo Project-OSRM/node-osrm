@@ -1,5 +1,8 @@
 language: cpp
 
+git:
+  depth: 2
+
 addons:
   apt:
     packages:
