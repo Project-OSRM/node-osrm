@@ -287,7 +287,7 @@ it('match: throws on invalid timestamps param', function(done) {
     options.timestamps = ['invalid', 'timestamp', 'array'];
     assert.throws(function() { osrm.match(options, function(err, response) {}) },
         /timestamps array items must be numbers/);
-    options.timestamps = ['invalid', 'timestamp', 'array'];
+    options.timestamps = [1424684612, 1424684616];
     assert.throws(function() { osrm.match(options, function(err, response) {}) },
         /timestamp array must have the same size as the coordinates array/);
     done();
