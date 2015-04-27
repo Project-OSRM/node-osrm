@@ -5,8 +5,12 @@ git:
 
 addons:
   apt:
+    sources:
+     - ubuntu-toolchain-r-test
+     - llvm-toolchain-precise-3.6
     packages:
-      - gdb
+     - clang-3.6
+     - gdb
 
 # TODO: ideally use sudo:false https://github.com/travis-ci/travis-ci/issues/3754
 sudo: required
@@ -41,6 +45,8 @@ env:
    - secure: WLGmxl6VTVWhXGm6X83GYNYzPNsvTD+9usJOKM5YBLAdG7cnOBQBNiCCUKc9OZMMZVUr3ec2/iigakH5Y8Yc+U6AlWKzlORyqWLuk4nFuoedu62x6ocQkTkuOc7mHiYhKd21xTGMYauaZRS6kugv4xkpGES2UjI2T8cjZ+LN2jU=
 
 before_install:
+- export CXX="clang++-3.6";
+- export CC="clang-3.6";
 - scripts/validate_tag.sh
 - export COVERAGE=${COVERAGE:-false}
 - source ./scripts/install_node.sh ${NODE_VERSION}
