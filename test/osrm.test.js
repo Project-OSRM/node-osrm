@@ -29,6 +29,11 @@ it('constructor: takes a shared memory argument', function(done) {
     });
 });
 
+it('constructor: throws if shared_memory==false with no path defined', function() {
+    assert.throws(function() { var osrm = new OSRM({shared_memory: false}); },
+        /shared_memory must be enabled if no path is specified/);
+});
+
 it('constructor: throws if given a non-bool shared_memory option', function() {
     assert.throws(function() { var osrm = new OSRM({path: "berlin-latest.osrm", shared_memory: "a"}); },
         /shared_memory option must be a boolean/);

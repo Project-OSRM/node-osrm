@@ -108,6 +108,10 @@ NAN_METHOD(Engine::New)
                         NanReturnUndefined();
                     } else {
                         lib_config.use_shared_memory = shared_memory->ToBoolean()->Value();
+                        if (base.empty() && lib_config.use_shared_memory == false) {
+                            NanThrowError("shared_memory must be enabled if no path is specified");
+                            NanReturnUndefined();
+                        }
                         shared_memory_defined = true;
                     }
                 }
@@ -120,8 +124,8 @@ NAN_METHOD(Engine::New)
             if (!base.empty()) {
                 lib_config.server_paths["base"] = base;
             }
-            if (shared_memory_defined == false) {
-                lib_config.use_shared_memory = false;
+            if (shared_memory_defined == false && base.empty()) {
+                lib_config.use_shared_memory = true;
             }
         }
         auto im = new Engine(lib_config);
