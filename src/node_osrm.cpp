@@ -79,17 +79,51 @@ NAN_METHOD(Engine::New)
     try {
         libosrm_config lib_config;
         if (args.Length() == 1) {
-            std::string base = *String::Utf8Value(args[0]->ToString());
-            lib_config.server_paths["base"] = base;
-            lib_config.use_shared_memory = false;
-        } else if (args.Length() >= 2) {
-            if (!args[1]->IsUint32()) {
-                NanThrowError("the maximum number of locations in the distance table must be an unsigned integer");
+            std::string base;
+            bool shared_memory_defined = false;
+            if (args[0]->IsString()) {
+                base = *String::Utf8Value(args[0]->ToString());
+            } else if (args[0]->IsObject()) {
+                Local<Object> params = args[0]->ToObject();
+
+                Local<Value> path = params->Get(NanNew("path"));
+                if (!path->IsUndefined()) {
+                    base = *String::Utf8Value(path->ToString());
+                }
+
+                Local<Value> max_locations_distance_table = params->Get(NanNew("distance_table"));
+                if (!max_locations_distance_table->IsUndefined()) {
+                    if (!max_locations_distance_table->IsUint32()) {
+                        NanThrowError("the maximum number of locations in the distance table must be an unsigned integer");
+                        NanReturnUndefined();
+                    } else {
+                        lib_config.max_locations_distance_table = max_locations_distance_table->ToUint32()->Value();
+                    }
+                }
+
+                Local<Value> shared_memory = params->Get(NanNew("shared_memory"));
+                if (!shared_memory->IsUndefined()) {
+                    if (!shared_memory->IsBoolean()) {
+                        NanThrowError("shared_memory option must be a boolean");
+                        NanReturnUndefined();
+                    } else {
+                        lib_config.use_shared_memory = shared_memory->ToBoolean()->Value();
+                        shared_memory_defined = true;
+                    }
+                }
+
+            } else {
+                NanThrowError("first argument must be a path string or params object");
                 NanReturnUndefined();
             }
-            lib_config.max_locations_distance_table = args[1]->ToUint32()->Value();
-        }
 
+            if (!base.empty()) {
+                lib_config.server_paths["base"] = base;
+            }
+            if (shared_memory_defined == false) {
+                lib_config.use_shared_memory = false;
+            }
+        }
         auto im = new Engine(lib_config);
         im->Wrap(args.This());
         NanReturnValue(args.This());
@@ -118,15 +152,11 @@ NAN_METHOD(Engine::route)
     }
 
     if (!args[0]->IsObject()) {
-        NanThrowTypeError("two arguments required");
+        NanThrowTypeError("first arg must be an object");
         NanReturnUndefined();
     }
 
     Local<Object> obj = args[0]->ToObject();
-    if (obj->IsNull() || obj->IsUndefined()) {
-        NanThrowError("first arg must be an object");
-        NanReturnUndefined();
-    }
 
     route_parameters_ptr params = make_unique<RouteParameters>();
 
@@ -260,11 +290,11 @@ NAN_METHOD(Engine::match)
         NanReturnUndefined();
     }
 
-    Local<Object> obj = args[0]->ToObject();
-    if (obj->IsNull() || obj->IsUndefined()) {
+    if (args[0]->IsNull() || args[0]->IsUndefined()) {
         NanThrowError("first arg must be an object");
         NanReturnUndefined();
     }
+    Local<Object> obj = args[0]->ToObject();
 
     Local<Value> coordinates = obj->Get(NanNew("coordinates"));
     if (!coordinates->IsArray()) {
@@ -279,7 +309,7 @@ NAN_METHOD(Engine::match)
     }
 
     Local<Value> timestamps = obj->Get(NanNew("timestamps"));
-    if (!coordinates->IsArray() && !timestamps->IsUndefined()) {
+    if (!timestamps->IsArray() && !timestamps->IsUndefined()) {
         NanThrowError("timestamps must be an array of integers (or undefined)");
         NanReturnUndefined();
     }
@@ -306,6 +336,10 @@ NAN_METHOD(Engine::match)
 
         // add all timestamps
         for (uint32_t i = 0; i < timestamps_array->Length(); ++i) {
+            if (!timestamps_array->Get(i)->IsNumber()) {
+                NanThrowError("timestamps array items must be numbers");
+                NanReturnUndefined();
+            }
             params->timestamps.emplace_back(static_cast<unsigned>(timestamps_array->Get(i)->NumberValue()));
         }
     }
@@ -342,11 +376,11 @@ NAN_METHOD(Engine::table)
         NanReturnUndefined();
     }
 
-    Local<Object> obj = args[0]->ToObject();
-    if (obj->IsNull() || obj->IsUndefined()) {
+    if (args[0]->IsNull() || args[0]->IsUndefined()) {
         NanThrowError("first arg must be an object");
         NanReturnUndefined();
     }
+    Local<Object> obj = args[0]->ToObject();
 
     Local<Value> coordinates = obj->Get(NanNew("coordinates"));
     if (!coordinates->IsArray()) {
