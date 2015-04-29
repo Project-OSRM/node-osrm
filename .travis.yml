@@ -9,8 +9,6 @@ addons:
      - ubuntu-toolchain-r-test
     packages:
      - g++-4.8
-     - libstdc++6
-     - libstdc++-4.9-dev
      - gdb
 
 # TODO: no core files on sudo:false machines until https://github.com/travis-ci/travis-ci/issues/3754 is resolved
