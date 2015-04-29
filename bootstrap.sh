@@ -57,6 +57,7 @@ function localize() {
     move_tool osrm-extract
     move_tool osrm-datastore
     move_tool osrm-prepare
+    move_tool osrm-components
 }
 
 function main() {
@@ -115,6 +116,7 @@ function main() {
         mkdir -p build
         cd build
         cmake ../ -DCMAKE_INSTALL_PREFIX=${MASON_HOME} \
+          -DBUILD_TOOLS=1 \
           -DCMAKE_CXX_COMPILER="$CXX" \
           -DBoost_NO_SYSTEM_PATHS=ON \
           -DTBB_INSTALL_DIR=${MASON_HOME} \
