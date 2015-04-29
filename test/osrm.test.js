@@ -13,17 +13,40 @@ it('constructor: throws if necessary files do not exist', function(done) {
     done();
 });
 
-it.skip('constructor: takes a distance table length argument', function(done) {     // err: `Start canary of block corrupted.`
-    var osrm = new OSRM("berlin-latest.osrm", 300);
+it('constructor: takes a distance table length argument', function(done) {
+    var osrm = new OSRM({path: "berlin-latest.osrm", distance_table: 30000});
     osrm.route({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]}, function(err, route) {
         assert.ifError(err);
         done();
     });
 });
 
-it('constructor: throws if given a non-uint second arg', function() {
-    assert.throws(function() { var osrm = new OSRM("berlin-latest.osrm", -4); },
+it('constructor: takes a shared memory argument', function(done) {
+    var osrm = new OSRM({path: "berlin-latest.osrm", shared_memory: false});
+    osrm.route({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]}, function(err, route) {
+        assert.ifError(err);
+        done();
+    });
+});
+
+it('constructor: throws if shared_memory==false with no path defined', function() {
+    assert.throws(function() { var osrm = new OSRM({shared_memory: false}); },
+        /shared_memory must be enabled if no path is specified/);
+});
+
+it('constructor: throws if given a non-bool shared_memory option', function() {
+    assert.throws(function() { var osrm = new OSRM({path: "berlin-latest.osrm", shared_memory: "a"}); },
+        /shared_memory option must be a boolean/);
+});
+
+it('constructor: throws if given a non-uint distance_table option', function() {
+    assert.throws(function() { var osrm = new OSRM({path: "berlin-latest.osrm", distance_table: -4}); },
         /the maximum number of locations in the distance table must be an unsigned integer/);
+});
+
+it('constructor: throws if given a non-string/obj argument', function() {
+    assert.throws(function() { var osrm = new OSRM(true); },
+        /first argument must be a path string or params object/);
 });
 
 it('route: routes Berlin', function(done) {
