@@ -7,9 +7,10 @@ addons:
   apt:
     sources:
      - ubuntu-toolchain-r-test
-     - llvm-toolchain-precise-3.6
     packages:
-     - clang-3.6
+     - g++-4.8
+     - libstdc++6
+     - libstdc++-4.9-dev
      - gdb
 
 # TODO: no core files on sudo:false machines until https://github.com/travis-ci/travis-ci/issues/3754 is resolved
@@ -23,10 +24,10 @@ matrix:
        env: NODE_VERSION="0.10" COVERAGE=true
      # Linux
      - os: linux
-       compiler: clang
+       compiler: gcc
        env: NODE_VERSION="0.12.0"
      - os: linux
-       compiler: clang
+       compiler: gcc
        env: NODE_VERSION="0.10.36"
      # OS X
      - os: osx
@@ -48,8 +49,8 @@ before_install:
 - scripts/validate_tag.sh
 - export COVERAGE=${COVERAGE:-false}
 - if [[ $(uname -s) == 'Linux' ]]; then
-    export CXX="clang++-3.6";
-    export CC="clang-3.6";
+    export CXX="g++-4.8";
+    export CC="gcc-4.8";
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python2.7/site-packages;
    else
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python/site-packages;
