@@ -124,8 +124,8 @@ NAN_METHOD(Engine::New)
             if (!base.empty()) {
                 lib_config.server_paths["base"] = base;
             }
-            if (shared_memory_defined == false && base.empty()) {
-                lib_config.use_shared_memory = true;
+            if (shared_memory_defined == false && !base.empty()) {
+                lib_config.use_shared_memory = false;
             }
         }
         auto im = new Engine(lib_config);
