@@ -3,15 +3,16 @@
 Provides read-only bindings to the [Open Source Routing Machine - OSRM](https://github.com/Project-OSRM/osrm-backend), a routing engine for OpenStreetMap data implementing high-performance algorithms for shortest paths in road networks.
 
 [![Build Status](https://travis-ci.org/Project-OSRM/node-osrm.svg?branch=master)](https://travis-ci.org/Project-OSRM/node-osrm)
+[![Coverage Status](https://coveralls.io/repos/Project-OSRM/node-osrm/badge.svg?branch=sudo-false)](https://coveralls.io/r/Project-OSRM/node-osrm?branch=sudo-false)
 
 # Depends
 
- - Node.js v0.10.x
+ - Node.js v0.10.x or v0.12.x
  - Modern C++ runtime libraries supporting C++11
 
 C++11 capable platforms include:
 
-  - Mac OS X >= 10.7
+  - Mac OS X >= 10.8
   - Ubuntu Linux >= 14.04 or other Linux distributions with g++ >= 4.8 toolchain (>= GLIBC_2.17 from libc and >= GLIBCXX_3.4.17 from libstdc++)
 
 An installation error like below indicates your system does not have a modern enough g++ toolchain:
