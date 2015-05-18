@@ -17,6 +17,7 @@
       'libraries': [
         '<!@(pkg-config libosrm --libs)'
       ],
+      'defines': ['LIBOSRM_GIT_REVISION="<!@(pkg-config libosrm --modversion)"'],
       'conditions': [
         [ 'OS=="linux"', {
           'cflags_cc' : [
