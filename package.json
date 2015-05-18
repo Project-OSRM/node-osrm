@@ -20,13 +20,14 @@
     },
     "binary": {
         "module_name": "osrm",
-        "module_path": "./lib/binding/",
-        "host": "https://mapbox-node-binary.s3.amazonaws.com",
-        "remote_path" : "./{module_name}/"
+        "module_path" : "./lib/binding/",
+        "host"        : "https://mapbox-node-binary.s3.amazonaws.com",
+        "remote_path" : "./{name}/v{version}/{configuration}/",
+        "package_name": "{node_abi}-{platform}-{arch}.tar.gz"
     },
     "dependencies": {
-        "node-pre-gyp": "~0.6.4",
-        "nan": "~1.6.2"
+        "nan": "~1.8.4",
+        "node-pre-gyp": "~0.6.7"
     },
     "bundledDependencies":["node-pre-gyp"],
     "licenses": [

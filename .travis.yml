@@ -1,66 +1,78 @@
 language: cpp
 
-os:
-  - linux
-  - osx
+git:
+  depth: 10
 
-compiler:
- - clang
- - gcc
+addons:
+  apt:
+    sources:
+     - ubuntu-toolchain-r-test
+    packages:
+     - g++-4.8
+     - gdb
+
+# TODO: no core files on sudo:false machines until https://github.com/travis-ci/travis-ci/issues/3754 is resolved
+sudo: false
 
 matrix:
-  exclude:
+  include:
+     # Coverage
      - os: osx
-       compiler: gcc
-     - os: linux
        compiler: clang
+       env: NODE_VERSION="0.10" COVERAGE=true TARGET=Debug NPM_FLAGS="--debug"
+     # Linux
+     - os: linux
+       compiler: gcc
+       env: NODE_VERSION="0.12.0" TARGET=Release
+     - os: linux
+       compiler: gcc
+       env: NODE_VERSION="0.10.36" TARGET=Release
+     - os: linux
+       compiler: gcc
+       env: NODE_VERSION="0.10.36" TARGET=Debug NPM_FLAGS="--debug"
+     # OS X
+     - os: osx
+       compiler: clang
+       env: NODE_VERSION="0.12.0" TARGET=Release
+     - os: osx
+       compiler: clang
+       env: NODE_VERSION="0.10.36" TARGET=Release
 
 env:
-  matrix:
-   - NVM_NODE_VERSION="0.10.36"
-   - NVM_NODE_VERSION="0.12.0"
   global:
+   - JOBS: "3"
+   - OSRM_RELEASE: "v4.6.1"
    - secure: KitzGZjoDblX/3heajcvssGz0JnJ/k02dr2tu03ksUV+6MogC3RSQudqyKY57+f8VyZrcllN/UOlJ0Q/3iG38Oz8DljC+7RZxtkVmE1SFBoOezKCdhcvWM12G3uqPs7hhrRxuUgIh0C//YXEkulUrqa2H1Aj2xeen4E3FAqEoy0=
    - secure: WLGmxl6VTVWhXGm6X83GYNYzPNsvTD+9usJOKM5YBLAdG7cnOBQBNiCCUKc9OZMMZVUr3ec2/iigakH5Y8Yc+U6AlWKzlORyqWLuk4nFuoedu62x6ocQkTkuOc7mHiYhKd21xTGMYauaZRS6kugv4xkpGES2UjI2T8cjZ+LN2jU=
 
 before_install:
-# check if tag exists and matches package.json
 - scripts/validate_tag.sh
-# get commit message
-- COMMIT_MESSAGE=$(git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n')
-# put node-pre-gyp on path
-- export PATH=./node_modules/.bin/:$PATH
-# here we set up the node version on the fly based on the matrix value.
-# This is done manually so that it is easy to flip the 'language' to
-# objective-c in another branch (to run the same travis.yml on OS X)
-- rm -rf ~/.nvm/ && git clone --depth 1 https://github.com/creationix/nvm.git ~/.nvm
-- source ~/.nvm/nvm.sh
-- nvm install $NVM_NODE_VERSION
-- nvm use $NVM_NODE_VERSION
-- node --version
-- npm --version
-- which node
-- "if [[ `uname -s` == 'Linux' ]]; then sudo add-apt-repository -y ppa:kalakris/cmake && sudo apt-get update -qq && sudo apt-get install cmake pkg-config; fi"
-- if [[ `uname -s` == 'Darwin' ]]; then brew install pkg-config; fi
+- export COVERAGE=${COVERAGE:-false}
+- if [[ $(uname -s) == 'Linux' ]]; then
+    export CXX="g++-4.8";
+    export CC="gcc-4.8";
+    export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python2.7/site-packages;
+   else
+    export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python/site-packages;
+   fi;
+- source ./scripts/install_node.sh ${NODE_VERSION}
 
 install:
-# set a few env settings for the static build script
-- NODE_MODULE_ROOT=`pwd`
-- export OSRM_RELEASE="v4.6.1"
-# WARNING: this script modifies the environment
-- source ./scripts/static_build.sh
+- source ./bootstrap.sh
+- if [[ ${COVERAGE} == true ]]; then
+    PYTHONUSERBASE=$(pwd)/mason_packages/.link pip install --user cpp-coveralls;
+    export LDFLAGS="--coverage";
+    export CXXFLAGS="--coverage";
+  fi;
+- npm install --build-from-source ${NPM_FLAGS} --clang=1;
 
 before_script:
-- if [[ `uname -s` == 'Darwin' ]]; then otool -L ./lib/binding/* || true; fi
-- if [[ `uname -s` == 'Linux' ]]; then readelf -d ./lib/binding/* || true; fi
-- which osrm-extract||true;rm -rf ${TMP_DEPS_DIR};which osrm-extract||true;
-- make test
+- ulimit -c unlimited -S
 
 script:
-- node-pre-gyp package
-- if [[ ${COMMIT_MESSAGE} =~ "[publish binary]" ]]; then
-    node-pre-gyp publish;
-  fi;
-- if [[ ${COMMIT_MESSAGE} =~ "[republish binary]" ]]; then
-    node-pre-gyp unpublish publish;
-  fi;
+- RESULT=0
+- make test || RESULT=$?
+- for i in $(find ./ -maxdepth 1 -name 'core*' -print); do gdb $(which node) $i -ex "thread apply all bt" -ex "set pagination 0" -batch; done;
+- if [[ ${RESULT} != 0 ]]; then exit $RESULT; fi
+- if [[ ${COVERAGE} == true ]]; then ./mason_packages/.link/bin/cpp-coveralls --exclude node_modules --exclude mason_packages --exclude tests --build-root build --gcov-options '\-lp' --exclude doc --exclude build/Release/obj/gen; fi;
+- if [[ ${COVERAGE} != true ]]; then ./scripts/publish.sh; fi;
