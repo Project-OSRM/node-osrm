@@ -63,6 +63,7 @@ void Engine::Initialize(Handle<Object> target) {
     NODE_SET_PROTOTYPE_METHOD(lcons, "nearest", nearest);
     NODE_SET_PROTOTYPE_METHOD(lcons, "table", table);
     NODE_SET_PROTOTYPE_METHOD(lcons, "match", match);
+    lcons->Set(NanNew("libosrm_version"), NanNew(LIBOSRM_GIT_REVISION));
     target->Set(NanNew("OSRM"), lcons->GetFunction());
     NanAssignPersistent(constructor, lcons);
 }
