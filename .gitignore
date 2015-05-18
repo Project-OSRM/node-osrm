@@ -7,4 +7,5 @@ berlin-latest.osrm*
 stxxl.errlog
 stxxl.log
 *.sublime-*
-/lib/osrm.node
+mason_packages
+npm-debug.log
