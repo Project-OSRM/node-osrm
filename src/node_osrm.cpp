@@ -227,6 +227,10 @@ NAN_METHOD(Engine::route)
         params->print_instructions = obj->Get(NanNew("printInstructions"))->BooleanValue();
     }
 
+    if (obj->Has(NanNew("geometry"))) {
+        params->geometry = obj->Get(NanNew("geometry"))->BooleanValue();
+    }
+
     if (obj->Has(NanNew("jsonpParameter"))) {
         params->jsonp_parameter = *v8::String::Utf8Value(obj->Get(NanNew("jsonpParameter")));
     }
