@@ -1,5 +1,10 @@
 ## node-osrm changelog
 
+### 4.7.0
+
+ - Update OSRM to v4.7.0
+ - Support the geometry parameter for route requests
+
 ### 4.6.1
 
  - Update OSRM to v4.6.1
