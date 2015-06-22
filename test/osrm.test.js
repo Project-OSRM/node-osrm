@@ -120,13 +120,15 @@ it('route: routes Berlin with options', function(done) {
         coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
         zoomLevel: 17,
         alternateRoute: false,
-        printInstructions: false
+        printInstructions: false,
+        geometry: false
     };
     osrm.route(options, function(err, route) {
         assert.ifError(err);
         assert.equal(route.status_message,'Found route between points');
         assert.equal(undefined, route.route_instructions);
         assert.equal(undefined, route.alternative_geometries);
+        assert.equal(undefined, route.route_geometry);
         done();
     });
 });
