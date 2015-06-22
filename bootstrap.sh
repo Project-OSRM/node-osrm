@@ -97,7 +97,8 @@ function main() {
         LINK_FLAGS="${LINK_FLAGS} "'-Wl,-z,origin -Wl,-rpath=\$ORIGIN'
     fi
 
-    if [[ ! -d osrm-backend-${TARGET}/build/osrm-extract ]] || [[ ! -f ${MASON_HOME}/bin/osrm-extract ]]; then
+    # make sure we rebuild if previous build was not successful
+    if [[ ! -f osrm-backend-${TARGET}/build/osrm-extract ]] || [[ ! -f ${MASON_HOME}/bin/osrm-extract ]]; then
         mkdir -p osrm-backend-${TARGET}
         git clone ${OSRM_REPO} osrm-backend-${TARGET}
         cd osrm-backend-${TARGET}
