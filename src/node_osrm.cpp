@@ -293,6 +293,37 @@ NAN_METHOD(Engine::locate)
     NanReturnUndefined();
 }
 
+/**
+ * Matches given coordinates to the road network
+ *
+ * @name osrm.match
+ * 
+ * @param {String} [loc=52.542648,13.393252] Location of the point.
+ * @param {String} [t=1424684612] Timestamp of the preceding point.
+ * @param {Boolean} [geometry=true] Return route geometry.
+ * @param {Boolean} [classify=false] Return a confidence value for this matching.
+ * @param {Number} [gps_precision=-1] Specify gps precision as standart deviation in meters.
+ * @param {Number} [matching_beta=-1] Specify beta value for matching algorithm.
+ * @param {Object} matchings array containing an object for each partial sub-matching of the trace.
+ * @param {Array} matchings.matched_points coordinates of the points snapped to the road network in [lat, lon]
+ * 
+ * @returns {Object} matchings array containing an object for each partial sub-matching of the trace.
+ * @returns {Array} matchings.matched_points coordinates of the points snapped to the road network in [lat, lon]
+ * @returns {Array} matchings.indices array that gives the indices of the matched coordinates in the original trace
+ * @returns {String} matchings.geometry geometry of the matched trace in the road network, compressed as polyline, but with 6 decimals. You can use the npm module polyline to decompress it.
+ * @returns {Number} matchings.confidence value between 0 and 1, where 1 is very confident. Please note that the correctness of this value depends highly on the assumptions about the sample rate mentioned above.
+ * 
+ * @example
+ * var osrm = new OSRM("berlin-latest.osrm");
+ * var options = {
+ *     coordinates: [[52.542648,13.393252], [52.543079,13.394780], [52.542107,13.397389]],
+ *     timestamps: [1424684612, 1424684616, 1424684620]
+ * };
+ * osrm.match(options, function(err, response) {
+ *     if(err) throw err;
+ * });
+ * 
+ */
 NAN_METHOD(Engine::match)
 {
     NanScope();
