@@ -14,6 +14,11 @@
           <a href='/' class='h5 button block button-transparent'> </a>
           <div class='px2'>
               <a
+                href='#osrm-locate'
+                class='regular block'>
+                <code>osrm.locate</code>
+              </a>
+              <a
                 href='#osrm-match'
                 class='regular block'>
                 <code>osrm.match</code>
@@ -29,6 +34,55 @@
       <div class='sm-col  lg-col-9  flex flex-column'>
         <div class='flex-auto full-width'>
           <div class='px1'>
+<section id='osrm-locate'class='mt4 mb4 px2'>
+  <h3 class='regular'>
+    <a class='black' href='#osrm-locate'>
+      <code>
+        osrm.locate<span class='gray'>(Point)</span>
+      </code>
+    </a>
+  </h3>
+  <p>Returns coordinate snapped to nearest node</p>
+
+
+    <p>
+      <table class='table-light overflow-hidden bg-cloudy-light'>
+        <thead>
+          <th class='col-3'>parameter</th>
+          <th class='col-3'>type</th>
+          <th class='col-6'>description</th>
+        </thead>
+          <tr>
+            <td>Point</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>
+            </td>
+            <td><p>latitude, longitude pair to locate on the network.</p>
+</td>
+          </tr>
+      </table>
+    </p>
+
+
+      <h4>Returns</h4>
+      <code><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>></code>
+      :
+      <span class='force-inline'>
+        <p>Location of the node as latitude longitude pair.</p>
+
+      </span>
+
+
+    <h4>Examples</h4>
+<pre><span class="hljs-keyword">var</span> osrm = <span class="hljs-keyword">new</span> OSRM(<span class="hljs-string">"berlin-latest.osrm"</span>);
+osrm.locate([<span class="hljs-number">52.4224</span>, <span class="hljs-number">13.333086</span>], <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err, result</span>) </span>{
+    <span class="hljs-keyword">if</span>(err) <span class="hljs-keyword">throw</span> err;
+});</pre>
+
+
+
+
+</section>
 <section id='osrm-match'class='mt4 mb4 px2'>
   <h3 class='regular'>
     <a class='black' href='#osrm-match'>
@@ -136,7 +190,7 @@ osrm.match(options, <span class="hljs-function"><span class="hljs-keyword">funct
       </code>
     </a>
   </h3>
-  <p>Matching return object</p>
+  <p>Matching</p>
 
 
 

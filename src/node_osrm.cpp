@@ -263,6 +263,21 @@ NAN_METHOD(Engine::route)
     NanReturnUndefined();
 }
 
+/**
+ * Returns coordinate snapped to nearest node
+ *
+ * @name osrm.locate
+ * 
+ * @param {Array<Number>} Point latitude, longitude pair to locate on the network.
+ * 
+ * @returns {Array<Number>} Location of the node as latitude longitude pair.
+ *
+ * @example
+ * var osrm = new OSRM("berlin-latest.osrm");
+ * osrm.locate([52.4224, 13.333086], function(err, result) {
+ *     if(err) throw err;
+ * });
+ */
 NAN_METHOD(Engine::locate)
 {
     NanScope();
@@ -305,7 +320,7 @@ NAN_METHOD(Engine::locate)
  * @param {Number} [gps_precision=-1] Specify gps precision as standart deviation in meters.
  * @param {Number} [matching_beta=-1] Specify beta value for matching algorithm.
  * 
- * @returns {Matching} matchings array containing an object for each partial sub-matching of the trace.
+ * @returns {(Matching)} matchings array containing an object for each partial sub-matching of the trace.
  *
  * @example
  * var osrm = new OSRM("berlin-latest.osrm");
@@ -320,13 +335,12 @@ NAN_METHOD(Engine::locate)
  */
 
 /**
- * Matching return object
+ * Matching
  * @typedef {Object} Matching
  * @property {Array} matched_points coordinates of the points snapped to the road network in [lat, lon]
  * @property {Array} indices array that gives the indices of the matched coordinates in the original trace
  * @property {String} geometry geometry of the matched trace in the road network, compressed as polyline, but with 6 decimals. You can use the npm module polyline to decompress it.
  * @property {Number} confidence value between 0 and 1, where 1 is very confident. Please note that the correctness of this value depends highly on the assumptions about the sample rate mentioned above.
- * 
  */
 NAN_METHOD(Engine::match)
 {
