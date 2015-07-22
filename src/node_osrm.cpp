@@ -546,6 +546,28 @@ NAN_METHOD(Engine::trip)
     NanReturnUndefined();
 }
 
+/**
+ * Computes distance tables for the given via points. Currently all pair-wise distances are computed. Please note that the distance in this case is the travel time which is the default metric used by OSRM.
+ *
+ * @name osrm.table
+ * 
+ * @param {Array<Number>} Location of the via point as lattitude, longitude
+ * 
+ * @returns {DistanceTable}
+ *
+ * @example
+ * var osrm = new OSRM({path: "berlin-latest.osrm", distance_table: 30000});
+ * osrm.route({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]}, function(err, route) {
+ *     if(err) throw err;
+ * });
+ * 
+ */
+
+/**
+ * DistanceTable
+ * @typedef {Object} DistanceTable 
+ * @property {Array<Array<Number>>} distance_table array of arrays that stores the matrix in row-major order. `distance_table[i][j]` gives the travel time from the i-th via to the j-th via point. Values are given in 10th of a second.
+ */
 NAN_METHOD(Engine::table)
 {
     NanScope();

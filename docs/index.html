@@ -24,6 +24,16 @@
                 <code>osrm.match</code>
               </a>
               <a
+                href='#osrm-table'
+                class='regular block'>
+                <code>osrm.table</code>
+              </a>
+              <a
+                href='#'
+                class='regular block'>
+                <code></code>
+              </a>
+              <a
                 href='#'
                 class='regular block'>
                 <code></code>
@@ -182,6 +192,54 @@ osrm.match(options, <span class="hljs-function"><span class="hljs-keyword">funct
 
 
 </section>
+<section id='osrm-table'class='mt4 mb4 px2'>
+  <h3 class='regular'>
+    <a class='black' href='#osrm-table'>
+      <code>
+        osrm.table<span class='gray'>(Location)</span>
+      </code>
+    </a>
+  </h3>
+  <p>Computes distance tables for the given via points. Currently all pair-wise distances are computed. Please note that the distance in this case is the travel time which is the default metric used by OSRM.</p>
+
+
+    <p>
+      <table class='table-light overflow-hidden bg-cloudy-light'>
+        <thead>
+          <th class='col-3'>parameter</th>
+          <th class='col-3'>type</th>
+          <th class='col-6'>description</th>
+        </thead>
+          <tr>
+            <td>Location</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>
+            </td>
+            <td><p>of the via point as lattitude, longitude</p>
+</td>
+          </tr>
+      </table>
+    </p>
+
+
+      <h4>Returns</h4>
+      <code><code>DistanceTable</code></code>
+      
+      <span class='force-inline'>
+        
+      </span>
+
+
+    <h4>Examples</h4>
+<pre><span class="hljs-keyword">var</span> osrm = <span class="hljs-keyword">new</span> OSRM({path: <span class="hljs-string">"berlin-latest.osrm"</span>, distance_table: <span class="hljs-number">30000</span>});
+osrm.route({coordinates: [[<span class="hljs-number">52.519930</span>,<span class="hljs-number">13.438640</span>], [<span class="hljs-number">52.513191</span>,<span class="hljs-number">13.415852</span>]]}, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err, route</span>) </span>{
+    <span class="hljs-keyword">if</span>(err) <span class="hljs-keyword">throw</span> err;
+});</pre>
+
+
+
+
+</section>
 <section id=''class='mt4 mb4 px2'>
   <h3 class='regular'>
     <a class='black' href='#'>
@@ -231,6 +289,43 @@ osrm.match(options, <span class="hljs-function"><span class="hljs-keyword">funct
               <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>
             </td>
             <td><p>value between 0 and 1, where 1 is very confident. Please note that the correctness of this value depends highly on the assumptions about the sample rate mentioned above.</p>
+</td>
+          </tr>
+      </table>
+    </p>
+
+
+
+
+
+
+
+</section>
+<section id=''class='mt4 mb4 px2'>
+  <h3 class='regular'>
+    <a class='black' href='#'>
+      <code>
+        <span class='gray'></span>
+      </code>
+    </a>
+  </h3>
+  <p>DistanceTable</p>
+
+
+
+    <p>
+      <table class='table-light overflow-hidden bg-cloudy-light'>
+        <thead>
+          <th class='col-3'>property</th>
+          <th class='col-3'>type</th>
+          <th class='col-6'>description</th>
+        </thead>
+          <tr>
+            <td>distance_table</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>>
+            </td>
+            <td><p>array of arrays that stores the matrix in row-major order. <code>distance_table[i][j]</code> gives the travel time from the i-th via to the j-th via point. Values are given in 10th of a second.</p>
 </td>
           </tr>
       </table>
