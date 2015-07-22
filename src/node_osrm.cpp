@@ -313,14 +313,14 @@ NAN_METHOD(Engine::locate)
  *
  * @name osrm.match
  * 
- * @param {String} [loc=52.542648,13.393252] Location of the point.
- * @param {String} [t=1424684612] Timestamp of the preceding point.
+ * @param {Array<Number>} coordinates the point to match as a latitude, longitude array.
+ * @param {Array<Number>} timestamps an array of the preceding point in UNIX style format (eg: 1424684612).
  * @param {Boolean} [geometry=true] Return route geometry.
  * @param {Boolean} [classify=false] Return a confidence value for this matching.
  * @param {Number} [gps_precision=-1] Specify gps precision as standart deviation in meters.
  * @param {Number} [matching_beta=-1] Specify beta value for matching algorithm.
  * 
- * @returns {(Matching)} matchings array containing an object for each partial sub-matching of the trace.
+ * @returns {MatchResult} matchings array containing an object for each partial sub-matching of the trace.
  *
  * @example
  * var osrm = new OSRM("berlin-latest.osrm");
@@ -335,8 +335,8 @@ NAN_METHOD(Engine::locate)
  */
 
 /**
- * Matching
- * @typedef {Object} Matching
+ * MatchResult
+ * @typedef {Object} MatchResult
  * @property {Array} matched_points coordinates of the points snapped to the road network in [lat, lon]
  * @property {Array} indices array that gives the indices of the matched coordinates in the original trace
  * @property {String} geometry geometry of the matched trace in the road network, compressed as polyline, but with 6 decimals. You can use the npm module polyline to decompress it.
@@ -551,7 +551,7 @@ NAN_METHOD(Engine::trip)
  *
  * @name osrm.table
  * 
- * @param {Array<Number>} Location of the via point as lattitude, longitude
+ * @param {Array<Number>} Location of the via point as latitude, longitude
  * 
  * @returns {DistanceTable}
  *
@@ -564,8 +564,8 @@ NAN_METHOD(Engine::trip)
  */
 
 /**
- * DistanceTable
- * @typedef {Object} DistanceTable 
+ * TableResult
+ * @typedef {Object} TableResult 
  * @property {Array<Array<Number>>} distance_table array of arrays that stores the matrix in row-major order. `distance_table[i][j]` gives the travel time from the i-th via to the j-th via point. Values are given in 10th of a second.
  */
 NAN_METHOD(Engine::table)
@@ -620,6 +620,30 @@ NAN_METHOD(Engine::table)
     NanReturnUndefined();
 }
 
+/**
+ * Computes the nearest street segment for a given coordinate.
+ *
+ * @name osrm.nearest
+ * 
+ * @param {Array<Number>} Location of the query point as latitude, longitude
+ * 
+ * @returns {NearestResult}
+ *
+ * @example
+ * var osrm = new OSRM("berlin-latest.osrm");
+ * osrm.nearest([52.4224, 13.333086], function(err, result) {
+ *     if(err) throw err;
+ * });
+ * 
+ */
+
+/**
+ * NearestResult
+ * @typedef {Object} NearestResult 
+ * @property {Number} status Passed or failed.
+ * @property {Array<Number>} mapped_coordinate Array that contains the [lat, lon] pair of the snapped coordinate.
+ * @property {String} name Name of the street the coordinate snapped to.
+ */
 NAN_METHOD(Engine::nearest)
 {
     NanScope();

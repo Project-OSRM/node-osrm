@@ -24,9 +24,19 @@
                 <code>osrm.match</code>
               </a>
               <a
+                href='#osrm-nearest'
+                class='regular block'>
+                <code>osrm.nearest</code>
+              </a>
+              <a
                 href='#osrm-table'
                 class='regular block'>
                 <code>osrm.table</code>
+              </a>
+              <a
+                href='#'
+                class='regular block'>
+                <code></code>
               </a>
               <a
                 href='#'
@@ -97,7 +107,7 @@ osrm.locate([<span class="hljs-number">52.4224</span>, <span class="hljs-number"
   <h3 class='regular'>
     <a class='black' href='#osrm-match'>
       <code>
-        osrm.match<span class='gray'>([loc], [t], [geometry], [classify], [gps_precision], [matching_beta])</span>
+        osrm.match<span class='gray'>(coordinates, timestamps, [geometry], [classify], [gps_precision], [matching_beta])</span>
       </code>
     </a>
   </h3>
@@ -112,21 +122,19 @@ osrm.locate([<span class="hljs-number">52.4224</span>, <span class="hljs-number"
           <th class='col-6'>description</th>
         </thead>
           <tr>
-            <td>loc</td>
+            <td>coordinates</td>
             <td>
-              <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>]</code>
-                (default <code>52.542648,13.393252</code>)
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>
             </td>
-            <td><p>Location of the point.</p>
+            <td><p>the point to match as a latitude, longitude array.</p>
 </td>
           </tr>
           <tr>
-            <td>t</td>
+            <td>timestamps</td>
             <td>
-              <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>]</code>
-                (default <code>1424684612</code>)
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>
             </td>
-            <td><p>Timestamp of the preceding point.</p>
+            <td><p>an array of the preceding point in UNIX style format (eg: 1424684612).</p>
 </td>
           </tr>
           <tr>
@@ -170,7 +178,7 @@ osrm.locate([<span class="hljs-number">52.4224</span>, <span class="hljs-number"
 
 
       <h4>Returns</h4>
-      <code><code>Matching</code></code>
+      <code><code>MatchResult</code></code>
       :
       <span class='force-inline'>
         <p>matchings array containing an object for each partial sub-matching of the trace.</p>
@@ -185,6 +193,54 @@ osrm.locate([<span class="hljs-number">52.4224</span>, <span class="hljs-number"
     timestamps: [<span class="hljs-number">1424684612</span>, <span class="hljs-number">1424684616</span>, <span class="hljs-number">1424684620</span>]
 };
 osrm.match(options, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err, response</span>) </span>{
+    <span class="hljs-keyword">if</span>(err) <span class="hljs-keyword">throw</span> err;
+});</pre>
+
+
+
+
+</section>
+<section id='osrm-nearest'class='mt4 mb4 px2'>
+  <h3 class='regular'>
+    <a class='black' href='#osrm-nearest'>
+      <code>
+        osrm.nearest<span class='gray'>(Location)</span>
+      </code>
+    </a>
+  </h3>
+  <p>Computes the nearest street segment for a given coordinate.</p>
+
+
+    <p>
+      <table class='table-light overflow-hidden bg-cloudy-light'>
+        <thead>
+          <th class='col-3'>parameter</th>
+          <th class='col-3'>type</th>
+          <th class='col-6'>description</th>
+        </thead>
+          <tr>
+            <td>Location</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>
+            </td>
+            <td><p>of the query point as latitude, longitude</p>
+</td>
+          </tr>
+      </table>
+    </p>
+
+
+      <h4>Returns</h4>
+      <code><code>NearestResult</code></code>
+      
+      <span class='force-inline'>
+        
+      </span>
+
+
+    <h4>Examples</h4>
+<pre><span class="hljs-keyword">var</span> osrm = <span class="hljs-keyword">new</span> OSRM(<span class="hljs-string">"berlin-latest.osrm"</span>);
+osrm.nearest([<span class="hljs-number">52.4224</span>, <span class="hljs-number">13.333086</span>], <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err, result</span>) </span>{
     <span class="hljs-keyword">if</span>(err) <span class="hljs-keyword">throw</span> err;
 });</pre>
 
@@ -215,7 +271,7 @@ osrm.match(options, <span class="hljs-function"><span class="hljs-keyword">funct
             <td>
               <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>
             </td>
-            <td><p>of the via point as lattitude, longitude</p>
+            <td><p>of the via point as latitude, longitude</p>
 </td>
           </tr>
       </table>
@@ -248,7 +304,7 @@ osrm.route({coordinates: [[<span class="hljs-number">52.519930</span>,<span clas
       </code>
     </a>
   </h3>
-  <p>Matching</p>
+  <p>MatchResult</p>
 
 
 
@@ -309,7 +365,7 @@ osrm.route({coordinates: [[<span class="hljs-number">52.519930</span>,<span clas
       </code>
     </a>
   </h3>
-  <p>DistanceTable</p>
+  <p>TableResult</p>
 
 
 
@@ -326,6 +382,59 @@ osrm.route({coordinates: [[<span class="hljs-number">52.519930</span>,<span clas
               <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>>
             </td>
             <td><p>array of arrays that stores the matrix in row-major order. <code>distance_table[i][j]</code> gives the travel time from the i-th via to the j-th via point. Values are given in 10th of a second.</p>
+</td>
+          </tr>
+      </table>
+    </p>
+
+
+
+
+
+
+
+</section>
+<section id=''class='mt4 mb4 px2'>
+  <h3 class='regular'>
+    <a class='black' href='#'>
+      <code>
+        <span class='gray'></span>
+      </code>
+    </a>
+  </h3>
+  <p>NearestResult</p>
+
+
+
+    <p>
+      <table class='table-light overflow-hidden bg-cloudy-light'>
+        <thead>
+          <th class='col-3'>property</th>
+          <th class='col-3'>type</th>
+          <th class='col-6'>description</th>
+        </thead>
+          <tr>
+            <td>status</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>
+            </td>
+            <td><p>Passed or failed.</p>
+</td>
+          </tr>
+          <tr>
+            <td>mapped_coordinate</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>
+            </td>
+            <td><p>Array that contains the [lat, lon] pair of the snapped coordinate.</p>
+</td>
+          </tr>
+          <tr>
+            <td>name</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>
+            </td>
+            <td><p>Name of the street the coordinate snapped to.</p>
 </td>
           </tr>
       </table>
