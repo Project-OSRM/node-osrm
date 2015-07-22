@@ -1,0 +1,199 @@
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title> </title>
+  <link href='assets/bass.css' type='text/css' rel='stylesheet' />
+  <link href='assets/style.css' type='text/css' rel='stylesheet' />
+  <link href='assets/github.css' type='text/css' rel='stylesheet' />
+</head>
+<body class='documentation'>
+  <div class='px2'>
+    <div class='clearfix flex flex-stretch mxn2'>
+      <div class='documentation-sidebar relative top-0 bottom-0 right-0 px2 py2 col-3 sm-show'>
+        <div class='font-smaller fixed col-3 top-0 bottom-0 left-0 overflow-auto black bg-cloudy'>
+          <a href='/' class='h5 button block button-transparent'> </a>
+          <div class='px2'>
+              <a
+                href='#osrm-match'
+                class='regular block'>
+                <code>osrm.match</code>
+              </a>
+              <a
+                href='#'
+                class='regular block'>
+                <code></code>
+              </a>
+          </div>
+        </div>
+      </div>
+      <div class='sm-col  lg-col-9  flex flex-column'>
+        <div class='flex-auto full-width'>
+          <div class='px1'>
+<section id='osrm-match'class='mt4 mb4 px2'>
+  <h3 class='regular'>
+    <a class='black' href='#osrm-match'>
+      <code>
+        osrm.match<span class='gray'>([loc], [t], [geometry], [classify], [gps_precision], [matching_beta])</span>
+      </code>
+    </a>
+  </h3>
+  <p>Matches given coordinates to the road network</p>
+
+
+    <p>
+      <table class='table-light overflow-hidden bg-cloudy-light'>
+        <thead>
+          <th class='col-3'>parameter</th>
+          <th class='col-3'>type</th>
+          <th class='col-6'>description</th>
+        </thead>
+          <tr>
+            <td>loc</td>
+            <td>
+              <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>]</code>
+                (default <code>52.542648,13.393252</code>)
+            </td>
+            <td><p>Location of the point.</p>
+</td>
+          </tr>
+          <tr>
+            <td>t</td>
+            <td>
+              <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>]</code>
+                (default <code>1424684612</code>)
+            </td>
+            <td><p>Timestamp of the preceding point.</p>
+</td>
+          </tr>
+          <tr>
+            <td>geometry</td>
+            <td>
+              <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></code>]</code>
+                (default <code>true</code>)
+            </td>
+            <td><p>Return route geometry.</p>
+</td>
+          </tr>
+          <tr>
+            <td>classify</td>
+            <td>
+              <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></code>]</code>
+                (default <code>false</code>)
+            </td>
+            <td><p>Return a confidence value for this matching.</p>
+</td>
+          </tr>
+          <tr>
+            <td>gps_precision</td>
+            <td>
+              <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>]</code>
+                (default <code>-1</code>)
+            </td>
+            <td><p>Specify gps precision as standart deviation in meters.</p>
+</td>
+          </tr>
+          <tr>
+            <td>matching_beta</td>
+            <td>
+              <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>]</code>
+                (default <code>-1</code>)
+            </td>
+            <td><p>Specify beta value for matching algorithm.</p>
+</td>
+          </tr>
+      </table>
+    </p>
+
+
+      <h4>Returns</h4>
+      <code><code>Matching</code></code>
+      :
+      <span class='force-inline'>
+        <p>matchings array containing an object for each partial sub-matching of the trace.</p>
+
+      </span>
+
+
+    <h4>Examples</h4>
+<pre><span class="hljs-keyword">var</span> osrm = <span class="hljs-keyword">new</span> OSRM(<span class="hljs-string">"berlin-latest.osrm"</span>);
+<span class="hljs-keyword">var</span> options = {
+    coordinates: [[<span class="hljs-number">52.542648</span>,<span class="hljs-number">13.393252</span>], [<span class="hljs-number">52.543079</span>,<span class="hljs-number">13.394780</span>], [<span class="hljs-number">52.542107</span>,<span class="hljs-number">13.397389</span>]],
+    timestamps: [<span class="hljs-number">1424684612</span>, <span class="hljs-number">1424684616</span>, <span class="hljs-number">1424684620</span>]
+};
+osrm.match(options, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err, response</span>) </span>{
+    <span class="hljs-keyword">if</span>(err) <span class="hljs-keyword">throw</span> err;
+});</pre>
+
+
+
+
+</section>
+<section id=''class='mt4 mb4 px2'>
+  <h3 class='regular'>
+    <a class='black' href='#'>
+      <code>
+        <span class='gray'></span>
+      </code>
+    </a>
+  </h3>
+  <p>Matching return object</p>
+
+
+
+    <p>
+      <table class='table-light overflow-hidden bg-cloudy-light'>
+        <thead>
+          <th class='col-3'>property</th>
+          <th class='col-3'>type</th>
+          <th class='col-6'>description</th>
+        </thead>
+          <tr>
+            <td>matched_points</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>
+            </td>
+            <td><p>coordinates of the points snapped to the road network in [lat, lon]</p>
+</td>
+          </tr>
+          <tr>
+            <td>indices</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>
+            </td>
+            <td><p>array that gives the indices of the matched coordinates in the original trace</p>
+</td>
+          </tr>
+          <tr>
+            <td>geometry</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>
+            </td>
+            <td><p>geometry of the matched trace in the road network, compressed as polyline, but with 6 decimals. You can use the npm module polyline to decompress it.</p>
+</td>
+          </tr>
+          <tr>
+            <td>confidence</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>
+            </td>
+            <td><p>value between 0 and 1, where 1 is very confident. Please note that the correctness of this value depends highly on the assumptions about the sample rate mentioned above.</p>
+</td>
+          </tr>
+      </table>
+    </p>
+
+
+
+
+
+
+
+</section>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
