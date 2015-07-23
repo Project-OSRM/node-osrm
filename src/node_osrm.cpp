@@ -599,7 +599,7 @@ NAN_METHOD(Engine::trip)
  *
  * @name osrm.table
  * 
- * @param {Array<Array<Number>>} Array of coordinate pairs as latitude, longitude representing the via points to be computed.
+ * @param {Array<Array<Number>>} coordinates Array of coordinate pairs as latitude, longitude representing the via points to be computed.
  * 
  * @returns {TableResult}
  *

@@ -140,7 +140,7 @@ Computes distance tables for the given via points. Currently all pair-wise dista
 
 ### Parameters
 
-* `Array` **`Array<Array<Number>>`** of coordinate pairs as latitude, longitude representing the via points to be computed.
+* `coordinates` **`Array<Array<Number>>`** Array of coordinate pairs as latitude, longitude representing the via points to be computed.
 
 
 ### Examples
