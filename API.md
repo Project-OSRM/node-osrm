@@ -1,4 +1,4 @@
-## `new`
+## `OSRM`
 
 Creates a new `osrm` instance
 
@@ -25,7 +25,7 @@ Returns coordinate snapped to nearest node
 
 ### Parameters
 
-* `Point` **`Array<Number>`** latitude, longitude pair to locate on the network.
+* `point` **`Array<Number>`** latitude, longitude pair to locate on the network.
 
 
 ### Examples
@@ -37,7 +37,7 @@ osrm.locate([52.4224, 13.333086], function(err, result) {
 });
 ```
 
-Returns  Location of the node as latitude longitude pair.
+Returns  node location of the node as latitude longitude pair.
 
 ## `osrm.match`
 
@@ -74,19 +74,38 @@ Computes the nearest street segment for a given coordinate.
 
 ### Parameters
 
-* `Location` **`Array<Number>`** of the query point as latitude, longitude
+* `point` **`Array<Number>`** coordinates of the query point as a latitude, longitude array
+
+
+
+
+## `osrm.route`
+
+Computes a route between coordinates over the network.
+
+### Parameters
+
+* `options` **`Object`** options object
+  * `options.coordinates` **`Array<Array<Number>>`** An array of number arrays expressing coordinate pairs as latitude, longitude.
+  * `options.alternateRoute` **`[Boolean]`** Return an alternate route. (optional, default `false`)
+  * `options.checksum` **`[Number]`** `Checksum` of the network dataset. (optional, default `0`)
+  * `options.zoomLevel` **`[Number]`** Zoom level determines the level of generalization. The default zoom 18 performs no generalization. (optional, default `18`)
+  * `options.printInstructions` **`[Boolean]`** Include turn by turn instructions. (optional, default `false`)
+  * `options.geometry` **`[Boolean]`** Include the geometry of the route. (optional, default `true`)
+  * `options.jsonpParameter` **`[String]`** Format results with jsonp. (optional, default `&quot;&quot;`)
+  * `options.hints` **`[Array<String>]`** `Polylines` that can be used to speed up incremental queries, where only a few via nodes change.
 
 
 ### Examples
 
 ```js
-var osrm = new OSRM('berlin-latest.osrm');
-osrm.nearest([52.4224, 13.333086], function(err, result) {
+var osrm = new OSRM("berlin-latest.osrm");
+osrm.route({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]}, function(err, route) {
     if(err) throw err;
 });
 ```
 
-Returns `NearestResult` 
+Returns `RouteResult` matchings array containing an object for each partial sub-matching of the trace.
 
 ## `osrm.table`
 
@@ -94,19 +113,33 @@ Computes distance tables for the given via points. Currently all pair-wise dista
 
 ### Parameters
 
-* `Location` **`Array<Number>`** of the via point as latitude, longitude
+* `Array` **`Array<Array<Number>>`** of coordinate pairs as latitude, longitude representing the via points to be computed.
 
 
 ### Examples
 
 ```js
-var osrm = new OSRM({path: 'berlin-latest.osrm', distance_table: 30000});
-osrm.route({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]}, function(err, route) {
-    if(err) throw err;
+var osrm = new OSRM("berlin-latest.osrm");
+var options = {
+    coordinates: [[52.519930,13.438640], [52.513191,13.415852]]
+};   
+osrm.table(options, function(err, table) {
+    if(err) throw err
 });
 ```
 
-Returns `DistanceTable` 
+Returns `TableResult` 
+
+## ``
+
+RouteResult
+
+
+| name | type | description |
+| ---- | ---- | ----------- |
+| `Line` | `Array` |  |
+
+
 
 ## ``
 

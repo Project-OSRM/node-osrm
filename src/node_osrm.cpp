@@ -69,11 +69,12 @@ void Engine::Initialize(Handle<Object> target) {
     target->Set(NanNew("OSRM"), lcons->GetFunction());
     NanAssignPersistent(constructor, lcons);
 }
-
+    
 /**
  * Creates a new `osrm` instance
  *
- * @name new
+ * @class OSRM
+ * @name OSRM
  *
  * @param {Object} options Contructor object. Optionally, pass only the `path`
  * @param {String} options.path Path to .osrm preprocessed file.
@@ -166,6 +167,36 @@ struct RunQueryBaton {
     std::string error;
 };
 
+/**
+ * Computes a route between coordinates over the network.
+ *
+ * @name osrm.route
+ * 
+ * @param {Object} options options object
+ * @param {Array<Array<Number>>} options.coordinates An array of number arrays expressing coordinate pairs as latitude, longitude.
+ * @param {Boolean} [options.alternateRoute=false] Return an alternate route.
+ * @param {Number} [options.checksum=0] [Checksum]{@link https://en.wikipedia.org/wiki/Checksum} of the network dataset.
+ * @param {Number} [options.zoomLevel=18] Zoom level determines the level of generalization. The default zoom 18 performs no generalization.
+ * @param {Boolean} [options.printInstructions=false] Include turn by turn instructions.
+ * @param {Boolean} [options.geometry=true] Include the geometry of the route.
+ * @param {String} [options.jsonpParameter=""] Format results with jsonp.
+ * @param {Array<String>} [options.hints] [Polylines]{@link https://github.com/mapbox/polyline} that can be used to speed up incremental queries, where only a few via nodes change.
+ * 
+ * @returns {RouteResult} matchings array containing an object for each partial sub-matching of the trace.
+ *
+ * @example
+ * var osrm = new OSRM("berlin-latest.osrm");
+ * osrm.route({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]}, function(err, route) {
+ *     if(err) throw err;
+ * });
+ * 
+ */
+
+/**
+ * RouteResult
+ * @typedef {Object} RouteResult
+ * @property {Array} Line
+ */
 NAN_METHOD(Engine::route)
 {
     NanScope();
@@ -285,9 +316,9 @@ NAN_METHOD(Engine::route)
  *
  * @name osrm.locate
  * 
- * @param {Array<Number>} Point latitude, longitude pair to locate on the network.
+ * @param {Array<Number>} point latitude, longitude pair to locate on the network.
  * 
- * @returns {Array<Number>} Location of the node as latitude longitude pair.
+ * @returns {Array<Number>} node location of the node as latitude longitude pair.
  *
  * @example
  * var osrm = new OSRM('berlin-latest.osrm');
@@ -568,14 +599,17 @@ NAN_METHOD(Engine::trip)
  *
  * @name osrm.table
  * 
- * @param {Array<Number>} Location of the via point as latitude, longitude
+ * @param {Array<Array<Number>>} Array of coordinate pairs as latitude, longitude representing the via points to be computed.
  * 
- * @returns {DistanceTable}
+ * @returns {TableResult}
  *
  * @example
- * var osrm = new OSRM({path: 'berlin-latest.osrm', distance_table: 30000});
- * osrm.route({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]}, function(err, route) {
- *     if(err) throw err;
+ * var osrm = new OSRM("berlin-latest.osrm");
+ * var options = {
+ *     coordinates: [[52.519930,13.438640], [52.513191,13.415852]]
+ * };   
+ * osrm.table(options, function(err, table) {
+ *     if(err) throw err
  * });
  * 
  */
@@ -642,9 +676,9 @@ NAN_METHOD(Engine::table)
  *
  * @name osrm.nearest
  * 
- * @param {Array<Number>} Location of the query point as latitude, longitude
+ * @param {Array<Number>} point coordinates of the query point as a latitude, longitude array
  * 
- * @returns {NearestResult}
+ * @returns NearestResult
  *
  * @example
  * var osrm = new OSRM('berlin-latest.osrm');
@@ -656,7 +690,7 @@ NAN_METHOD(Engine::table)
 
 /**
  * NearestResult
- * @typedef {Object} NearestResult 
+ * @typedef {Object} NearestResult
  * @property {Number} status Passed or failed.
  * @property {Array<Number>} mapped_coordinate Array that contains the [lat, lon] pair of the snapped coordinate.
  * @property {String} name Name of the street the coordinate snapped to.

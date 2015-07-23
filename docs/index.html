@@ -1,7 +1,7 @@
 <html>
 <head>
   <meta charset='utf-8' />
-  <title> </title>
+  <title>node-osrm </title>
   <link href='assets/bass.css' type='text/css' rel='stylesheet' />
   <link href='assets/style.css' type='text/css' rel='stylesheet' />
   <link href='assets/github.css' type='text/css' rel='stylesheet' />
@@ -11,12 +11,12 @@
     <div class='clearfix flex flex-stretch mxn2'>
       <div class='documentation-sidebar relative top-0 bottom-0 right-0 px2 py2 col-3 sm-show'>
         <div class='font-smaller fixed col-3 top-0 bottom-0 left-0 overflow-auto black bg-cloudy'>
-          <a href='/' class='h5 button block button-transparent'> </a>
+          <a href='/' class='h3 button block button-transparent'>node-osrm </a>
           <div class='px2'>
               <a
-                href='#new'
+                href='#osrm'
                 class='regular block'>
-                <code>new</code>
+                <code>OSRM</code>
               </a>
               <a
                 href='#osrm-locate'
@@ -34,9 +34,19 @@
                 <code>osrm.nearest</code>
               </a>
               <a
+                href='#osrm-route'
+                class='regular block'>
+                <code>osrm.route</code>
+              </a>
+              <a
                 href='#osrm-table'
                 class='regular block'>
                 <code>osrm.table</code>
+              </a>
+              <a
+                href='#'
+                class='regular block'>
+                <code></code>
               </a>
               <a
                 href='#'
@@ -59,11 +69,11 @@
       <div class='sm-col  lg-col-9  flex flex-column'>
         <div class='flex-auto full-width'>
           <div class='px1'>
-<section id='new'class='mt4 mb4 px2'>
+<section id='osrm'class='mt4 mb4 px2'>
   <h3 class='regular'>
-    <a class='black' href='#new'>
+    <a class='black' href='#osrm'>
       <code>
-        new<span class='gray'>(options)</span>
+        OSRM<span class='gray'>(options)</span>
       </code>
     </a>
   </h3>
@@ -134,7 +144,7 @@
   <h3 class='regular'>
     <a class='black' href='#osrm-locate'>
       <code>
-        osrm.locate<span class='gray'>(Point)</span>
+        osrm.locate<span class='gray'>(point)</span>
       </code>
     </a>
   </h3>
@@ -149,7 +159,7 @@
           <th class='col-6'>description</th>
         </thead>
           <tr>
-            <td>Point</td>
+            <td>point</td>
             <td>
               <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>
             </td>
@@ -164,7 +174,7 @@
       <code><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>></code>
       :
       <span class='force-inline'>
-        <p>Location of the node as latitude longitude pair.</p>
+        <p>node location of the node as latitude longitude pair.</p>
 
       </span>
 
@@ -280,7 +290,7 @@ osrm.match(options, <span class="hljs-function"><span class="hljs-keyword">funct
   <h3 class='regular'>
     <a class='black' href='#osrm-nearest'>
       <code>
-        osrm.nearest<span class='gray'>(Location)</span>
+        osrm.nearest<span class='gray'>(point)</span>
       </code>
     </a>
   </h3>
@@ -295,28 +305,136 @@ osrm.match(options, <span class="hljs-function"><span class="hljs-keyword">funct
           <th class='col-6'>description</th>
         </thead>
           <tr>
-            <td>Location</td>
+            <td>point</td>
             <td>
               <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>
             </td>
-            <td><p>of the query point as latitude, longitude</p>
+            <td><p>coordinates of the query point as a latitude, longitude array</p>
 </td>
           </tr>
       </table>
     </p>
 
 
+
+
+
+
+
+
+</section>
+<section id='osrm-route'class='mt4 mb4 px2'>
+  <h3 class='regular'>
+    <a class='black' href='#osrm-route'>
+      <code>
+        osrm.route<span class='gray'>(options)</span>
+      </code>
+    </a>
+  </h3>
+  <p>Computes a route between coordinates over the network.</p>
+
+
+    <p>
+      <table class='table-light overflow-hidden bg-cloudy-light'>
+        <thead>
+          <th class='col-3'>parameter</th>
+          <th class='col-3'>type</th>
+          <th class='col-6'>description</th>
+        </thead>
+          <tr>
+            <td>options</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>
+            </td>
+            <td><p>options object</p>
+</td>
+          </tr>
+            <tr>
+              <td>options.coordinates</td>
+              <td>
+                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>>
+              </td>
+              <td><p>An array of number arrays expressing coordinate pairs as latitude, longitude.</p>
+</td>
+            </tr>
+            <tr>
+              <td>options.alternateRoute</td>
+              <td>
+                <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></code>]</code>
+                (default <code>false</code>)
+              </td>
+              <td><p>Return an alternate route.</p>
+</td>
+            </tr>
+            <tr>
+              <td>options.checksum</td>
+              <td>
+                <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>]</code>
+                (default <code>0</code>)
+              </td>
+              <td><p><a href="https-en-wikipedia-org-wiki-checksum"><code>Checksum</code></a> of the network dataset.</p>
+</td>
+            </tr>
+            <tr>
+              <td>options.zoomLevel</td>
+              <td>
+                <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>]</code>
+                (default <code>18</code>)
+              </td>
+              <td><p>Zoom level determines the level of generalization. The default zoom 18 performs no generalization.</p>
+</td>
+            </tr>
+            <tr>
+              <td>options.printInstructions</td>
+              <td>
+                <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></code>]</code>
+                (default <code>false</code>)
+              </td>
+              <td><p>Include turn by turn instructions.</p>
+</td>
+            </tr>
+            <tr>
+              <td>options.geometry</td>
+              <td>
+                <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></code>]</code>
+                (default <code>true</code>)
+              </td>
+              <td><p>Include the geometry of the route.</p>
+</td>
+            </tr>
+            <tr>
+              <td>options.jsonpParameter</td>
+              <td>
+                <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>]</code>
+                (default <code>&quot;&quot;</code>)
+              </td>
+              <td><p>Format results with jsonp.</p>
+</td>
+            </tr>
+            <tr>
+              <td>options.hints</td>
+              <td>
+                <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>>]</code>
+              </td>
+              <td><p><a href="https-github-com-mapbox-polyline"><code>Polylines</code></a> that can be used to speed up incremental queries, where only a few via nodes change.</p>
+</td>
+            </tr>
+      </table>
+    </p>
+
+
       <h4>Returns</h4>
-      <code><code>NearestResult</code></code>
-      
+      <code><code>RouteResult</code></code>
+      :
       <span class='force-inline'>
-        
+        <p>matchings array containing an object for each partial sub-matching of the trace.</p>
+
       </span>
 
 
     <h4>Examples</h4>
-<pre><span class="hljs-keyword">var</span> osrm = <span class="hljs-keyword">new</span> OSRM(<span class="hljs-string">'berlin-latest.osrm'</span>);
-osrm.nearest([<span class="hljs-number">52.4224</span>, <span class="hljs-number">13.333086</span>], <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err, result</span>) </span>{
+<pre><span class="hljs-keyword">var</span> osrm = <span class="hljs-keyword">new</span> OSRM(<span class="hljs-string">"berlin-latest.osrm"</span>);
+osrm.route({coordinates: [[<span class="hljs-number">52.519930</span>,<span class="hljs-number">13.438640</span>], [<span class="hljs-number">52.513191</span>,<span class="hljs-number">13.415852</span>]]}, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err, route</span>) </span>{
     <span class="hljs-keyword">if</span>(err) <span class="hljs-keyword">throw</span> err;
 });</pre>
 
@@ -328,7 +446,7 @@ osrm.nearest([<span class="hljs-number">52.4224</span>, <span class="hljs-number
   <h3 class='regular'>
     <a class='black' href='#osrm-table'>
       <code>
-        osrm.table<span class='gray'>(Location)</span>
+        osrm.table<span class='gray'>(Array)</span>
       </code>
     </a>
   </h3>
@@ -343,11 +461,11 @@ osrm.nearest([<span class="hljs-number">52.4224</span>, <span class="hljs-number
           <th class='col-6'>description</th>
         </thead>
           <tr>
-            <td>Location</td>
+            <td>Array</td>
             <td>
-              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>>
             </td>
-            <td><p>of the via point as latitude, longitude</p>
+            <td><p>of coordinate pairs as latitude, longitude representing the via points to be computed.</p>
 </td>
           </tr>
       </table>
@@ -355,7 +473,7 @@ osrm.nearest([<span class="hljs-number">52.4224</span>, <span class="hljs-number
 
 
       <h4>Returns</h4>
-      <code><code>DistanceTable</code></code>
+      <code><code>TableResult</code></code>
       
       <span class='force-inline'>
         
@@ -363,10 +481,49 @@ osrm.nearest([<span class="hljs-number">52.4224</span>, <span class="hljs-number
 
 
     <h4>Examples</h4>
-<pre><span class="hljs-keyword">var</span> osrm = <span class="hljs-keyword">new</span> OSRM({path: <span class="hljs-string">'berlin-latest.osrm'</span>, distance_table: <span class="hljs-number">30000</span>});
-osrm.route({coordinates: [[<span class="hljs-number">52.519930</span>,<span class="hljs-number">13.438640</span>], [<span class="hljs-number">52.513191</span>,<span class="hljs-number">13.415852</span>]]}, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err, route</span>) </span>{
-    <span class="hljs-keyword">if</span>(err) <span class="hljs-keyword">throw</span> err;
+<pre><span class="hljs-keyword">var</span> osrm = <span class="hljs-keyword">new</span> OSRM(<span class="hljs-string">"berlin-latest.osrm"</span>);
+<span class="hljs-keyword">var</span> options = {
+    coordinates: [[<span class="hljs-number">52.519930</span>,<span class="hljs-number">13.438640</span>], [<span class="hljs-number">52.513191</span>,<span class="hljs-number">13.415852</span>]]
+};   
+osrm.table(options, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err, table</span>) </span>{
+    <span class="hljs-keyword">if</span>(err) <span class="hljs-keyword">throw</span> err
 });</pre>
+
+
+
+
+</section>
+<section id=''class='mt4 mb4 px2'>
+  <h3 class='regular'>
+    <a class='black' href='#'>
+      <code>
+        <span class='gray'></span>
+      </code>
+    </a>
+  </h3>
+  <p>RouteResult</p>
+
+
+
+    <p>
+      <table class='table-light overflow-hidden bg-cloudy-light'>
+        <thead>
+          <th class='col-3'>property</th>
+          <th class='col-3'>type</th>
+          <th class='col-6'>description</th>
+        </thead>
+          <tr>
+            <td>Line</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>
+            </td>
+            <td></td>
+          </tr>
+      </table>
+    </p>
+
+
+
 
 
 

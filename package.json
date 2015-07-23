@@ -49,6 +49,6 @@
     "prepublish": "npm ls",
     "install": "node-pre-gyp install --fallback-to-build",
     "test": "mocha -R spec",
-    "doc": "documentation --polyglot src/node_osrm.cpp -f md > API.md; documentation --polyglot src/node_osrm.cpp -f html -o docs;"
+    "doc": "documentation --polyglot src/node_osrm.cpp --name node-osrm -f md > API.md; documentation --polyglot src/node_osrm.cpp --name node-osrm -f html -o docs;"
   }
 }
