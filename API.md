@@ -1,3 +1,24 @@
+## `new`
+
+Creates a new `osrm` instance
+
+### Parameters
+
+* `options` **`Object`** Contructor object. Optionally, pass only the `path`
+  * `options.path` **`String`** Path to .osrm preprocessed file.
+  * `options.shared_memory` **`[Boolean]`** Allows you to share data among a number of processes and the shared memory used is persistent. It stays in the system until it is explicitly removed.
+  * `options.distance_table` **`[String]`** The maximum number of locations in the distance table.
+
+
+### Examples
+
+```js
+var OSRM = require('osrm');
+var osrm = new OSRM('berlin-latest.osrm');
+```
+
+Returns `Object` The osrm instance.
+
 ## `osrm.locate`
 
 Returns coordinate snapped to nearest node
@@ -10,7 +31,7 @@ Returns coordinate snapped to nearest node
 ### Examples
 
 ```js
-var osrm = new OSRM("berlin-latest.osrm");
+var osrm = new OSRM('berlin-latest.osrm');
 osrm.locate([52.4224, 13.333086], function(err, result) {
     if(err) throw err;
 });
@@ -35,7 +56,7 @@ Matches given coordinates to the road network
 ### Examples
 
 ```js
-var osrm = new OSRM("berlin-latest.osrm");
+var osrm = new OSRM('berlin-latest.osrm');
 var options = {
     coordinates: [[52.542648,13.393252], [52.543079,13.394780], [52.542107,13.397389]],
     timestamps: [1424684612, 1424684616, 1424684620]
@@ -59,7 +80,7 @@ Computes the nearest street segment for a given coordinate.
 ### Examples
 
 ```js
-var osrm = new OSRM("berlin-latest.osrm");
+var osrm = new OSRM('berlin-latest.osrm');
 osrm.nearest([52.4224, 13.333086], function(err, result) {
     if(err) throw err;
 });
@@ -79,7 +100,7 @@ Computes distance tables for the given via points. Currently all pair-wise dista
 ### Examples
 
 ```js
-var osrm = new OSRM({path: "berlin-latest.osrm", distance_table: 30000});
+var osrm = new OSRM({path: 'berlin-latest.osrm', distance_table: 30000});
 osrm.route({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]}, function(err, route) {
     if(err) throw err;
 });

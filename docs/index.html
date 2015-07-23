@@ -14,6 +14,11 @@
           <a href='/' class='h5 button block button-transparent'> </a>
           <div class='px2'>
               <a
+                href='#new'
+                class='regular block'>
+                <code>new</code>
+              </a>
+              <a
                 href='#osrm-locate'
                 class='regular block'>
                 <code>osrm.locate</code>
@@ -54,6 +59,77 @@
       <div class='sm-col  lg-col-9  flex flex-column'>
         <div class='flex-auto full-width'>
           <div class='px1'>
+<section id='new'class='mt4 mb4 px2'>
+  <h3 class='regular'>
+    <a class='black' href='#new'>
+      <code>
+        new<span class='gray'>(options)</span>
+      </code>
+    </a>
+  </h3>
+  <p>Creates a new <code>osrm</code> instance</p>
+
+
+    <p>
+      <table class='table-light overflow-hidden bg-cloudy-light'>
+        <thead>
+          <th class='col-3'>parameter</th>
+          <th class='col-3'>type</th>
+          <th class='col-6'>description</th>
+        </thead>
+          <tr>
+            <td>options</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>
+            </td>
+            <td><p>Contructor object. Optionally, pass only the <code>path</code></p>
+</td>
+          </tr>
+            <tr>
+              <td>options.path</td>
+              <td>
+                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>
+              </td>
+              <td><p>Path to .osrm preprocessed file.</p>
+</td>
+            </tr>
+            <tr>
+              <td>options.shared_memory</td>
+              <td>
+                <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></code>]</code>
+              </td>
+              <td><p>Allows you to share data among a number of processes and the shared memory used is persistent. It stays in the system until it is explicitly removed.</p>
+</td>
+            </tr>
+            <tr>
+              <td>options.distance_table</td>
+              <td>
+                <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>]</code>
+              </td>
+              <td><p>The maximum number of locations in the distance table.</p>
+</td>
+            </tr>
+      </table>
+    </p>
+
+
+      <h4>Returns</h4>
+      <code><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code></code>
+      :
+      <span class='force-inline'>
+        <p>The osrm instance.</p>
+
+      </span>
+
+
+    <h4>Examples</h4>
+<pre><span class="hljs-keyword">var</span> OSRM = <span class="hljs-built_in">require</span>(<span class="hljs-string">'osrm'</span>);
+<span class="hljs-keyword">var</span> osrm = <span class="hljs-keyword">new</span> OSRM(<span class="hljs-string">'berlin-latest.osrm'</span>);</pre>
+
+
+
+
+</section>
 <section id='osrm-locate'class='mt4 mb4 px2'>
   <h3 class='regular'>
     <a class='black' href='#osrm-locate'>
@@ -94,7 +170,7 @@
 
 
     <h4>Examples</h4>
-<pre><span class="hljs-keyword">var</span> osrm = <span class="hljs-keyword">new</span> OSRM(<span class="hljs-string">"berlin-latest.osrm"</span>);
+<pre><span class="hljs-keyword">var</span> osrm = <span class="hljs-keyword">new</span> OSRM(<span class="hljs-string">'berlin-latest.osrm'</span>);
 osrm.locate([<span class="hljs-number">52.4224</span>, <span class="hljs-number">13.333086</span>], <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err, result</span>) </span>{
     <span class="hljs-keyword">if</span>(err) <span class="hljs-keyword">throw</span> err;
 });</pre>
@@ -187,7 +263,7 @@ osrm.locate([<span class="hljs-number">52.4224</span>, <span class="hljs-number"
 
 
     <h4>Examples</h4>
-<pre><span class="hljs-keyword">var</span> osrm = <span class="hljs-keyword">new</span> OSRM(<span class="hljs-string">"berlin-latest.osrm"</span>);
+<pre><span class="hljs-keyword">var</span> osrm = <span class="hljs-keyword">new</span> OSRM(<span class="hljs-string">'berlin-latest.osrm'</span>);
 <span class="hljs-keyword">var</span> options = {
     coordinates: [[<span class="hljs-number">52.542648</span>,<span class="hljs-number">13.393252</span>], [<span class="hljs-number">52.543079</span>,<span class="hljs-number">13.394780</span>], [<span class="hljs-number">52.542107</span>,<span class="hljs-number">13.397389</span>]],
     timestamps: [<span class="hljs-number">1424684612</span>, <span class="hljs-number">1424684616</span>, <span class="hljs-number">1424684620</span>]
@@ -239,7 +315,7 @@ osrm.match(options, <span class="hljs-function"><span class="hljs-keyword">funct
 
 
     <h4>Examples</h4>
-<pre><span class="hljs-keyword">var</span> osrm = <span class="hljs-keyword">new</span> OSRM(<span class="hljs-string">"berlin-latest.osrm"</span>);
+<pre><span class="hljs-keyword">var</span> osrm = <span class="hljs-keyword">new</span> OSRM(<span class="hljs-string">'berlin-latest.osrm'</span>);
 osrm.nearest([<span class="hljs-number">52.4224</span>, <span class="hljs-number">13.333086</span>], <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err, result</span>) </span>{
     <span class="hljs-keyword">if</span>(err) <span class="hljs-keyword">throw</span> err;
 });</pre>
@@ -287,7 +363,7 @@ osrm.nearest([<span class="hljs-number">52.4224</span>, <span class="hljs-number
 
 
     <h4>Examples</h4>
-<pre><span class="hljs-keyword">var</span> osrm = <span class="hljs-keyword">new</span> OSRM({path: <span class="hljs-string">"berlin-latest.osrm"</span>, distance_table: <span class="hljs-number">30000</span>});
+<pre><span class="hljs-keyword">var</span> osrm = <span class="hljs-keyword">new</span> OSRM({path: <span class="hljs-string">'berlin-latest.osrm'</span>, distance_table: <span class="hljs-number">30000</span>});
 osrm.route({coordinates: [[<span class="hljs-number">52.519930</span>,<span class="hljs-number">13.438640</span>], [<span class="hljs-number">52.513191</span>,<span class="hljs-number">13.415852</span>]]}, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err, route</span>) </span>{
     <span class="hljs-keyword">if</span>(err) <span class="hljs-keyword">throw</span> err;
 });</pre>

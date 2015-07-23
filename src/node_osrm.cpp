@@ -70,6 +70,23 @@ void Engine::Initialize(Handle<Object> target) {
     NanAssignPersistent(constructor, lcons);
 }
 
+/**
+ * Creates a new `osrm` instance
+ *
+ * @name new
+ *
+ * @param {Object} options Contructor object. Optionally, pass only the `path`
+ * @param {String} options.path Path to .osrm preprocessed file.
+ * @param {Boolean} [options.shared_memory] Allows you to share data among a number of processes and the shared memory used is persistent. It stays in the system until it is explicitly removed.
+ * @param {String} [options.distance_table] The maximum number of locations in the distance table.
+ * 
+ * @returns {Object} The osrm instance.
+ *
+ * @example
+ * var OSRM = require('osrm');
+ * var osrm = new OSRM('berlin-latest.osrm');
+ * 
+ */
 NAN_METHOD(Engine::New)
 {
     NanScope();
@@ -273,7 +290,7 @@ NAN_METHOD(Engine::route)
  * @returns {Array<Number>} Location of the node as latitude longitude pair.
  *
  * @example
- * var osrm = new OSRM("berlin-latest.osrm");
+ * var osrm = new OSRM('berlin-latest.osrm');
  * osrm.locate([52.4224, 13.333086], function(err, result) {
  *     if(err) throw err;
  * });
@@ -323,7 +340,7 @@ NAN_METHOD(Engine::locate)
  * @returns {MatchResult} matchings array containing an object for each partial sub-matching of the trace.
  *
  * @example
- * var osrm = new OSRM("berlin-latest.osrm");
+ * var osrm = new OSRM('berlin-latest.osrm');
  * var options = {
  *     coordinates: [[52.542648,13.393252], [52.543079,13.394780], [52.542107,13.397389]],
  *     timestamps: [1424684612, 1424684616, 1424684620]
@@ -556,7 +573,7 @@ NAN_METHOD(Engine::trip)
  * @returns {DistanceTable}
  *
  * @example
- * var osrm = new OSRM({path: "berlin-latest.osrm", distance_table: 30000});
+ * var osrm = new OSRM({path: 'berlin-latest.osrm', distance_table: 30000});
  * osrm.route({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]}, function(err, route) {
  *     if(err) throw err;
  * });
@@ -630,7 +647,7 @@ NAN_METHOD(Engine::table)
  * @returns {NearestResult}
  *
  * @example
- * var osrm = new OSRM("berlin-latest.osrm");
+ * var osrm = new OSRM('berlin-latest.osrm');
  * osrm.nearest([52.4224, 13.333086], function(err, result) {
  *     if(err) throw err;
  * });
