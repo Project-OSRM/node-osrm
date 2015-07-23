@@ -193,7 +193,7 @@ struct RunQueryBaton {
  */
 
 /**
- * RouteResult
+ * @name RouteResult
  * @typedef {Object} RouteResult
  * @property {Array} Line
  */
@@ -383,7 +383,7 @@ NAN_METHOD(Engine::locate)
  */
 
 /**
- * MatchResult
+ * @name MatchResult
  * @typedef {Object} MatchResult
  * @property {Array} matched_points coordinates of the points snapped to the road network in [lat, lon]
  * @property {Array} indices array that gives the indices of the matched coordinates in the original trace
@@ -615,7 +615,7 @@ NAN_METHOD(Engine::trip)
  */
 
 /**
- * TableResult
+ * @name TableResult
  * @typedef {Object} TableResult 
  * @property {Array<Array<Number>>} distance_table array of arrays that stores the matrix in row-major order. `distance_table[i][j]` gives the travel time from the i-th via to the j-th via point. Values are given in 10th of a second.
  */
@@ -689,7 +689,7 @@ NAN_METHOD(Engine::table)
  */
 
 /**
- * NearestResult
+ * @name NearestResult
  * @typedef {Object} NearestResult
  * @property {Number} status Passed or failed.
  * @property {Array<Number>} mapped_coordinate Array that contains the [lat, lon] pair of the snapped coordinate.

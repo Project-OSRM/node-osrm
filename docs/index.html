@@ -14,6 +14,16 @@
           <a href='/' class='h3 button block button-transparent'>node-osrm </a>
           <div class='px2'>
               <a
+                href='#matchresult'
+                class='regular block'>
+                <code>MatchResult</code>
+              </a>
+              <a
+                href='#nearestresult'
+                class='regular block'>
+                <code>NearestResult</code>
+              </a>
+              <a
                 href='#osrm'
                 class='regular block'>
                 <code>OSRM</code>
@@ -44,24 +54,14 @@
                 <code>osrm.table</code>
               </a>
               <a
-                href='#'
+                href='#routeresult'
                 class='regular block'>
-                <code></code>
+                <code>RouteResult</code>
               </a>
               <a
-                href='#'
+                href='#tableresult'
                 class='regular block'>
-                <code></code>
-              </a>
-              <a
-                href='#'
-                class='regular block'>
-                <code></code>
-              </a>
-              <a
-                href='#'
-                class='regular block'>
-                <code></code>
+                <code>TableResult</code>
               </a>
           </div>
         </div>
@@ -69,6 +69,118 @@
       <div class='sm-col  lg-col-9  flex flex-column'>
         <div class='flex-auto full-width'>
           <div class='px1'>
+<section id='matchresult'class='mt4 mb4 px2'>
+  <h3 class='regular'>
+    <a class='black' href='#matchresult'>
+      <code>
+        MatchResult<span class='gray'></span>
+      </code>
+    </a>
+  </h3>
+  
+
+
+    <p>
+      <table class='table-light overflow-hidden bg-cloudy-light'>
+        <thead>
+          <th class='col-3'>property</th>
+          <th class='col-3'>type</th>
+          <th class='col-6'>description</th>
+        </thead>
+          <tr>
+            <td>matched_points</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>
+            </td>
+            <td><p>coordinates of the points snapped to the road network in [lat, lon]</p>
+</td>
+          </tr>
+          <tr>
+            <td>indices</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>
+            </td>
+            <td><p>array that gives the indices of the matched coordinates in the original trace</p>
+</td>
+          </tr>
+          <tr>
+            <td>geometry</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>
+            </td>
+            <td><p>geometry of the matched trace in the road network, compressed as polyline, but with 6 decimals. You can use the npm module polyline to decompress it.</p>
+</td>
+          </tr>
+          <tr>
+            <td>confidence</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>
+            </td>
+            <td><p>value between 0 and 1, where 1 is very confident. Please note that the correctness of this value depends highly on the assumptions about the sample rate mentioned above.</p>
+</td>
+          </tr>
+      </table>
+    </p>
+
+
+
+
+
+
+
+</section>
+<section id='nearestresult'class='mt4 mb4 px2'>
+  <h3 class='regular'>
+    <a class='black' href='#nearestresult'>
+      <code>
+        NearestResult<span class='gray'></span>
+      </code>
+    </a>
+  </h3>
+  
+
+
+    <p>
+      <table class='table-light overflow-hidden bg-cloudy-light'>
+        <thead>
+          <th class='col-3'>property</th>
+          <th class='col-3'>type</th>
+          <th class='col-6'>description</th>
+        </thead>
+          <tr>
+            <td>status</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>
+            </td>
+            <td><p>Passed or failed.</p>
+</td>
+          </tr>
+          <tr>
+            <td>mapped_coordinate</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>
+            </td>
+            <td><p>Array that contains the [lat, lon] pair of the snapped coordinate.</p>
+</td>
+          </tr>
+          <tr>
+            <td>name</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>
+            </td>
+            <td><p>Name of the street the coordinate snapped to.</p>
+</td>
+          </tr>
+      </table>
+    </p>
+
+
+
+
+
+
+
+</section>
 <section id='osrm'class='mt4 mb4 px2'>
   <h3 class='regular'>
     <a class='black' href='#osrm'>
@@ -264,7 +376,7 @@ osrm.locate([<span class="hljs-number">52.4224</span>, <span class="hljs-number"
 
 
       <h4>Returns</h4>
-      <code><code>MatchResult</code></code>
+      <code><code><a href="#matchresult">MatchResult</a></code></code>
       :
       <span class='force-inline'>
         <p>matchings array containing an object for each partial sub-matching of the trace.</p>
@@ -424,7 +536,7 @@ osrm.match(options, <span class="hljs-function"><span class="hljs-keyword">funct
 
 
       <h4>Returns</h4>
-      <code><code>RouteResult</code></code>
+      <code><code><a href="#routeresult">RouteResult</a></code></code>
       :
       <span class='force-inline'>
         <p>matchings array containing an object for each partial sub-matching of the trace.</p>
@@ -473,7 +585,7 @@ osrm.route({coordinates: [[<span class="hljs-number">52.519930</span>,<span clas
 
 
       <h4>Returns</h4>
-      <code><code>TableResult</code></code>
+      <code><code><a href="#tableresult">TableResult</a></code></code>
       
       <span class='force-inline'>
         
@@ -493,16 +605,15 @@ osrm.table(options, <span class="hljs-function"><span class="hljs-keyword">funct
 
 
 </section>
-<section id=''class='mt4 mb4 px2'>
+<section id='routeresult'class='mt4 mb4 px2'>
   <h3 class='regular'>
-    <a class='black' href='#'>
+    <a class='black' href='#routeresult'>
       <code>
-        <span class='gray'></span>
+        RouteResult<span class='gray'></span>
       </code>
     </a>
   </h3>
-  <p>RouteResult</p>
-
+  
 
 
     <p>
@@ -529,77 +640,15 @@ osrm.table(options, <span class="hljs-function"><span class="hljs-keyword">funct
 
 
 </section>
-<section id=''class='mt4 mb4 px2'>
+<section id='tableresult'class='mt4 mb4 px2'>
   <h3 class='regular'>
-    <a class='black' href='#'>
+    <a class='black' href='#tableresult'>
       <code>
-        <span class='gray'></span>
+        TableResult<span class='gray'></span>
       </code>
     </a>
   </h3>
-  <p>MatchResult</p>
-
-
-
-    <p>
-      <table class='table-light overflow-hidden bg-cloudy-light'>
-        <thead>
-          <th class='col-3'>property</th>
-          <th class='col-3'>type</th>
-          <th class='col-6'>description</th>
-        </thead>
-          <tr>
-            <td>matched_points</td>
-            <td>
-              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>
-            </td>
-            <td><p>coordinates of the points snapped to the road network in [lat, lon]</p>
-</td>
-          </tr>
-          <tr>
-            <td>indices</td>
-            <td>
-              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>
-            </td>
-            <td><p>array that gives the indices of the matched coordinates in the original trace</p>
-</td>
-          </tr>
-          <tr>
-            <td>geometry</td>
-            <td>
-              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>
-            </td>
-            <td><p>geometry of the matched trace in the road network, compressed as polyline, but with 6 decimals. You can use the npm module polyline to decompress it.</p>
-</td>
-          </tr>
-          <tr>
-            <td>confidence</td>
-            <td>
-              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>
-            </td>
-            <td><p>value between 0 and 1, where 1 is very confident. Please note that the correctness of this value depends highly on the assumptions about the sample rate mentioned above.</p>
-</td>
-          </tr>
-      </table>
-    </p>
-
-
-
-
-
-
-
-</section>
-<section id=''class='mt4 mb4 px2'>
-  <h3 class='regular'>
-    <a class='black' href='#'>
-      <code>
-        <span class='gray'></span>
-      </code>
-    </a>
-  </h3>
-  <p>TableResult</p>
-
+  
 
 
     <p>
@@ -615,59 +664,6 @@ osrm.table(options, <span class="hljs-function"><span class="hljs-keyword">funct
               <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>>
             </td>
             <td><p>array of arrays that stores the matrix in row-major order. <code>distance_table[i][j]</code> gives the travel time from the i-th via to the j-th via point. Values are given in 10th of a second.</p>
-</td>
-          </tr>
-      </table>
-    </p>
-
-
-
-
-
-
-
-</section>
-<section id=''class='mt4 mb4 px2'>
-  <h3 class='regular'>
-    <a class='black' href='#'>
-      <code>
-        <span class='gray'></span>
-      </code>
-    </a>
-  </h3>
-  <p>NearestResult</p>
-
-
-
-    <p>
-      <table class='table-light overflow-hidden bg-cloudy-light'>
-        <thead>
-          <th class='col-3'>property</th>
-          <th class='col-3'>type</th>
-          <th class='col-6'>description</th>
-        </thead>
-          <tr>
-            <td>status</td>
-            <td>
-              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>
-            </td>
-            <td><p>Passed or failed.</p>
-</td>
-          </tr>
-          <tr>
-            <td>mapped_coordinate</td>
-            <td>
-              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>
-            </td>
-            <td><p>Array that contains the [lat, lon] pair of the snapped coordinate.</p>
-</td>
-          </tr>
-          <tr>
-            <td>name</td>
-            <td>
-              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>
-            </td>
-            <td><p>Name of the street the coordinate snapped to.</p>
 </td>
           </tr>
       </table>

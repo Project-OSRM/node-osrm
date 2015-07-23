@@ -1,3 +1,30 @@
+## `MatchResult`
+
+
+
+
+| name | type | description |
+| ---- | ---- | ----------- |
+| `matched_points` | `Array` | coordinates of the points snapped to the road network in [lat, lon] |
+| `indices` | `Array` | array that gives the indices of the matched coordinates in the original trace |
+| `geometry` | `String` | geometry of the matched trace in the road network, compressed as polyline, but with 6 decimals. You can use the npm module polyline to decompress it. |
+| `confidence` | `Number` | value between 0 and 1, where 1 is very confident. Please note that the correctness of this value depends highly on the assumptions about the sample rate mentioned above. |
+
+
+
+## `NearestResult`
+
+
+
+
+| name | type | description |
+| ---- | ---- | ----------- |
+| `status` | `Number` | Passed or failed. |
+| `mapped_coordinate` | `Array<Number>` | Array that contains the [lat, lon] pair of the snapped coordinate. |
+| `name` | `String` | Name of the street the coordinate snapped to. |
+
+
+
 ## `OSRM`
 
 Creates a new `osrm` instance
@@ -130,9 +157,9 @@ osrm.table(options, function(err, table) {
 
 Returns `TableResult` 
 
-## ``
+## `RouteResult`
 
-RouteResult
+
 
 
 | name | type | description |
@@ -141,41 +168,14 @@ RouteResult
 
 
 
-## ``
-
-MatchResult
+## `TableResult`
 
 
-| name | type | description |
-| ---- | ---- | ----------- |
-| `matched_points` | `Array` | coordinates of the points snapped to the road network in [lat, lon] |
-| `indices` | `Array` | array that gives the indices of the matched coordinates in the original trace |
-| `geometry` | `String` | geometry of the matched trace in the road network, compressed as polyline, but with 6 decimals. You can use the npm module polyline to decompress it. |
-| `confidence` | `Number` | value between 0 and 1, where 1 is very confident. Please note that the correctness of this value depends highly on the assumptions about the sample rate mentioned above. |
-
-
-
-## ``
-
-TableResult
 
 
 | name | type | description |
 | ---- | ---- | ----------- |
 | `distance_table` | `Array<Array<Number>>` | array of arrays that stores the matrix in row-major order. `distance_table[i][j]` gives the travel time from the i-th via to the j-th via point. Values are given in 10th of a second. |
-
-
-
-## ``
-
-NearestResult
-
-
-| name | type | description |
-| ---- | ---- | ----------- |
-| `status` | `Number` | Passed or failed. |
-| `mapped_coordinate` | `Array<Number>` | Array that contains the [lat, lon] pair of the snapped coordinate. |
-| `name` | `String` | Name of the street the coordinate snapped to. |
 
 
 
