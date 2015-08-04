@@ -5,10 +5,10 @@
 
 | name | type | description |
 | ---- | ---- | ----------- |
-| `matched_points` | `Array` | coordinates of the points snapped to the road network in [lat, lon] |
-| `indices` | `Array` | array that gives the indices of the matched coordinates in the original trace |
-| `geometry` | `String` | geometry of the matched trace in the road network, compressed as polyline, but with 6 decimals. You can use the npm module polyline to decompress it. |
-| `confidence` | `Number` | value between 0 and 1, where 1 is very confident. Please note that the correctness of this value depends highly on the assumptions about the sample rate mentioned above. |
+| `matched_points` | `Array` | Coordinates the points snapped to the road network as latitude, longitude pairs. |
+| `indices` | `Array` | Array that gives the indices of the matched coordinates in the original trace. |
+| `geometry` | `String` | Geometry of the matched trace in the road network, compressed as polyline, but with 6 decimals. You can use the npm module polyline to decompress it. |
+| `confidence` | `Number` | Value between 0 and 1, where 1 is very confident. Please note that the correctness of this value depends highly on the assumptions about the sample rate mentioned above. |
 
 
 
@@ -31,10 +31,10 @@ Creates a new `osrm` instance
 
 ### Parameters
 
-* `options` **`Object`** Contructor object. Optionally, pass only the `path`
-  * `options.path` **`String`** Path to .osrm preprocessed file.
+* `options` **`Object`** An object containing osrm options.
+  * `options.path` **`String`** Path to the [ .osrm preprocessed file](https://github.com/Project-OSRM/osrm-backend/wiki/Running-OSRM#creating-the-hierarchy). If `path` is the the only option, it can be used directly as a string.
   * `options.shared_memory` **`[Boolean]`** Allows you to share data among a number of processes and the shared memory used is persistent. It stays in the system until it is explicitly removed.
-  * `options.distance_table` **`[String]`** The maximum number of locations in the distance table.
+  * `options.distance_table` **`[Number]`** The maximum number of locations in the distance table.
 
 
 ### Examples
@@ -52,7 +52,7 @@ Returns coordinate snapped to nearest node
 
 ### Parameters
 
-* `point` **`Array<Number>`** latitude, longitude pair to locate on the network.
+* `point` **`Array<Number>`** Latitude, longitude pair to locate on the network.
 
 
 ### Examples
@@ -64,7 +64,7 @@ osrm.locate([52.4224, 13.333086], function(err, result) {
 });
 ```
 
-Returns  node location of the node as latitude longitude pair.
+Returns  node Location of the nearest node as a latitude, longitude pair.
 
 ## `osrm.match`
 
@@ -72,9 +72,8 @@ Matches given coordinates to the road network
 
 ### Parameters
 
-* `coordinates` **`Array<Number>`** the point to match as a latitude, longitude array.
-* `timestamps` **`Array<Number>`** an array of the preceding point in UNIX style format (eg: 1424684612).
-* `geometry` **`[Boolean]`** Return route geometry. (optional, default `true`)
+* `coordinates` **`Array<Array<Number>>`** The point to match as a latitude, longitude array.
+* `timestamps` **`Array<Number>`** An array of UNIX style timestamps corresponding to the input coordinates (eg: 1424684612).
 * `classify` **`[Boolean]`** Return a confidence value for this matching. (optional, default `false`)
 * `gps_precision` **`[Number]`** Specify gps precision as standart deviation in meters. (optional, default `-1`)
 * `matching_beta` **`[Number]`** Specify beta value for matching algorithm. (optional, default `-1`)
@@ -112,15 +111,14 @@ Computes a route between coordinates over the network.
 
 ### Parameters
 
-* `options` **`Object`** options object
-  * `options.coordinates` **`Array<Array<Number>>`** An array of number arrays expressing coordinate pairs as latitude, longitude.
+* `options` **`Object`** Object literal containing parameters for the route query.
+  * `options.coordinates` **`Array<Array<Number>>`** Via points to route represented by an array of number arrays expressing coordinate pairs as latitude, longitude.
   * `options.alternateRoute` **`[Boolean]`** Return an alternate route. (optional, default `false`)
-  * `options.checksum` **`[Number]`** `Checksum` of the network dataset. (optional, default `0`)
-  * `options.zoomLevel` **`[Number]`** Zoom level determines the level of generalization. The default zoom 18 performs no generalization. (optional, default `18`)
+  * `options.checksum` **`[Number]`** [Checksum](https://en.wikipedia.org/wiki/Checksum) of the network dataset. (optional, default `0`)
+  * `options.zoomLevel` **`[Number]`** Determines the level of generalization. The default zoom 18 performs no generalization. (optional, default `18`)
   * `options.printInstructions` **`[Boolean]`** Include turn by turn instructions. (optional, default `false`)
   * `options.geometry` **`[Boolean]`** Include the geometry of the route. (optional, default `true`)
-  * `options.jsonpParameter` **`[String]`** Format results with jsonp. (optional, default `&quot;&quot;`)
-  * `options.hints` **`[Array<String>]`** `Polylines` that can be used to speed up incremental queries, where only a few via nodes change.
+  * `options.hints` **`[Array<String>]`** [Polylines](https://github.com/mapbox/polyline) that can be used to speed up incremental queries, where only a few via nodes change.
 
 
 ### Examples

@@ -92,7 +92,7 @@
             <td>
               <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>
             </td>
-            <td><p>coordinates of the points snapped to the road network in [lat, lon]</p>
+            <td><p>Coordinates the points snapped to the road network as latitude, longitude pairs.</p>
 </td>
           </tr>
           <tr>
@@ -100,7 +100,7 @@
             <td>
               <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>
             </td>
-            <td><p>array that gives the indices of the matched coordinates in the original trace</p>
+            <td><p>Array that gives the indices of the matched coordinates in the original trace.</p>
 </td>
           </tr>
           <tr>
@@ -108,7 +108,7 @@
             <td>
               <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>
             </td>
-            <td><p>geometry of the matched trace in the road network, compressed as polyline, but with 6 decimals. You can use the npm module polyline to decompress it.</p>
+            <td><p>Geometry of the matched trace in the road network, compressed as polyline, but with 6 decimals. You can use the npm module polyline to decompress it.</p>
 </td>
           </tr>
           <tr>
@@ -116,7 +116,7 @@
             <td>
               <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>
             </td>
-            <td><p>value between 0 and 1, where 1 is very confident. Please note that the correctness of this value depends highly on the assumptions about the sample rate mentioned above.</p>
+            <td><p>Value between 0 and 1, where 1 is very confident. Please note that the correctness of this value depends highly on the assumptions about the sample rate mentioned above.</p>
 </td>
           </tr>
       </table>
@@ -204,7 +204,7 @@
             <td>
               <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>
             </td>
-            <td><p>Contructor object. Optionally, pass only the <code>path</code></p>
+            <td><p>An object containing osrm options.</p>
 </td>
           </tr>
             <tr>
@@ -212,7 +212,7 @@
               <td>
                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>
               </td>
-              <td><p>Path to .osrm preprocessed file.</p>
+              <td><p>Path to the <a href="https://github.com/Project-OSRM/osrm-backend/wiki/Running-OSRM#creating-the-hierarchy"> .osrm preprocessed file</a>. If <code>path</code> is the the only option, it can be used directly as a string.</p>
 </td>
             </tr>
             <tr>
@@ -226,7 +226,7 @@
             <tr>
               <td>options.distance_table</td>
               <td>
-                <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>]</code>
+                <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>]</code>
               </td>
               <td><p>The maximum number of locations in the distance table.</p>
 </td>
@@ -275,7 +275,7 @@
             <td>
               <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>
             </td>
-            <td><p>latitude, longitude pair to locate on the network.</p>
+            <td><p>Latitude, longitude pair to locate on the network.</p>
 </td>
           </tr>
       </table>
@@ -286,7 +286,7 @@
       <code><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>></code>
       :
       <span class='force-inline'>
-        <p>node location of the node as latitude longitude pair.</p>
+        <p>node Location of the nearest node as a latitude, longitude pair.</p>
 
       </span>
 
@@ -305,7 +305,7 @@ osrm.locate([<span class="hljs-number">52.4224</span>, <span class="hljs-number"
   <h3 class='regular'>
     <a class='black' href='#osrm-match'>
       <code>
-        osrm.match<span class='gray'>(coordinates, timestamps, [geometry], [classify], [gps_precision], [matching_beta])</span>
+        osrm.match<span class='gray'>(coordinates, timestamps, [classify], [gps_precision], [matching_beta])</span>
       </code>
     </a>
   </h3>
@@ -322,9 +322,9 @@ osrm.locate([<span class="hljs-number">52.4224</span>, <span class="hljs-number"
           <tr>
             <td>coordinates</td>
             <td>
-              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>>
             </td>
-            <td><p>the point to match as a latitude, longitude array.</p>
+            <td><p>The point to match as a latitude, longitude array.</p>
 </td>
           </tr>
           <tr>
@@ -332,16 +332,7 @@ osrm.locate([<span class="hljs-number">52.4224</span>, <span class="hljs-number"
             <td>
               <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>
             </td>
-            <td><p>an array of the preceding point in UNIX style format (eg: 1424684612).</p>
-</td>
-          </tr>
-          <tr>
-            <td>geometry</td>
-            <td>
-              <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></code>]</code>
-                (default <code>true</code>)
-            </td>
-            <td><p>Return route geometry.</p>
+            <td><p>An array of UNIX style timestamps corresponding to the input coordinates (eg: 1424684612).</p>
 </td>
           </tr>
           <tr>
@@ -458,7 +449,7 @@ osrm.match(options, <span class="hljs-function"><span class="hljs-keyword">funct
             <td>
               <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>
             </td>
-            <td><p>options object</p>
+            <td><p>Object literal containing parameters for the route query.</p>
 </td>
           </tr>
             <tr>
@@ -466,7 +457,7 @@ osrm.match(options, <span class="hljs-function"><span class="hljs-keyword">funct
               <td>
                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>>
               </td>
-              <td><p>An array of number arrays expressing coordinate pairs as latitude, longitude.</p>
+              <td><p>Via points to route represented by an array of number arrays expressing coordinate pairs as latitude, longitude.</p>
 </td>
             </tr>
             <tr>
@@ -484,7 +475,7 @@ osrm.match(options, <span class="hljs-function"><span class="hljs-keyword">funct
                 <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>]</code>
                 (default <code>0</code>)
               </td>
-              <td><p><a href="https-en-wikipedia-org-wiki-checksum"><code>Checksum</code></a> of the network dataset.</p>
+              <td><p><a href="https://en.wikipedia.org/wiki/Checksum">Checksum</a> of the network dataset.</p>
 </td>
             </tr>
             <tr>
@@ -493,7 +484,7 @@ osrm.match(options, <span class="hljs-function"><span class="hljs-keyword">funct
                 <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>]</code>
                 (default <code>18</code>)
               </td>
-              <td><p>Zoom level determines the level of generalization. The default zoom 18 performs no generalization.</p>
+              <td><p>Determines the level of generalization. The default zoom 18 performs no generalization.</p>
 </td>
             </tr>
             <tr>
@@ -515,20 +506,11 @@ osrm.match(options, <span class="hljs-function"><span class="hljs-keyword">funct
 </td>
             </tr>
             <tr>
-              <td>options.jsonpParameter</td>
-              <td>
-                <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>]</code>
-                (default <code>&quot;&quot;</code>)
-              </td>
-              <td><p>Format results with jsonp.</p>
-</td>
-            </tr>
-            <tr>
               <td>options.hints</td>
               <td>
                 <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>>]</code>
               </td>
-              <td><p><a href="https-github-com-mapbox-polyline"><code>Polylines</code></a> that can be used to speed up incremental queries, where only a few via nodes change.</p>
+              <td><p><a href="https://github.com/mapbox/polyline">Polylines</a> that can be used to speed up incremental queries, where only a few via nodes change.</p>
 </td>
             </tr>
       </table>

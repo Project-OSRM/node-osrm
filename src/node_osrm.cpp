@@ -76,10 +76,10 @@ void Engine::Initialize(Handle<Object> target) {
  * @class OSRM
  * @name OSRM
  *
- * @param {Object} options Contructor object. Optionally, pass only the `path`
- * @param {String} options.path Path to .osrm preprocessed file.
+ * @param {Object} options An object containing osrm options.
+ * @param {String} options.path Path to the [ .osrm preprocessed file](https://github.com/Project-OSRM/osrm-backend/wiki/Running-OSRM#creating-the-hierarchy). If `path` is the the only option, it can be used directly as a string.
  * @param {Boolean} [options.shared_memory] Allows you to share data among a number of processes and the shared memory used is persistent. It stays in the system until it is explicitly removed.
- * @param {String} [options.distance_table] The maximum number of locations in the distance table.
+ * @param {Number} [options.distance_table] The maximum number of locations in the distance table.
  * 
  * @returns {Object} The osrm instance.
  *
@@ -172,15 +172,14 @@ struct RunQueryBaton {
  *
  * @name osrm.route
  * 
- * @param {Object} options options object
- * @param {Array<Array<Number>>} options.coordinates An array of number arrays expressing coordinate pairs as latitude, longitude.
+ * @param {Object} options Object literal containing parameters for the route query.
+ * @param {Array<Array<Number>>} options.coordinates Via points to route represented by an array of number arrays expressing coordinate pairs as latitude, longitude.
  * @param {Boolean} [options.alternateRoute=false] Return an alternate route.
- * @param {Number} [options.checksum=0] [Checksum]{@link https://en.wikipedia.org/wiki/Checksum} of the network dataset.
- * @param {Number} [options.zoomLevel=18] Zoom level determines the level of generalization. The default zoom 18 performs no generalization.
+ * @param {Number} [options.checksum=0] [Checksum](https://en.wikipedia.org/wiki/Checksum) of the network dataset.
+ * @param {Number} [options.zoomLevel=18] Determines the level of generalization. The default zoom 18 performs no generalization.
  * @param {Boolean} [options.printInstructions=false] Include turn by turn instructions.
  * @param {Boolean} [options.geometry=true] Include the geometry of the route.
- * @param {String} [options.jsonpParameter=""] Format results with jsonp.
- * @param {Array<String>} [options.hints] [Polylines]{@link https://github.com/mapbox/polyline} that can be used to speed up incremental queries, where only a few via nodes change.
+ * @param {Array<String>} [options.hints] [Polylines](https://github.com/mapbox/polyline) that can be used to speed up incremental queries, where only a few via nodes change.
  * 
  * @returns {RouteResult} matchings array containing an object for each partial sub-matching of the trace.
  *
@@ -316,9 +315,9 @@ NAN_METHOD(Engine::route)
  *
  * @name osrm.locate
  * 
- * @param {Array<Number>} point latitude, longitude pair to locate on the network.
+ * @param {Array<Number>} point Latitude, longitude pair to locate on the network.
  * 
- * @returns {Array<Number>} node location of the node as latitude longitude pair.
+ * @returns {Array<Number>} node Location of the nearest node as a latitude, longitude pair.
  *
  * @example
  * var osrm = new OSRM('berlin-latest.osrm');
@@ -361,9 +360,8 @@ NAN_METHOD(Engine::locate)
  *
  * @name osrm.match
  * 
- * @param {Array<Number>} coordinates the point to match as a latitude, longitude array.
- * @param {Array<Number>} timestamps an array of the preceding point in UNIX style format (eg: 1424684612).
- * @param {Boolean} [geometry=true] Return route geometry.
+ * @param {Array<Array<Number>>} coordinates The point to match as a latitude, longitude array.
+ * @param {Array<Number>} timestamps An array of UNIX style timestamps corresponding to the input coordinates (eg: 1424684612).
  * @param {Boolean} [classify=false] Return a confidence value for this matching.
  * @param {Number} [gps_precision=-1] Specify gps precision as standart deviation in meters.
  * @param {Number} [matching_beta=-1] Specify beta value for matching algorithm.
@@ -385,10 +383,10 @@ NAN_METHOD(Engine::locate)
 /**
  * @name MatchResult
  * @typedef {Object} MatchResult
- * @property {Array} matched_points coordinates of the points snapped to the road network in [lat, lon]
- * @property {Array} indices array that gives the indices of the matched coordinates in the original trace
- * @property {String} geometry geometry of the matched trace in the road network, compressed as polyline, but with 6 decimals. You can use the npm module polyline to decompress it.
- * @property {Number} confidence value between 0 and 1, where 1 is very confident. Please note that the correctness of this value depends highly on the assumptions about the sample rate mentioned above.
+ * @property {Array} matched_points Coordinates the points snapped to the road network as latitude, longitude pairs.
+ * @property {Array} indices Array that gives the indices of the matched coordinates in the original trace.
+ * @property {String} geometry Geometry of the matched trace in the road network, compressed as polyline, but with 6 decimals. You can use the npm module polyline to decompress it.
+ * @property {Number} confidence Value between 0 and 1, where 1 is very confident. Please note that the correctness of this value depends highly on the assumptions about the sample rate mentioned above.
  */
 NAN_METHOD(Engine::match)
 {
