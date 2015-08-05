@@ -11,7 +11,7 @@
     <div class='clearfix flex flex-stretch mxn2'>
       <div class='documentation-sidebar relative top-0 bottom-0 right-0 px2 py2 col-3 sm-show'>
         <div class='font-smaller fixed col-3 top-0 bottom-0 left-0 overflow-auto black bg-cloudy'>
-          <a href='/' class='h3 button block button-transparent'>node-osrm </a>
+          <a href='/' class='h5 button block button-transparent'>node-osrm </a>
           <div class='px2'>
               <a
                 href='#matchresult'
@@ -90,7 +90,7 @@
           <tr>
             <td>matched_points</td>
             <td>
-              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>>
             </td>
             <td><p>Coordinates the points snapped to the road network as latitude, longitude pairs.</p>
 </td>
@@ -98,7 +98,7 @@
           <tr>
             <td>indices</td>
             <td>
-              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>
             </td>
             <td><p>Array that gives the indices of the matched coordinates in the original trace.</p>
 </td>
@@ -108,7 +108,7 @@
             <td>
               <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>
             </td>
-            <td><p>Geometry of the matched trace in the road network, compressed as polyline, but with 6 decimals. You can use the npm module polyline to decompress it.</p>
+            <td><p>Geometry of the matched trace in the road network, compressed as a <a href="https://github.com/mapbox/polyline">polyline</a> with 6 decimals of precision.</p>
 </td>
           </tr>
           <tr>
@@ -116,7 +116,7 @@
             <td>
               <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>
             </td>
-            <td><p>Value between 0 and 1, where 1 is very confident. Please note that the correctness of this value depends highly on the assumptions about the sample rate mentioned above.</p>
+            <td><p>Value between 0 and 1, where 1 is very confident. Please note that the correctness of this value depends highly on <a href="https://github.com/Project-OSRM/osrm-backend/wiki/Server-api#service-match">the assumptions about the sample rate</a>.</p>
 </td>
           </tr>
       </table>
@@ -152,7 +152,7 @@
             <td>
               <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>
             </td>
-            <td><p>Passed or failed.</p>
+            <td><p>0 if passed, undefined if failed.</p>
 </td>
           </tr>
           <tr>
@@ -160,7 +160,7 @@
             <td>
               <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>
             </td>
-            <td><p>Array that contains the [lat, lon] pair of the snapped coordinate.</p>
+            <td><p>Array that contains the latitude, longitude pair for the snapped coordinate.</p>
 </td>
           </tr>
           <tr>
@@ -212,7 +212,7 @@
               <td>
                 <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>
               </td>
-              <td><p>Path to the <a href="https://github.com/Project-OSRM/osrm-backend/wiki/Running-OSRM#creating-the-hierarchy"> .osrm preprocessed file</a>. If <code>path</code> is the the only option, it can be used directly as a string.</p>
+              <td><p>Path to the <a href="https://github.com/Project-OSRM/osrm-backend/wiki/Running-OSRM#creating-the-hierarchy">.osrm preprocessed file</a>. If <code>path</code> is the the only option, it can be used directly as a string.</p>
 </td>
             </tr>
             <tr>
@@ -367,10 +367,10 @@ osrm.locate([<span class="hljs-number">52.4224</span>, <span class="hljs-number"
 
 
       <h4>Returns</h4>
-      <code><code><a href="#matchresult">MatchResult</a></code></code>
+      <code><code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="#matchresult">MatchResult</a></code>></code>
       :
       <span class='force-inline'>
-        <p>matchings array containing an object for each partial sub-matching of the trace.</p>
+        <p>matchings Array of MatchResults, each containing an object for a partial sub-matching of the trace.</p>
 
       </span>
 
@@ -473,7 +473,6 @@ osrm.match(options, <span class="hljs-function"><span class="hljs-keyword">funct
               <td>options.checksum</td>
               <td>
                 <code>[<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>]</code>
-                (default <code>0</code>)
               </td>
               <td><p><a href="https://en.wikipedia.org/wiki/Checksum">Checksum</a> of the network dataset.</p>
 </td>
@@ -606,11 +605,124 @@ osrm.table(options, <span class="hljs-function"><span class="hljs-keyword">funct
           <th class='col-6'>description</th>
         </thead>
           <tr>
-            <td>Line</td>
+            <td>status</td>
             <td>
-              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>
             </td>
-            <td></td>
+            <td><p>0 if passed, undefined if failed.</p>
+</td>
+          </tr>
+          <tr>
+            <td>status_message</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>
+            </td>
+            <td><p>Information about the query results.</p>
+</td>
+          </tr>
+          <tr>
+            <td>via_indices</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>
+            </td>
+            <td><p>Array of node indices corresponding to the via coordinates.</p>
+</td>
+          </tr>
+          <tr>
+            <td>route_geometry</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>
+            </td>
+            <td><p>Geometry of the suggested route, compressed as a <a href="https://github.com/mapbox/polyline">polyline</a>.</p>
+</td>
+          </tr>
+          <tr>
+            <td>route_summary</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>
+            </td>
+            <td><p>Object literal containing an overview of the suggested route.</p>
+</td>
+          </tr>
+          <tr>
+            <td>route_summary.start_point</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>
+            </td>
+            <td><p>Human readable name of the start location.</p>
+</td>
+          </tr>
+          <tr>
+            <td>route_summary.end_point</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>
+            </td>
+            <td><p>Human readable name of the end location.</p>
+</td>
+          </tr>
+          <tr>
+            <td>route_summary.total_time</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>
+            </td>
+            <td><p>Total time of the trip in seconds.</p>
+</td>
+          </tr>
+          <tr>
+            <td>route_summary.total_distance</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>
+            </td>
+            <td><p>Total distance of the trip in meters.</p>
+</td>
+          </tr>
+          <tr>
+            <td>via_points</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>>
+            </td>
+            <td><p>Array of latitude, longitude Array pairs representing the routed points.</p>
+</td>
+          </tr>
+          <tr>
+            <td>found_alternative</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean">Boolean</a></code>
+            </td>
+            <td><p>Value will be <code>true</code> if an alternitive route was requested and found. Set options.alternateRoute to <code>true</code> to attempt to find an alternate route.</p>
+</td>
+          </tr>
+          <tr>
+            <td>route_name</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>>
+            </td>
+            <td><p>An array of the most prominent street names along the route.</p>
+</td>
+          </tr>
+          <tr>
+            <td>hint_data</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>
+            </td>
+            <td><p>Object literal containing necessary data for speeding up similar queries.</p>
+</td>
+          </tr>
+          <tr>
+            <td>hint_data.locations</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">String</a></code>>
+            </td>
+            <td><p>An array of <a href="https://github.com/mapbox/polyline">polyline</a> strings used for incremental hinting.</p>
+</td>
+          </tr>
+          <tr>
+            <td>hint_data.checksum</td>
+            <td>
+              <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>
+            </td>
+            <td><p><a href="https://en.wikipedia.org/wiki/Checksum">Checksum</a> of the network dataset.</p>
+</td>
           </tr>
       </table>
     </p>
@@ -645,7 +757,7 @@ osrm.table(options, <span class="hljs-function"><span class="hljs-keyword">funct
             <td>
               <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code><<code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number">Number</a></code>>>
             </td>
-            <td><p>array of arrays that stores the matrix in row-major order. <code>distance_table[i][j]</code> gives the travel time from the i-th via to the j-th via point. Values are given in 10th of a second.</p>
+            <td><p>Array of arrays that stores the matrix in <a href="https://en.wikipedia.org/wiki/Row-major_order">row-major order</a>. <code>distance_table[i][j]</code> gives the travel time from the i-th via to the j-th via point. Values are given in 10th of a second.</p>
 </td>
           </tr>
       </table>

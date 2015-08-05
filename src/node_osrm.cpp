@@ -69,7 +69,7 @@ void Engine::Initialize(Handle<Object> target) {
     target->Set(NanNew("OSRM"), lcons->GetFunction());
     NanAssignPersistent(constructor, lcons);
 }
-    
+
 /**
  * Creates a new `osrm` instance
  *
@@ -77,7 +77,7 @@ void Engine::Initialize(Handle<Object> target) {
  * @name OSRM
  *
  * @param {Object} options An object containing osrm options.
- * @param {String} options.path Path to the [ .osrm preprocessed file](https://github.com/Project-OSRM/osrm-backend/wiki/Running-OSRM#creating-the-hierarchy). If `path` is the the only option, it can be used directly as a string.
+ * @param {String} options.path Path to the [.osrm preprocessed file](https://github.com/Project-OSRM/osrm-backend/wiki/Running-OSRM#creating-the-hierarchy). If `path` is the the only option, it can be used directly as a string.
  * @param {Boolean} [options.shared_memory] Allows you to share data among a number of processes and the shared memory used is persistent. It stays in the system until it is explicitly removed.
  * @param {Number} [options.distance_table] The maximum number of locations in the distance table.
  * 
@@ -175,7 +175,7 @@ struct RunQueryBaton {
  * @param {Object} options Object literal containing parameters for the route query.
  * @param {Array<Array<Number>>} options.coordinates Via points to route represented by an array of number arrays expressing coordinate pairs as latitude, longitude.
  * @param {Boolean} [options.alternateRoute=false] Return an alternate route.
- * @param {Number} [options.checksum=0] [Checksum](https://en.wikipedia.org/wiki/Checksum) of the network dataset.
+ * @param {Number} [options.checksum] [Checksum](https://en.wikipedia.org/wiki/Checksum) of the network dataset.
  * @param {Number} [options.zoomLevel=18] Determines the level of generalization. The default zoom 18 performs no generalization.
  * @param {Boolean} [options.printInstructions=false] Include turn by turn instructions.
  * @param {Boolean} [options.geometry=true] Include the geometry of the route.
@@ -194,7 +194,21 @@ struct RunQueryBaton {
 /**
  * @name RouteResult
  * @typedef {Object} RouteResult
- * @property {Array} Line
+ * @property {Number} status 0 if passed, undefined if failed.
+ * @property {String} status_message Information about the query results.
+ * @property {Array<Number>} via_indices Array of node indices corresponding to the via coordinates.
+ * @property {String} route_geometry Geometry of the suggested route, compressed as a [polyline](https://github.com/mapbox/polyline).
+ * @property {Object} route_summary Object literal containing an overview of the suggested route.
+ * @property {String} route_summary.start_point Human readable name of the start location.
+ * @property {String} route_summary.end_point Human readable name of the end location.
+ * @property {Number} route_summary.total_time Total time of the trip in seconds.
+ * @property {Number} route_summary.total_distance Total distance of the trip in meters.
+ * @property {Array<Array<Number>>} via_points Array of latitude, longitude Array pairs representing the routed points.
+ * @property {Boolean} found_alternative Value will be `true` if an alternitive route was requested and found. Set options.alternateRoute to `true` to attempt to find an alternate route.
+ * @property {Array<String>} route_name An array of the most prominent street names along the route.
+ * @property {Object} hint_data Object literal containing necessary data for speeding up similar queries.
+ * @property {Array<String>} hint_data.locations An array of [polyline](https://github.com/mapbox/polyline) strings used for incremental hinting.
+ * @property {Number} hint_data.checksum [Checksum](https://en.wikipedia.org/wiki/Checksum) of the network dataset.
  */
 NAN_METHOD(Engine::route)
 {
@@ -366,7 +380,7 @@ NAN_METHOD(Engine::locate)
  * @param {Number} [gps_precision=-1] Specify gps precision as standart deviation in meters.
  * @param {Number} [matching_beta=-1] Specify beta value for matching algorithm.
  * 
- * @returns {MatchResult} matchings array containing an object for each partial sub-matching of the trace.
+ * @returns {Array<MatchResult>} matchings Array of MatchResults, each containing an object for a partial sub-matching of the trace.
  *
  * @example
  * var osrm = new OSRM('berlin-latest.osrm');
@@ -383,10 +397,10 @@ NAN_METHOD(Engine::locate)
 /**
  * @name MatchResult
  * @typedef {Object} MatchResult
- * @property {Array} matched_points Coordinates the points snapped to the road network as latitude, longitude pairs.
- * @property {Array} indices Array that gives the indices of the matched coordinates in the original trace.
- * @property {String} geometry Geometry of the matched trace in the road network, compressed as polyline, but with 6 decimals. You can use the npm module polyline to decompress it.
- * @property {Number} confidence Value between 0 and 1, where 1 is very confident. Please note that the correctness of this value depends highly on the assumptions about the sample rate mentioned above.
+ * @property {Array<Array<Number>>} matched_points Coordinates the points snapped to the road network as latitude, longitude pairs.
+ * @property {Array<Number>} indices Array that gives the indices of the matched coordinates in the original trace.
+ * @property {String} geometry Geometry of the matched trace in the road network, compressed as a [polyline](https://github.com/mapbox/polyline) with 6 decimals of precision.
+ * @property {Number} confidence Value between 0 and 1, where 1 is very confident. Please note that the correctness of this value depends highly on [the assumptions about the sample rate](https://github.com/Project-OSRM/osrm-backend/wiki/Server-api#service-match).
  */
 NAN_METHOD(Engine::match)
 {
@@ -615,7 +629,7 @@ NAN_METHOD(Engine::trip)
 /**
  * @name TableResult
  * @typedef {Object} TableResult 
- * @property {Array<Array<Number>>} distance_table array of arrays that stores the matrix in row-major order. `distance_table[i][j]` gives the travel time from the i-th via to the j-th via point. Values are given in 10th of a second.
+ * @property {Array<Array<Number>>} distance_table Array of arrays that stores the matrix in [row-major order](https://en.wikipedia.org/wiki/Row-major_order). `distance_table[i][j]` gives the travel time from the i-th via to the j-th via point. Values are given in 10th of a second.
  */
 NAN_METHOD(Engine::table)
 {
@@ -689,8 +703,8 @@ NAN_METHOD(Engine::table)
 /**
  * @name NearestResult
  * @typedef {Object} NearestResult
- * @property {Number} status Passed or failed.
- * @property {Array<Number>} mapped_coordinate Array that contains the [lat, lon] pair of the snapped coordinate.
+ * @property {Number} status 0 if passed, undefined if failed.
+ * @property {Array<Number>} mapped_coordinate Array that contains the latitude, longitude pair for the snapped coordinate.
  * @property {String} name Name of the street the coordinate snapped to.
  */
 NAN_METHOD(Engine::nearest)

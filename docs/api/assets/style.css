@@ -1,3 +1,7 @@
+.documentation a {
+  color: #1184CE;
+}
+
 .container-small {
   max-width: 58rem;
   margin-left: auto;
@@ -22,7 +26,7 @@
 }
 
 .bg-cloudy {
-  background: #363636;
+  background: #fafafa;
 }
 
 .force-inline * {
@@ -33,16 +37,8 @@ section:target {
   background: #fcfbf2;
 }
 
-.documentation-sidebar a {
-  color: #E4E4E4;
-}
-
-.documentation-sidebar a:hover {
-  background: #434343;
-}
-
 .documentation-sidebar a:active {
-  background: #696969;
+  background: #fcfbf2;
 }
 
 .documentation,
