@@ -1,5 +1,9 @@
 ## node-osrm changelog
 
+### 4.7.1
+
+ - Update OSRM to v4.7.1
+
 ### 4.7.0
 
  - Update OSRM to v4.7.0
