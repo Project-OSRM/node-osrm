@@ -37,6 +37,7 @@ public:
     static NAN_METHOD(nearest);
     static NAN_METHOD(table);
     static NAN_METHOD(match);
+    static NAN_METHOD(trip);
 
     static void Run(_NAN_METHOD_ARGS, route_parameters_ptr);
     static void AsyncRun(uv_work_t*);
@@ -63,6 +64,7 @@ void Engine::Initialize(Handle<Object> target) {
     NODE_SET_PROTOTYPE_METHOD(lcons, "nearest", nearest);
     NODE_SET_PROTOTYPE_METHOD(lcons, "table", table);
     NODE_SET_PROTOTYPE_METHOD(lcons, "match", match);
+    NODE_SET_PROTOTYPE_METHOD(lcons, "trip", trip);
     lcons->Set(NanNew("libosrm_version"), NanNew(LIBOSRM_GIT_REVISION));
     target->Set(NanNew("OSRM"), lcons->GetFunction());
     NanAssignPersistent(constructor, lcons);
@@ -371,6 +373,121 @@ NAN_METHOD(Engine::match)
         params->coordinates.emplace_back(static_cast<int>(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION),
                                          static_cast<int>(coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
 
+    }
+
+    Run(args, std::move(params));
+    NanReturnUndefined();
+}
+
+// uses the same options as viaroute
+NAN_METHOD(Engine::trip)
+{
+    NanScope();
+
+    if (args.Length() < 2) {
+        NanThrowTypeError("two arguments required");
+        NanReturnUndefined();
+    }
+
+    if (!args[0]->IsObject()) {
+        NanThrowTypeError("first arg must be an object");
+        NanReturnUndefined();
+    }
+
+    Local<Object> obj = args[0]->ToObject();
+
+    route_parameters_ptr params = make_unique<RouteParameters>();
+
+    params->zoom_level = 18; //no generalization
+    params->print_instructions = false; //turn by turn instructions
+    params->alternate_route = false; //get an alternate route, too
+    params->geometry = true; //retrieve geometry of route
+    params->compression = true; //polyline encoding
+    params->check_sum = 0; //see wiki
+    params->service = "trip"; //that's routing
+    params->output_format = "json";
+    params->jsonp_parameter = ""; //set for jsonp wrapping
+    params->language = ""; //unused atm
+
+    if (!obj->Has(NanNew("coordinates"))) {
+        NanThrowError("must provide a coordinates property");
+        NanReturnUndefined();
+    }
+
+    Local<Value> coordinates = obj->Get(NanNew("coordinates"));
+    if (!coordinates->IsArray()) {
+        NanThrowError("coordinates must be an array of (lat/long) pairs");
+        NanReturnUndefined();
+    }
+
+    Local<Array> coordinates_array = Local<Array>::Cast(coordinates);
+    if (coordinates_array->Length() < 2) {
+        NanThrowError("at least two coordinates must be provided");
+        NanReturnUndefined();
+    }
+
+    for (uint32_t i = 0; i < coordinates_array->Length(); ++i) {
+        Local<Value> coordinate = coordinates_array->Get(i);
+
+        if (!coordinate->IsArray()) {
+            NanThrowError("coordinates must be an array of (lat/long) pairs");
+            NanReturnUndefined();
+        }
+
+        Local<Array> coordinate_pair = Local<Array>::Cast(coordinate);
+        if (coordinate_pair->Length() != 2) {
+            NanThrowError("coordinates must be an array of (lat/long) pairs");
+            NanReturnUndefined();
+        }
+
+        params->coordinates.emplace_back(static_cast<int>(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION),
+                                         static_cast<int>(coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
+    }
+
+    if (obj->Has(NanNew("alternateRoute"))) {
+        params->alternate_route = obj->Get(NanNew("alternateRoute"))->BooleanValue();
+    }
+
+    if (obj->Has(NanNew("checksum"))) {
+        params->check_sum = static_cast<unsigned>(obj->Get(NanNew("checksum"))->Uint32Value());
+    }
+
+    if (obj->Has(NanNew("zoomLevel"))) {
+        params->zoom_level = static_cast<short>(obj->Get(NanNew("zoomLevel"))->Int32Value());
+    }
+
+    if (obj->Has(NanNew("printInstructions"))) {
+        params->print_instructions = obj->Get(NanNew("printInstructions"))->BooleanValue();
+    }
+
+    if (obj->Has(NanNew("geometry"))) {
+        params->geometry = obj->Get(NanNew("geometry"))->BooleanValue();
+    }
+
+    if (obj->Has(NanNew("jsonpParameter"))) {
+        params->jsonp_parameter = *v8::String::Utf8Value(obj->Get(NanNew("jsonpParameter")));
+    }
+
+    if (obj->Has(NanNew("hints"))) {
+        Local<Value> hints = obj->Get(NanNew("hints"));
+
+        if (!hints->IsArray()) {
+            NanThrowError("hints must be an array of strings/null");
+            NanReturnUndefined();
+        }
+
+        Local<Array> hints_array = Local<Array>::Cast(hints);
+        for (uint32_t i = 0; i < hints_array->Length(); ++i) {
+            Local<Value> hint = hints_array->Get(i);
+            if (hint->IsString()) {
+                params->hints.push_back(*v8::String::Utf8Value(hint));
+            } else if(hint->IsNull()){
+                params->hints.push_back("");
+            }else{
+                NanThrowError("hint must be null or string");
+                NanReturnUndefined();
+            }
+        }
     }
 
     Run(args, std::move(params));
