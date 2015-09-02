@@ -4,7 +4,7 @@
     "url": "https://github.com/Project-OSRM/node-osrm",
     "homepage": "http://project-osrm.org",
     "author": "Dane Springmeyer <springmeyer>",
-    "version": "4.7.1",
+    "version": "4.8.0-rc1",
     "main": "./lib/osrm.js",
     "bugs": {
         "email": "dane@mapbox.com",
