@@ -335,6 +335,9 @@ NAN_METHOD(Engine::match)
     if (obj->Has(NanNew("matching_beta"))) {
         params->matching_beta = obj->Get(NanNew("matching_beta"))->NumberValue();
     }
+    if (obj->Has(NanNew("compression"))) {
+        params->compression = obj->Get(NanNew("compression"))->BooleanValue();
+    }
 
     if (timestamps->IsArray()) {
         Local<Array> timestamps_array = Local<Array>::Cast(timestamps);
