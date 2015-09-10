@@ -118,7 +118,27 @@ osrm.route(query, function (err, result) {
 
 # Source Build
 
-To build from source you will need:
+## Using Mason
+
+You can build from source by using [mason](https://github.com/mapbox/mason).
+Just go to your node-osrm folder and run:
+```
+. ./bootstrap.sh
+```
+This will download and build the current version of osrm-backend and set all needed variables.
+After having run `bootstrap.sh` successfully, run:
+```
+npm install --build-from-source
+```
+
+If you wish to use another version of osrm-backend, change `bootstrap.sh` and replace the `OSRM-RELEASE` with the commit hash of the version you would like to use:
+```
+OSRM_RELEASE=${OSRM_RELEASE:-" ENTER_COMMIT_HASH_HERE "}
+```
+
+## Using a local OSRM
+
+If you do not wish to use mason and build from source completely you will need:
 
  - OSRM >= 0.4.2
 
