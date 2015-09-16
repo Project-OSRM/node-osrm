@@ -131,8 +131,26 @@ osrm.table(options, function(err, table) {
 
 Returns `TableResult` 
 
+## `osrm.trip`
 
+Calculates a short roundtrip that visits every given coordinates
 
+### Parameters
+
+* `coordinates` **`Array<Array<Number>>`** The point to match as a latitude, longitude array.
+
+### Examples
+
+```js
+var osrm = new OSRM('berlin-latest.osrm');
+var options = {
+    coordinates: [[52.542648,13.393252], [52.543079,13.394780], [52.542107,13.397389]]};
+osrm.trip(options, function(err, response) {
+    if(err) throw err;
+});
+```
+
+Returns `TripResult`.
 
 
 ## `MatchResult`
