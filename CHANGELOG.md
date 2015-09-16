@@ -1,5 +1,11 @@
 ## node-osrm changelog
 
+### 4.8.0
+
+ - Update OSRM to v4.8.0
+ - New js API:
+    osrm.trip(options, callback)
+
 ### 4.7.1
 
  - Update OSRM to v4.7.1
