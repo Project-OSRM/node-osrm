@@ -70,6 +70,24 @@ void Engine::Initialize(Handle<Object> target) {
     NanAssignPersistent(constructor, lcons);
 }
 
+/**
+ * Creates a new `osrm` instance
+ *
+ * @class OSRM
+ * @name OSRM
+ *
+ * @param {Object} options An object containing osrm options.
+ * @param {String} options.path Path to the [.osrm preprocessed file](https://github.com/Project-OSRM/osrm-backend/wiki/Running-OSRM#creating-the-hierarchy). If `path` is the the only option, it can be used directly as a string.
+ * @param {Boolean} [options.shared_memory] Allows you to share data among a number of processes and the shared memory used is persistent. It stays in the system until it is explicitly removed.
+ * @param {Number} [options.distance_table] The maximum number of locations in the distance table.
+ * 
+ * @returns {Object} The osrm instance.
+ *
+ * @example
+ * var OSRM = require('osrm');
+ * var osrm = new OSRM('berlin-latest.osrm');
+ * 
+ */
 NAN_METHOD(Engine::New)
 {
     NanScope();
@@ -149,6 +167,49 @@ struct RunQueryBaton {
     std::string error;
 };
 
+/**
+ * Computes a route between coordinates over the network.
+ *
+ * @name osrm.route
+ * 
+ * @param {Object} options Object literal containing parameters for the route query.
+ * @param {Array<Array<Number>>} options.coordinates Via points to route represented by an array of number arrays expressing coordinate pairs as latitude, longitude.
+ * @param {Boolean} [options.alternateRoute=false] Return an alternate route.
+ * @param {Number} [options.checksum] [Checksum](https://en.wikipedia.org/wiki/Checksum) of the network dataset.
+ * @param {Number} [options.zoomLevel=18] Determines the level of generalization. The default zoom 18 performs no generalization.
+ * @param {Boolean} [options.printInstructions=false] Include turn by turn instructions.
+ * @param {Boolean} [options.geometry=true] Include the geometry of the route.
+ * @param {Array<String>} [options.hints] [Polylines](https://github.com/mapbox/polyline) that can be used to speed up incremental queries, where only a few via nodes change.
+ * 
+ * @returns {RouteResult} matchings array containing an object for each partial sub-matching of the trace.
+ *
+ * @example
+ * var osrm = new OSRM("berlin-latest.osrm");
+ * osrm.route({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]}, function(err, route) {
+ *     if(err) throw err;
+ * });
+ * 
+ */
+
+/**
+ * @name RouteResult
+ * @typedef {Object} RouteResult
+ * @property {Number} status 0 if passed, undefined if failed.
+ * @property {String} status_message Information about the query results.
+ * @property {Array<Number>} via_indices Array of node indices corresponding to the via coordinates.
+ * @property {String} route_geometry Geometry of the suggested route, compressed as a [polyline](https://github.com/mapbox/polyline).
+ * @property {Object} route_summary Object literal containing an overview of the suggested route.
+ * @property {String} route_summary.start_point Human readable name of the start location.
+ * @property {String} route_summary.end_point Human readable name of the end location.
+ * @property {Number} route_summary.total_time Total time of the trip in seconds.
+ * @property {Number} route_summary.total_distance Total distance of the trip in meters.
+ * @property {Array<Array<Number>>} via_points Array of latitude, longitude Array pairs representing the routed points.
+ * @property {Boolean} found_alternative Value will be `true` if an alternitive route was requested and found. Set options.alternateRoute to `true` to attempt to find an alternate route.
+ * @property {Array<String>} route_name An array of the most prominent street names along the route.
+ * @property {Object} hint_data Object literal containing necessary data for speeding up similar queries.
+ * @property {Array<String>} hint_data.locations An array of [polyline](https://github.com/mapbox/polyline) strings used for incremental hinting.
+ * @property {Number} hint_data.checksum [Checksum](https://en.wikipedia.org/wiki/Checksum) of the network dataset.
+ */
 NAN_METHOD(Engine::route)
 {
     NanScope();
@@ -263,6 +324,21 @@ NAN_METHOD(Engine::route)
     NanReturnUndefined();
 }
 
+/**
+ * Returns coordinate snapped to nearest node
+ *
+ * @name osrm.locate
+ * 
+ * @param {Array<Number>} point Latitude, longitude pair to locate on the network.
+ * 
+ * @returns {Array<Number>} node Location of the nearest node as a latitude, longitude pair.
+ *
+ * @example
+ * var osrm = new OSRM('berlin-latest.osrm');
+ * osrm.locate([52.4224, 13.333086], function(err, result) {
+ *     if(err) throw err;
+ * });
+ */
 NAN_METHOD(Engine::locate)
 {
     NanScope();
@@ -293,6 +369,39 @@ NAN_METHOD(Engine::locate)
     NanReturnUndefined();
 }
 
+/**
+ * Matches given coordinates to the road network
+ *
+ * @name osrm.match
+ * 
+ * @param {Array<Array<Number>>} coordinates The point to match as a latitude, longitude array.
+ * @param {Array<Number>} timestamps An array of UNIX style timestamps corresponding to the input coordinates (eg: 1424684612).
+ * @param {Boolean} [classify=false] Return a confidence value for this matching.
+ * @param {Number} [gps_precision=-1] Specify gps precision as standart deviation in meters.
+ * @param {Number} [matching_beta=-1] Specify beta value for matching algorithm.
+ * 
+ * @returns {Array<MatchResult>} matchings Array of MatchResults, each containing an object for a partial sub-matching of the trace.
+ *
+ * @example
+ * var osrm = new OSRM('berlin-latest.osrm');
+ * var options = {
+ *     coordinates: [[52.542648,13.393252], [52.543079,13.394780], [52.542107,13.397389]],
+ *     timestamps: [1424684612, 1424684616, 1424684620]
+ * };
+ * osrm.match(options, function(err, response) {
+ *     if(err) throw err;
+ * });
+ * 
+ */
+
+/**
+ * @name MatchResult
+ * @typedef {Object} MatchResult
+ * @property {Array<Array<Number>>} matched_points Coordinates the points snapped to the road network as latitude, longitude pairs.
+ * @property {Array<Number>} indices Array that gives the indices of the matched coordinates in the original trace.
+ * @property {String} geometry Geometry of the matched trace in the road network, compressed as a [polyline](https://github.com/mapbox/polyline) with 6 decimals of precision.
+ * @property {Number} confidence Value between 0 and 1, where 1 is very confident. Please note that the correctness of this value depends highly on [the assumptions about the sample rate](https://github.com/Project-OSRM/osrm-backend/wiki/Server-api#service-match).
+ */
 NAN_METHOD(Engine::match)
 {
     NanScope();
@@ -497,6 +606,31 @@ NAN_METHOD(Engine::trip)
     NanReturnUndefined();
 }
 
+/**
+ * Computes distance tables for the given via points. Currently all pair-wise distances are computed. Please note that the distance in this case is the travel time which is the default metric used by OSRM.
+ *
+ * @name osrm.table
+ * 
+ * @param {Array<Array<Number>>} coordinates Array of coordinate pairs as latitude, longitude representing the via points to be computed.
+ * 
+ * @returns {TableResult}
+ *
+ * @example
+ * var osrm = new OSRM("berlin-latest.osrm");
+ * var options = {
+ *     coordinates: [[52.519930,13.438640], [52.513191,13.415852]]
+ * };   
+ * osrm.table(options, function(err, table) {
+ *     if(err) throw err
+ * });
+ * 
+ */
+
+/**
+ * @name TableResult
+ * @typedef {Object} TableResult 
+ * @property {Array<Array<Number>>} distance_table Array of arrays that stores the matrix in [row-major order](https://en.wikipedia.org/wiki/Row-major_order). `distance_table[i][j]` gives the travel time from the i-th via to the j-th via point. Values are given in 10th of a second.
+ */
 NAN_METHOD(Engine::table)
 {
     NanScope();
@@ -549,6 +683,30 @@ NAN_METHOD(Engine::table)
     NanReturnUndefined();
 }
 
+/**
+ * Computes the nearest street segment for a given coordinate.
+ *
+ * @name osrm.nearest
+ * 
+ * @param {Array<Number>} point coordinates of the query point as a latitude, longitude array
+ * 
+ * @returns NearestResult
+ *
+ * @example
+ * var osrm = new OSRM('berlin-latest.osrm');
+ * osrm.nearest([52.4224, 13.333086], function(err, result) {
+ *     if(err) throw err;
+ * });
+ * 
+ */
+
+/**
+ * @name NearestResult
+ * @typedef {Object} NearestResult
+ * @property {Number} status 0 if passed, undefined if failed.
+ * @property {Array<Number>} mapped_coordinate Array that contains the latitude, longitude pair for the snapped coordinate.
+ * @property {String} name Name of the street the coordinate snapped to.
+ */
 NAN_METHOD(Engine::nearest)
 {
     NanScope();

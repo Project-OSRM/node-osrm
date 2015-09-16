@@ -1,0 +1,14 @@
+{
+    "order": [
+        "OSRM",
+        "osrm.route",
+        "RouteResult",
+        "osrm.table",
+        "TableResult",
+        "osrm.match",
+        "MatchResult",
+        "osrm.locate",
+        "osrm.nearest",
+        "NearestResult"
+    ]
+}
