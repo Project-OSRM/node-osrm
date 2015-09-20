@@ -1,5 +1,10 @@
 ## node-osrm changelog
 
+### 4.8.1
+
+ - Update OSRM to v4.8.1
+   Fixes a regression in the alternative route format
+
 ### 4.8.0
 
  - Update OSRM to v4.8.0
