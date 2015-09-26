@@ -454,10 +454,6 @@ NAN_METHOD(Engine::trip)
                                          static_cast<int>(coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
     }
 
-    if (obj->Has(NanNew("alternateRoute"))) {
-        params->alternate_route = obj->Get(NanNew("alternateRoute"))->BooleanValue();
-    }
-
     if (obj->Has(NanNew("checksum"))) {
         params->check_sum = static_cast<unsigned>(obj->Get(NanNew("checksum"))->Uint32Value());
     }
