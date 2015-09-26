@@ -118,13 +118,22 @@ if (process.platform === 'darwin') {
   });
 }
 
+it('route: routes Berlin with geometry compression', function(done) {
+    var osrm = new OSRM("berlin-latest.osrm");
+    var options = {
+        coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
+    };
+    osrm.route(options, function(err, route) {
+        assert.ifError(err);
+        assert.equal('string', typeof route.route_geometry);
+        done();
+    });
+});
+
 it('route: routes Berlin without geometry compression', function(done) {
     var osrm = new OSRM("berlin-latest.osrm");
     var options = {
         coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
-        zoomLevel: 17,
-        alternateRoute: false,
-        printInstructions: false,
         compression: false
     };
     osrm.route(options, function(err, route) {
@@ -306,6 +315,20 @@ it('trip: routes Berlin with hints', function(done) {
     });
 });
 
+it('trip: trip through Berlin with geometry compression', function(done) {
+    var osrm = new OSRM("berlin-latest.osrm");
+    var options = {
+        coordinates: [[52.519930,13.438640], [52.513191,13.415852]]
+    };
+    osrm.trip(options, function(err, trip) {
+        assert.ifError(err);
+        for (t = 0; t < trip.trips.length; t++) {
+            assert.equal('string', typeof trip.trips[t].route_geometry);
+        }
+        done();
+    });
+});
+
 it('trip: trip through Berlin without geometry compression', function(done) {
     var osrm = new OSRM("berlin-latest.osrm");
     var options = {
@@ -434,6 +457,19 @@ it('match: match in Berlin without timestamps', function(done) {
     osrm.match(options, function(err, response) {
         assert.ifError(err);
         assert.equal(response.matchings.length, 1);
+        done();
+    });
+});
+
+it('match: match in Berlin with geometry compression', function(done) {
+    var osrm = new OSRM("berlin-latest.osrm");
+    var options = {
+        coordinates: [[52.542648,13.393252], [52.543079,13.394780], [52.542107,13.397389]]
+    };
+    osrm.match(options, function(err, response) {
+        assert.ifError(err);
+        assert.equal(response.matchings.length, 1);
+        assert.equal('string', typeof response.matchings[0].geometry);
         done();
     });
 });
