@@ -341,6 +341,9 @@ NAN_METHOD(Engine::match)
     if (obj->Has(NanNew("matching_beta"))) {
         params->matching_beta = obj->Get(NanNew("matching_beta"))->NumberValue();
     }
+    if (obj->Has(NanNew("geometry"))) {
+        params->geometry = obj->Get(NanNew("geometry"))->BooleanValue();
+    }
     if (obj->Has(NanNew("compression"))) {
         params->compression = obj->Get(NanNew("compression"))->BooleanValue();
     }
