@@ -233,6 +233,10 @@ NAN_METHOD(Engine::route)
         params->geometry = obj->Get(NanNew("geometry"))->BooleanValue();
     }
 
+    if (obj->Has(NanNew("compression"))) {
+        params->compression = obj->Get(NanNew("compression"))->BooleanValue();
+    }
+
     if (obj->Has(NanNew("jsonpParameter"))) {
         params->jsonp_parameter = *v8::String::Utf8Value(obj->Get(NanNew("jsonpParameter")));
     }
@@ -465,6 +469,10 @@ NAN_METHOD(Engine::trip)
 
     if (obj->Has(NanNew("geometry"))) {
         params->geometry = obj->Get(NanNew("geometry"))->BooleanValue();
+    }
+
+    if (obj->Has(NanNew("compression"))) {
+        params->compression = obj->Get(NanNew("compression"))->BooleanValue();
     }
 
     if (obj->Has(NanNew("jsonpParameter"))) {
