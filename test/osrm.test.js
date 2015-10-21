@@ -104,6 +104,7 @@ it('route: takes jsonp parameter', function(done) {
     });
 });
 
+/*
 if (process.platform === 'darwin') {
   // shared memory does not work on Mac OS for now.
   it.skip('route: routes Berlin using shared memory', function(done) {});
@@ -117,6 +118,7 @@ if (process.platform === 'darwin') {
       });
   });
 }
+*/
 
 it('route: routes Berlin with options', function(done) {
     var osrm = new OSRM("berlin-latest.osrm");
