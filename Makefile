@@ -59,4 +59,4 @@ berlin-latest.osrm.hsgr: berlin-latest.osrm
 test: berlin-latest.osrm.hsgr
 	./node_modules/.bin/mocha -R spec
 
-.PHONY: test clean build
+.PHONY: clean build
