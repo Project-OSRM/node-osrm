@@ -403,6 +403,14 @@ NAN_METHOD(Engine::table)
         NanReturnUndefined();
     }
 
+    Local<Value> sources = obj->Get(NanNew("sources"));
+    if (!sources->IsArray()) {
+        NanThrowError("sources must be an array of (lat/long) pairs");
+        NanReturnUndefined();
+    }
+
+    Local<Array> sources_array = Local<Array>::Cast(sources);
+
     route_parameters_ptr params = make_unique<RouteParameters>();
     params->service = "table";
 
@@ -423,6 +431,27 @@ NAN_METHOD(Engine::table)
 
         params->coordinates.emplace_back(static_cast<int>(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION),
                                          static_cast<int>(coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
+    }
+    for (uint32_t i = 0; i < sources_array->Length(); ++i) {
+        Local<Value> coordinate = sources_array->Get(i);
+
+        if (!coordinate->IsArray()) {
+            NanThrowError("coordinates must be an array of (lat/long) pairs");
+            NanReturnUndefined();
+        }
+
+        Local<Array> coordinate_pair = Local<Array>::Cast(coordinate);
+        if (coordinate_pair->Length() != 2) {
+            NanThrowError("coordinates must be an array of (lat/long) pairs");
+            NanReturnUndefined();
+        }
+
+        params->sources.emplace_back(static_cast<int>(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION),
+                                         static_cast<int>(coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
+    }
+
+    if (obj->Has(NanNew("mappedPoints"))) {
+        params->mapped_points = obj->Get(NanNew("mappedPoints"))->BooleanValue();
     }
 
     Run(args, std::move(params));
