@@ -391,63 +391,107 @@ NAN_METHOD(Engine::table)
     }
     Local<Object> obj = args[0]->ToObject();
 
+    if ((obj->Has(NanNew("coordinates")) && obj->Has(NanNew("destinations"))) || (obj->Has(NanNew("coordinates")) && obj->Has(NanNew("sources")))) {
+        NanThrowError("coordinates and destinations/sources cannot be used together");
+        NanReturnUndefined();
+    }
+
     Local<Value> coordinates = obj->Get(NanNew("coordinates"));
-    if (!coordinates->IsArray()) {
+    if (obj->Has(NanNew("coordinates")) && !coordinates->IsArray()) {
         NanThrowError("coordinates must be an array of (lat/long) pairs");
         NanReturnUndefined();
     }
 
-    Local<Array> coordinates_array = Local<Array>::Cast(coordinates);
-    if (coordinates_array->Length() < 2) {
-        NanThrowError("at least two coordinates must be provided");
+    Local<Value> destinations = obj->Get(NanNew("destinations"));
+    if (obj->Has(NanNew("destinations")) && !destinations->IsArray()) {
+        NanThrowError("destinations must be an array of (lat/long) pairs");
         NanReturnUndefined();
     }
 
     Local<Value> sources = obj->Get(NanNew("sources"));
-    if (!sources->IsArray()) {
+    if (obj->Has(NanNew("sources")) && !sources->IsArray()) {
         NanThrowError("sources must be an array of (lat/long) pairs");
         NanReturnUndefined();
     }
 
-    Local<Array> sources_array = Local<Array>::Cast(sources);
-
     route_parameters_ptr params = make_unique<RouteParameters>();
     params->service = "table";
 
-    // add all coordinates
-    for (uint32_t i = 0; i < coordinates_array->Length(); ++i) {
-        Local<Value> coordinate = coordinates_array->Get(i);
+    if (obj->Has(NanNew("coordinates"))) {
+        Local<Array> coordinates_array = Local<Array>::Cast(coordinates);
 
-        if (!coordinate->IsArray()) {
-            NanThrowError("coordinates must be an array of (lat/long) pairs");
+        if (coordinates_array->Length() < 2) {
+            NanThrowError("at least two coordinates must be provided");
             NanReturnUndefined();
         }
 
-        Local<Array> coordinate_pair = Local<Array>::Cast(coordinate);
-        if (coordinate_pair->Length() != 2) {
-            NanThrowError("coordinates must be an array of (lat/long) pairs");
-            NanReturnUndefined();
-        }
+        // add all coordinates
+        for (uint32_t i = 0; i < coordinates_array->Length(); ++i) {
+            Local<Value> coordinate = coordinates_array->Get(i);
 
-        params->coordinates.emplace_back(static_cast<int>(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION),
-                                         static_cast<int>(coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
+            if (!coordinate->IsArray()) {
+                NanThrowError("coordinates must be an array of (lat/long) pairs");
+                NanReturnUndefined();
+            }
+
+            Local<Array> coordinate_pair = Local<Array>::Cast(coordinate);
+            if (coordinate_pair->Length() != 2) {
+                NanThrowError("coordinates must be an array of (lat/long) pairs");
+                NanReturnUndefined();
+            }
+
+            params->coordinates.emplace_back(static_cast<int>(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION),
+                                             static_cast<int>(coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
+        }
     }
-    for (uint32_t i = 0; i < sources_array->Length(); ++i) {
-        Local<Value> coordinate = sources_array->Get(i);
+    if (obj->Has(NanNew("destinations"))) {
+        Local<Array> destinations_array = Local<Array>::Cast(destinations);
 
-        if (!coordinate->IsArray()) {
-            NanThrowError("coordinates must be an array of (lat/long) pairs");
+        if (destinations_array->Length() < 2) {
+            NanThrowError("at least two coordinates must be provided");
             NanReturnUndefined();
         }
 
-        Local<Array> coordinate_pair = Local<Array>::Cast(coordinate);
-        if (coordinate_pair->Length() != 2) {
-            NanThrowError("coordinates must be an array of (lat/long) pairs");
-            NanReturnUndefined();
-        }
+        // add all coordinates
+        for (uint32_t i = 0; i < destinations_array->Length(); ++i) {
+            Local<Value> coordinate = destinations_array->Get(i);
 
-        params->sources.emplace_back(static_cast<int>(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION),
-                                         static_cast<int>(coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
+            if (!coordinate->IsArray()) {
+                NanThrowError("destinations must be an array of (lat/long) pairs");
+                NanReturnUndefined();
+            }
+
+            Local<Array> coordinate_pair = Local<Array>::Cast(coordinate);
+            if (coordinate_pair->Length() != 2) {
+                NanThrowError("destinations must be an array of (lat/long) pairs");
+                NanReturnUndefined();
+            }
+
+            params->destinations.emplace_back(static_cast<int>(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION),
+                                             static_cast<int>(coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
+        }
+        if (obj->Has(NanNew("sources"))) {
+            Local<Array> sources_array = Local<Array>::Cast(sources);
+
+            // add all coordinates
+            for (uint32_t i = 0; i < sources_array->Length(); ++i) {
+                Local<Value> coordinate = sources_array->Get(i);
+
+                if (!coordinate->IsArray()) {
+                    NanThrowError("sources must be an array of (lat/long) pairs");
+                    NanReturnUndefined();
+                }
+
+                Local<Array> coordinate_pair = Local<Array>::Cast(coordinate);
+                if (coordinate_pair->Length() != 2) {
+                    NanThrowError("sources must be an array of (lat/long) pairs");
+                    NanReturnUndefined();
+                }
+
+                params->sources.emplace_back(static_cast<int>(coordinate_pair->Get(0)->NumberValue()*COORDINATE_PRECISION),
+                                                 static_cast<int>(coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
+            }
+        }
     }
 
     if (obj->Has(NanNew("mappedPoints"))) {
