@@ -11,7 +11,7 @@
       'target_name': '<(module_name)',
       'include_dirs': [
           "<!(node -e \"require('nan')\")",
-          '<!@(pkg-config libosrm --cflags)',
+          '<!@(pkg-config libosrm --variable=includedir)',
           './src/'
       ],
       'libraries': [
@@ -24,7 +24,7 @@
               '-std=c++11'
           ],
           'libraries':[
-              '-Wl,-rpath=<!@(pkg-config libosrm --variable=prefix)/lib',
+              '-Wl,-rpath=<!@(pkg-config libosrm --variable=libdir)',
               '-lboost_program_options',
               '-lboost_regex'
           ]}
