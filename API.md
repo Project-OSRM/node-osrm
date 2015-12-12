@@ -53,6 +53,8 @@ Matches given coordinates to the road network
 * `classify` **`[Boolean]`** Return a confidence value for this matching. (optional, default `false`)
 * `gps_precision` **`[Number]`** Specify gps precision as standart deviation in meters. (optional, default `-1`)
 * `matching_beta` **`[Number]`** Specify beta value for matching algorithm. (optional, default `-1`)
+* `geometry` **`[Boolean]`** Return the route geometry. (optional, default `true`)
+* `compression` **`[Boolean]`** Compress route geometry as a polyline; geometry is an array of [lat, lng] pairs if false. (optional, default `true`)
 
 
 ### Examples
@@ -85,7 +87,7 @@ Computes the nearest street segment for a given coordinate.
 
 Computes a route between coordinates over the network.
 
-### Parameters
+### Parameters <a name="route_parameters"></a>
 
 * `options` **`Object`** Object literal containing parameters for the route query.
   * `options.coordinates` **`Array<Array<Number>>`** Via points to route represented by an array of number arrays expressing coordinate pairs as latitude, longitude.
@@ -94,6 +96,7 @@ Computes a route between coordinates over the network.
   * `options.zoomLevel` **`[Number]`** Determines the level of generalization. The default zoom 18 performs no generalization. (optional, default `18`)
   * `options.printInstructions` **`[Boolean]`** Include turn by turn instructions. (optional, default `false`)
   * `options.geometry` **`[Boolean]`** Include the geometry of the route. (optional, default `true`)
+  * `options.compression` **`[Boolean]`** Compress route geometry as a polyline; geometry is an array of [lat, lng] pairs if false. (optional, default `true`)
   * `options.hints` **`[Array<String>]`** [Polylines](https://github.com/mapbox/polyline) that can be used to speed up incremental queries, where only a few via nodes change.
 
 
@@ -138,6 +141,8 @@ Calculates a short roundtrip that visits every given coordinates
 ### Parameters
 
 * `coordinates` **`Array<Array<Number>>`** The point to match as a latitude, longitude array.
+
+For other parameters see [osrm.route Parameters](#route_parameters). `trip` does not support computing alternatives.
 
 ### Examples
 

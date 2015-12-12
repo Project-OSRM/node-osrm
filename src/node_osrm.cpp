@@ -233,6 +233,10 @@ NAN_METHOD(Engine::route)
         params->geometry = obj->Get(NanNew("geometry"))->BooleanValue();
     }
 
+    if (obj->Has(NanNew("compression"))) {
+        params->compression = obj->Get(NanNew("compression"))->BooleanValue();
+    }
+
     if (obj->Has(NanNew("jsonpParameter"))) {
         params->jsonp_parameter = *v8::String::Utf8Value(obj->Get(NanNew("jsonpParameter")));
     }
@@ -336,6 +340,9 @@ NAN_METHOD(Engine::match)
     }
     if (obj->Has(NanNew("matching_beta"))) {
         params->matching_beta = obj->Get(NanNew("matching_beta"))->NumberValue();
+    }
+    if (obj->Has(NanNew("geometry"))) {
+        params->geometry = obj->Get(NanNew("geometry"))->BooleanValue();
     }
     if (obj->Has(NanNew("compression"))) {
         params->compression = obj->Get(NanNew("compression"))->BooleanValue();
@@ -447,10 +454,6 @@ NAN_METHOD(Engine::trip)
                                          static_cast<int>(coordinate_pair->Get(1)->NumberValue()*COORDINATE_PRECISION));
     }
 
-    if (obj->Has(NanNew("alternateRoute"))) {
-        params->alternate_route = obj->Get(NanNew("alternateRoute"))->BooleanValue();
-    }
-
     if (obj->Has(NanNew("checksum"))) {
         params->check_sum = static_cast<unsigned>(obj->Get(NanNew("checksum"))->Uint32Value());
     }
@@ -465,6 +468,10 @@ NAN_METHOD(Engine::trip)
 
     if (obj->Has(NanNew("geometry"))) {
         params->geometry = obj->Get(NanNew("geometry"))->BooleanValue();
+    }
+
+    if (obj->Has(NanNew("compression"))) {
+        params->compression = obj->Get(NanNew("compression"))->BooleanValue();
     }
 
     if (obj->Has(NanNew("jsonpParameter"))) {
