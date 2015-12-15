@@ -15,14 +15,6 @@ test('constructor: throws if necessary files do not exist', function(assert) {
         /hsgr not found/);
 });
 
-test('constructor: takes a distance table length argument', function(assert) {
-    assert.plan(1);
-    var osrm = new OSRM({path: "berlin-latest.osrm", distance_table: 30000});
-    osrm.route({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]}, function(err, route) {
-        assert.ifError(err);
-    });
-});
-
 test('constructor: takes a shared memory argument', function(assert) {
     assert.plan(1);
     var osrm = new OSRM({path: "berlin-latest.osrm", shared_memory: false});
@@ -41,12 +33,6 @@ test('constructor: throws if given a non-bool shared_memory option', function(as
     assert.plan(1);
     assert.throws(function() { var osrm = new OSRM({path: "berlin-latest.osrm", shared_memory: "a"}); },
         /shared_memory option must be a boolean/);
-});
-
-test('constructor: throws if given a non-uint distance_table option', function(assert) {
-    assert.plan(1);
-    assert.throws(function() { var osrm = new OSRM({path: "berlin-latest.osrm", distance_table: -4}); },
-        /the maximum number of locations in the distance table must be an unsigned integer/);
 });
 
 test('constructor: throws if given a non-string/obj argument', function(assert) {
