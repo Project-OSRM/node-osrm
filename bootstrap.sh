@@ -37,10 +37,6 @@ function all_deps() {
 
 function move_tool() {
     cp ${MASON_HOME}/bin/$1 "${TARGET_DIR}/"
-    if [[ `uname -s` == 'Darwin' ]]; then
-        install_name_tool -change libtbb.dylib @loader_path/libtbb.dylib ${TARGET_DIR}/$1
-        install_name_tool -change libtbbmalloc.dylib @loader_path/libtbbmalloc.dylib ${TARGET_DIR}/$1
-    fi
 }
 
 function copy_tbb() {
@@ -101,6 +97,11 @@ function main() {
     export MASON_HOME=$(pwd)/mason_packages/.link
     if [[ ! -d ${MASON_HOME} ]]; then
         all_deps
+    fi
+    # fix install name of tbb
+    if [[ `uname -s` == 'Darwin' ]]; then
+        install_name_tool -id @loader_path/libtbb.dylib ${MASON_HOME}/lib/libtbb.dylib
+        install_name_tool -id @loader_path/libtbb.dylib ${MASON_HOME}/lib/libtbbmalloc.dylib
     fi
     export PATH=${MASON_HOME}/bin:$PATH
     export PKG_CONFIG_PATH=${MASON_HOME}/lib/pkgconfig
