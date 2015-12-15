@@ -1,78 +1,96 @@
 language: cpp
+sudo: required
+dist: trusty
+node_js:
+  - '4'
+  - '0.12'
+  - '0.11'
 
 git:
   depth: 10
 
-addons:
-  apt:
-    sources:
-     - ubuntu-toolchain-r-test
-    packages:
-     - g++-4.8
-     - gdb
-
-# TODO: no core files on sudo:false machines until https://github.com/travis-ci/travis-ci/issues/3754 is resolved
-sudo: false
-
 matrix:
   include:
-     # Coverage
-     - os: osx
-       compiler: clang
-       env: NODE_VERSION="0.10" COVERAGE=true TARGET=Debug NPM_FLAGS="--debug"
-     # Linux
-     - os: linux
-       compiler: gcc
-       env: NODE_VERSION="0.12.0" TARGET=Release
-     - os: linux
-       compiler: gcc
-       env: NODE_VERSION="0.10.36" TARGET=Release
-     - os: linux
-       compiler: gcc
-       env: NODE_VERSION="0.10.36" TARGET=Debug NPM_FLAGS="--debug"
-     # OS X
-     - os: osx
-       compiler: clang
-       env: NODE_VERSION="0.12.0" TARGET=Release
-     - os: osx
-       compiler: clang
-       env: NODE_VERSION="0.10.36" TARGET=Release
+    # 1/ Linux Clang Builds
+    - os: linux
+      compiler: clang
+      addons: &clang38
+        apt:
+          sources: ['llvm-toolchain-precise', 'ubuntu-toolchain-r-test']
+          packages: ['clang-3.8', 'libbz2-dev', 'libstxxl-dev', 'libstxxl1', 'libxml2-dev', 'libzip-dev', 'lua5.1', 'liblua5.1-0-dev', 'rubygems-integration', 'libtbb-dev', 'libgdal-dev', 'libluabind-dev', 'libboost-all-dev']
+      env: COMPILER='clang++-3.8' BUILD_TYPE='Release'
+
+    - os: linux
+      compiler: clang
+      addons: *clang38
+      env: COMPILER='clang++-3.8' BUILD_TYPE='Debug'
+
+    # 2/ Linux GCC Builds
+    - os: linux
+      compiler: gcc
+      addons: &gcc48
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-4.8', 'libbz2-dev', 'libstxxl-dev', 'libstxxl1', 'libxml2-dev', 'libzip-dev', 'lua5.1', 'liblua5.1-0-dev', 'rubygems-integration', 'libtbb-dev', 'libgdal-dev', 'libluabind-dev', 'libboost-all-dev']
+      env: COMPILER='g++-4.8' BUILD_TYPE='Release'
+
+    - os: linux
+      compiler: gcc
+      addons: *gcc48
+      env: COMPILER='g++-4.8' BUILD_TYPE='Debug'
+
+    - os: linux
+      compiler: gcc
+      addons: &gcc5
+        apt:
+          sources: ['ubuntu-toolchain-r-test']
+          packages: ['g++-5', 'libbz2-dev', 'libstxxl-dev', 'libstxxl1', 'libxml2-dev', 'libzip-dev', 'lua5.1', 'liblua5.1-0-dev', 'rubygems-integration', 'libtbb-dev', 'libgdal-dev', 'libluabind-dev', 'libboost-all-dev']
+      env: COMPILER='g++-5' BUILD_TYPE='Release'
+
+    - os: linux
+      compiler: gcc
+      addons: *gcc5
+      env: COMPILER='g++-5' BUILD_TYPE='Debug'
+
+    - os: osx
+      osx_image: xcode7
+      compiler: clang
+      env: COMPILER='clang++' BUILD_TYPE='Debug'
+
+    - os: osx
+      osx_image: xcode7
+      compiler: clang
+      env: COMPILER='clang++' BUILD_TYPE='Release'
 
 env:
   global:
    - JOBS: "3"
-   - OSRM_RELEASE: "v4.8.1"
+   - OSRM_RELEASE: "1264983688274780441aa763b1ba428dfeb904e0"
    - secure: KitzGZjoDblX/3heajcvssGz0JnJ/k02dr2tu03ksUV+6MogC3RSQudqyKY57+f8VyZrcllN/UOlJ0Q/3iG38Oz8DljC+7RZxtkVmE1SFBoOezKCdhcvWM12G3uqPs7hhrRxuUgIh0C//YXEkulUrqa2H1Aj2xeen4E3FAqEoy0=
    - secure: WLGmxl6VTVWhXGm6X83GYNYzPNsvTD+9usJOKM5YBLAdG7cnOBQBNiCCUKc9OZMMZVUr3ec2/iigakH5Y8Yc+U6AlWKzlORyqWLuk4nFuoedu62x6ocQkTkuOc7mHiYhKd21xTGMYauaZRS6kugv4xkpGES2UjI2T8cjZ+LN2jU=
 
 before_install:
 - scripts/validate_tag.sh
-- export COVERAGE=${COVERAGE:-false}
-- if [[ $(uname -s) == 'Linux' ]]; then
-    export CXX="g++-4.8";
-    export CC="gcc-4.8";
-    export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python2.7/site-packages;
-   else
-    export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python/site-packages;
-   fi;
-- source ./scripts/install_node.sh ${NODE_VERSION}
 
 install:
-- source ./bootstrap.sh
-- if [[ ${COVERAGE} == true ]]; then
-    PYTHONUSERBASE=$(pwd)/mason_packages/.link pip install --user cpp-coveralls;
-    export LDFLAGS="--coverage";
-    export CXXFLAGS="--coverage";
-  fi;
-- npm install --build-from-source ${NPM_FLAGS} --clang=1;
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+      brew update && brew install cmake boost libzip libstxxl libxml2 lua51 luabind tbb GDAL osmosis
+    fi
+  - cd ${TRAVIS_BUILD_DIR}
+  - mkdir deps && cd deps
+  - git clone https://github.com/Project-OSRM/osrm-backend.git
+  - cd osrm-backend
+  - git checkout ${OSRM_RELEASE}
+  - mkdir build && cd build
+  - export CXX=${COMPILER}
+  - export OSRM_PORT=5000 OSRM_TIMEOUT=60
+  - cmake .. -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
+  - make --jobs=2 && sudo make install
+  - cd ${TRAVIS_BUILD_DIR}
 
 before_script:
-- ulimit -c unlimited -S
+  - ulimit -c unlimited -S
 
 script:
-- RESULT=0
-- make test || RESULT=$?
-- for i in $(find ./ -maxdepth 1 -name 'core*' -print); do gdb $(which node) $i -ex "thread apply all bt" -ex "set pagination 0" -batch; done;
-- if [[ ${RESULT} != 0 ]]; then exit $RESULT; fi
-- if [[ ${COVERAGE} == true ]]; then ./mason_packages/.link/bin/cpp-coveralls --exclude node_modules --exclude mason_packages --exclude tests --build-root build --gcov-options '\-lp' --exclude doc --exclude build/Release/obj/gen; fi;
-- if [[ ${COVERAGE} != true ]]; then ./scripts/publish.sh; fi;
+  - npm install
