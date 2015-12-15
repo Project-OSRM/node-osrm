@@ -45,27 +45,30 @@ namespace json
 
 struct v8_renderer : mapbox::util::static_visitor<>
 {
-    explicit v8_renderer(v8::Local<v8::Value>& _out) : out(_out) {}
+    explicit v8_renderer(v8::Local<v8::Value> &_out) : out(_out) {}
 
-    void operator()(const String &string) const { out = NanNew(std::cref(string.value)); }
+    void operator()(const String &string) const
+    {
+        out = Nan::New(std::cref(string.value)).ToLocalChecked();
+    }
 
-    void operator()(const Number &number) const { out = NanNew(number.value); }
+    void operator()(const Number &number) const { out = Nan::New(number.value); }
 
     void operator()(const Object &object) const
     {
-        v8::Local<v8::Object> obj = NanNew<v8::Object>();
-        for (const auto& keyValue : object.values)
+        v8::Local<v8::Object> obj = Nan::New<v8::Object>();
+        for (const auto &keyValue : object.values)
         {
             v8::Local<v8::Value> child;
             mapbox::util::apply_visitor(v8_renderer(child), keyValue.second);
-            obj->Set(NanNew(keyValue.first), child);
+            obj->Set(Nan::New(keyValue.first).ToLocalChecked(), child);
         }
         out = obj;
     }
 
     void operator()(const Array &array) const
     {
-        v8::Local<v8::Array> a = NanNew<v8::Array>(array.values.size());
+        v8::Local<v8::Array> a = Nan::New<v8::Array>(array.values.size());
         for (auto i = 0u; i < array.values.size(); ++i)
         {
             v8::Local<v8::Value> child;
@@ -75,11 +78,11 @@ struct v8_renderer : mapbox::util::static_visitor<>
         out = a;
     }
 
-    void operator()(const True &) const { out = NanNew(true); }
+    void operator()(const True &) const { out = Nan::New(true); }
 
-    void operator()(const False &) const { out = NanNew(false); }
+    void operator()(const False &) const { out = Nan::New(false); }
 
-    void operator()(const Null &) const { out = NanNull(); }
+    void operator()(const Null &) const { out = Nan::Null(); }
 
   private:
     v8::Local<v8::Value> &out;
