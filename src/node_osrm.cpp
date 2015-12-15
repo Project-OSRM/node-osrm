@@ -252,8 +252,8 @@ class Engine final : public Nan::ObjectWrap
     static void AfterRun(uv_work_t *);
 
   private:
-    Engine(LibOSRMConfig lib_config)
-        : Nan::ObjectWrap(), this_(make_unique<OSRM>(std::move(lib_config)))
+    Engine(LibOSRMConfig &lib_config)
+        : Nan::ObjectWrap(), this_(make_unique<OSRM>(lib_config))
     {
     }
 
@@ -296,7 +296,7 @@ void Engine::New(const Nan::FunctionCallbackInfo<v8::Value> &args)
         {
             return;
         }
-        auto engine_ptr = new Engine(std::move(*lib_config_ptr));
+        auto engine_ptr = new Engine(*lib_config_ptr);
         engine_ptr->Wrap(args.This());
         args.GetReturnValue().Set(args.This());
     }
