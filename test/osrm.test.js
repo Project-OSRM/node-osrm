@@ -562,31 +562,3 @@ test('nearest: throws on invalid args', function(assert) {
     assert.throws(function() { osrm.nearest(options, function(err, res) {}); },
         /first argument must be an array of lat, long/);
 });
-
-////////////////////////////// LOCATE TESTS ////////////////////////////////////
-
-test('locate', function(assert) {
-    assert.plan(3);
-    var osrm = new OSRM("berlin-latest.osrm");
-    osrm.locate([52.4224, 13.333086], function(err, result) {
-        assert.ifError(err);
-        assert.equal(result.status, 0);
-        assert.equal(result.mapped_coordinate.length, 2);
-    });
-});
-
-test('locate: throws on incorrect number of args', function(assert) {
-    assert.plan(1);
-    var osrm = new OSRM("berlin-latest.osrm");
-    assert.throws(function() { osrm.locate([52.4224, 13.333086]) },
-        /two arguments required/);
-});
-
-test('locate: throws on invalid coordinate arg', function(assert) {
-    assert.plan(2);
-    var osrm = new OSRM("berlin-latest.osrm");
-    assert.throws(function() { osrm.locate(52.4224, function(err, result) {}) },
-        /first argument must be an array of lat, long/);
-    assert.throws(function() { osrm.locate([52.4224], function(err, result) {}) },
-        /first argument must be an array of lat, long/);
-});
