@@ -69,10 +69,6 @@ function build_osrm() {
     git checkout .
     git checkout ${OSRM_RELEASE}
 
-    # workaround https://github.com/Project-OSRM/node-osrm/issues/92
-    perl -i -p -e "s/-fprofile-arcs -ftest-coverage//g;" CMakeLists.txt
-    perl -i -p -e "s/\${CMAKE_CXX_FLAGS} -flto/\${CMAKE_CXX_FLAGS}/g;" CMakeLists.txt
-
     rm -rf build
     mkdir -p build
     cd build
