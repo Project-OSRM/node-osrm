@@ -10,10 +10,17 @@
 #include <osrm/osrm.hpp>
 
 #include <boost/optional.hpp>
+#include <boost/assert.hpp>
 
 // STL
 #include <iostream>
 #include <memory>
+#include <vector>
+#include <algorithm>
+#include <iterator>
+#include <utility>
+#include <exception>
+#include <string>
 
 namespace node_osrm
 {
@@ -83,7 +90,8 @@ libosrm_config_ptr argumentsToLibOSRMConfig(const Nan::FunctionCallbackInfo<v8::
     return lib_config;
 }
 
-boost::optional<std::vector<FixedPointCoordinate>> parseCoordinateArray(const v8::Local<v8::Array> &coordinates_array)
+boost::optional<std::vector<FixedPointCoordinate>>
+parseCoordinateArray(const v8::Local<v8::Array> &coordinates_array)
 {
     boost::optional<std::vector<FixedPointCoordinate>> resulting_coordinates;
     std::vector<FixedPointCoordinate> temp_coordinates;
@@ -109,8 +117,7 @@ boost::optional<std::vector<FixedPointCoordinate>> parseCoordinateArray(const v8
             static_cast<int>(coordinate_pair->Get(0)->NumberValue() * COORDINATE_PRECISION),
             static_cast<int>(coordinate_pair->Get(1)->NumberValue() * COORDINATE_PRECISION));
     }
-    resulting_coordinates =
-        boost::make_optional<std::vector<FixedPointCoordinate>>(std::move(temp_coordinates));
+    resulting_coordinates = boost::make_optional(std::move(temp_coordinates));
     return resulting_coordinates;
 }
 
@@ -150,9 +157,11 @@ route_parameters_ptr argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Va
         auto maybe_coordinates = parseCoordinateArray(coordinates_array);
         if (maybe_coordinates)
         {
-            std::copy(maybe_coordinates->begin(), maybe_coordinates->end(), std::back_inserter(params->coordinates));
+            std::copy(maybe_coordinates->begin(), maybe_coordinates->end(),
+                      std::back_inserter(params->coordinates));
             params->is_source.insert(params->is_source.end(), maybe_coordinates->size(), true);
-            params->is_destination.insert(params->is_destination.end(), maybe_coordinates->size(), true);
+            params->is_destination.insert(params->is_destination.end(), maybe_coordinates->size(),
+                                          true);
         }
         else
         {
@@ -252,10 +261,7 @@ class Engine final : public Nan::ObjectWrap
     static void AfterRun(uv_work_t *);
 
   private:
-    Engine(LibOSRMConfig &lib_config)
-        : Nan::ObjectWrap(), this_(make_unique<OSRM>(lib_config))
-    {
-    }
+    Engine(LibOSRMConfig &lib_config) : Nan::ObjectWrap(), this_(make_unique<OSRM>(lib_config)) {}
 
     static Nan::Persistent<v8::Function> constructor;
     osrm_ptr this_;
@@ -434,9 +440,11 @@ void Engine::table(const Nan::FunctionCallbackInfo<v8::Value> &args)
         auto maybe_sources = parseCoordinateArray(sources_array);
         if (maybe_sources)
         {
-            std::copy(maybe_sources->begin(), maybe_sources->end(), std::back_inserter(params->coordinates));
+            std::copy(maybe_sources->begin(), maybe_sources->end(),
+                      std::back_inserter(params->coordinates));
             params->is_source.insert(params->is_source.end(), maybe_sources->size(), true);
-            params->is_destination.insert(params->is_destination.end(), maybe_sources->size(), false);
+            params->is_destination.insert(params->is_destination.end(), maybe_sources->size(),
+                                          false);
         }
         else
         {
@@ -449,9 +457,11 @@ void Engine::table(const Nan::FunctionCallbackInfo<v8::Value> &args)
         auto maybe_destinations = parseCoordinateArray(destinations_array);
         if (maybe_destinations)
         {
-            std::copy(maybe_destinations->begin(), maybe_destinations->end(), std::back_inserter(params->coordinates));
+            std::copy(maybe_destinations->begin(), maybe_destinations->end(),
+                      std::back_inserter(params->coordinates));
             params->is_source.insert(params->is_source.end(), maybe_destinations->size(), false);
-            params->is_destination.insert(params->is_destination.end(), maybe_destinations->size(), true);
+            params->is_destination.insert(params->is_destination.end(), maybe_destinations->size(),
+                                          true);
         }
         else
         {
