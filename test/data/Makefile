@@ -1,6 +1,6 @@
 CAR_PROFILE_URL:=https://raw.githubusercontent.com/Project-OSRM/osrm-backend/$(OSRM_RELEASE)/profiles/car.lua
 PROFILE_LIB_URL:=https://raw.githubusercontent.com/Project-OSRM/osrm-backend/$(OSRM_RELEASE)/profiles/lib/access.lua
-BERLIN_URL:=http://download.geofabrik.de/europe/germany/berlin-latest.osm.pbf
+BERLIN_URL:=https://s3.amazonaws.com/mapbox/node-osrm/testing/berlin-latest.osm.pbf
 OSRM_EXTRACT:=$(TOOL_ROOT)/osrm-extract
 OSRM_PREPARE:=$(TOOL_ROOT)/osrm-prepare
 
