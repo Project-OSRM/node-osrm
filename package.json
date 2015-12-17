@@ -1,50 +1,52 @@
 {
-    "name": "osrm",
-    "description": "Open Source Routing Machine",
-    "url": "https://github.com/Project-OSRM/node-osrm",
-    "homepage": "http://project-osrm.org",
-    "author": "Dane Springmeyer <springmeyer>",
-    "version": "4.8.1",
-    "main": "./lib/osrm.js",
-    "bugs": {
-        "email": "dane@mapbox.com",
-        "url": "https://github.com/Project-OSRM/node-osrm/issues"
-    },
-    "keywords": [
-        "routing",
-        "geocoding"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/Project-OSRM/osrm-backend.git"
-    },
-    "binary": {
-        "module_name": "osrm",
-        "module_path" : "./lib/binding/",
-        "host"        : "https://mapbox-node-binary.s3.amazonaws.com",
-        "remote_path" : "./{name}/v{version}/{configuration}/",
-        "package_name": "{node_abi}-{platform}-{arch}.tar.gz"
-    },
-    "dependencies": {
-        "nan": "~1.8.4",
-        "node-pre-gyp": "~0.6.7"
-    },
-    "bundledDependencies":["node-pre-gyp"],
-    "licenses": [
-        {
-            "type": "BSD"
-        }
-    ],
-    "devDependencies": {
-        "mocha": "1.x",
-        "aws-sdk":"~2.0.31"
-    },
-    "engines": {
-        "node": "0.10.x"
-    },
-    "scripts": {
-        "prepublish":"npm ls",
-        "install": "node-pre-gyp install --fallback-to-build",
-        "test": "mocha -R spec"
+  "name": "osrm",
+  "description": "Open Source Routing Machine",
+  "url": "https://github.com/Project-OSRM/node-osrm",
+  "homepage": "http://project-osrm.org",
+  "author": "Dane Springmeyer <springmeyer>",
+  "version": "4.8.1",
+  "main": "./lib/osrm.js",
+  "bugs": {
+    "email": "dane@mapbox.com",
+    "url": "https://github.com/Project-OSRM/node-osrm/issues"
+  },
+  "keywords": [
+    "routing",
+    "geocoding"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Project-OSRM/osrm-backend.git"
+  },
+  "binary": {
+    "module_name": "osrm",
+    "module_path": "./lib/binding/",
+    "host": "https://mapbox-node-binary.s3.amazonaws.com",
+    "remote_path": "./{name}/v{version}/{configuration}/",
+    "package_name": "{node_abi}-{platform}-{arch}.tar.gz"
+  },
+  "dependencies": {
+    "nan": "~1.8.4",
+    "node-pre-gyp": "~0.6.7"
+  },
+  "bundledDependencies": [
+    "node-pre-gyp"
+  ],
+  "licenses": [
+    {
+      "type": "BSD"
     }
+  ],
+  "devDependencies": {
+    "tape": "^4.2.2",
+    "aws-sdk": "~2.0.31"
+  },
+  "engines": {
+    "node": "0.10.x"
+  },
+  "scripts": {
+    "prepublish": "npm ls",
+    "install": "node-pre-gyp install --fallback-to-build",
+    "test": "node test/osrm.test.js"
+  }
 }

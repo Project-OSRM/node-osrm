@@ -57,6 +57,6 @@ berlin-latest.osrm.hsgr: berlin-latest.osrm
     ./lib/binding/osrm-datastore berlin-latest.osrm
 
 test: berlin-latest.osrm.hsgr
-	./node_modules/.bin/mocha -R spec
+	npm test
 
 .PHONY: test clean build
