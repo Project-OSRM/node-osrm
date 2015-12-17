@@ -3,6 +3,12 @@ language: cpp
 git:
   depth: 10
 
+cache:
+  directories:
+  - test/data
+  - mason_packages
+  - node_modules
+
 addons:
   apt:
     sources:
