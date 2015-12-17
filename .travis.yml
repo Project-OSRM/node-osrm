@@ -21,6 +21,7 @@ addons:
     sources:
      - ubuntu-toolchain-r-test
     packages:
+     - coreutils
      - g++-4.8
      - gdb
 
@@ -67,11 +68,12 @@ env:
 before_install:
 - scripts/validate_tag.sh
 - export COVERAGE=${COVERAGE:-false}
-- if [[ $(uname -s) == 'Linux' ]]; then
+- |
+  if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
     export CXX="g++-4.8";
     export CC="gcc-4.8";
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python2.7/site-packages;
-   else
+  elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python/site-packages;
     brew install md5sha1sum;
   fi
