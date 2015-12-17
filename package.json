@@ -47,6 +47,6 @@
   "scripts": {
     "prepublish": "npm ls",
     "install": "node-pre-gyp install --fallback-to-build",
-    "test": "node test/osrm.test.js"
+    "test": "node test/index.js"
   }
 }

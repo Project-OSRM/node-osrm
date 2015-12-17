@@ -62,7 +62,7 @@ libosrm_config_ptr argumentsToLibOSRMConfig(const Nan::FunctionCallbackInfo<v8::
     }
     else if (!args[0]->IsObject())
     {
-        Nan::ThrowError("parameter must be path or options object.");
+        Nan::ThrowError("parameter must be a path or options object");
         return libosrm_config_ptr();
     }
 
@@ -78,7 +78,15 @@ libosrm_config_ptr argumentsToLibOSRMConfig(const Nan::FunctionCallbackInfo<v8::
     }
     if (!shared_memory->IsUndefined())
     {
-        lib_config->use_shared_memory = Nan::To<bool>(shared_memory).FromJust();
+        if (shared_memory->IsBoolean())
+        {
+            lib_config->use_shared_memory = Nan::To<bool>(shared_memory).FromJust();
+        }
+        else
+        {
+            Nan::ThrowError("shared_memory option must be a boolean");
+            return libosrm_config_ptr();
+        }
     }
 
     if (path->IsUndefined() && !lib_config->use_shared_memory)
@@ -162,6 +170,7 @@ route_parameters_ptr argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Va
         {
             std::copy(maybe_coordinates->begin(), maybe_coordinates->end(),
                       std::back_inserter(params->coordinates));
+            params->uturns.insert(params->uturns.end(), maybe_coordinates->size(), false);
             params->is_source.insert(params->is_source.end(), maybe_coordinates->size(), true);
             params->is_destination.insert(params->is_destination.end(), maybe_coordinates->size(),
                                           true);
@@ -450,6 +459,7 @@ void Engine::table(const Nan::FunctionCallbackInfo<v8::Value> &args)
         {
             std::copy(maybe_sources->begin(), maybe_sources->end(),
                       std::back_inserter(params->coordinates));
+            params->uturns.insert(params->uturns.end(), maybe_sources->size(), false);
             params->is_source.insert(params->is_source.end(), maybe_sources->size(), true);
             params->is_destination.insert(params->is_destination.end(), maybe_sources->size(),
                                           false);
@@ -467,6 +477,7 @@ void Engine::table(const Nan::FunctionCallbackInfo<v8::Value> &args)
         {
             std::copy(maybe_destinations->begin(), maybe_destinations->end(),
                       std::back_inserter(params->coordinates));
+            params->uturns.insert(params->uturns.end(), maybe_destinations->size(), false);
             params->is_source.insert(params->is_source.end(), maybe_destinations->size(), false);
             params->is_destination.insert(params->is_destination.end(), maybe_destinations->size(),
                                           true);
@@ -545,7 +556,28 @@ void Engine::AsyncRun(uv_work_t *req)
     RunQueryBaton *closure = static_cast<RunQueryBaton *>(req->data);
     try
     {
-        closure->machine->this_->RunQuery(*closure->params, closure->result);
+        const auto result_code = closure->machine->this_->RunQuery(*closure->params, closure->result);
+        const auto message_iter = closure->result.values.find("status_message");
+        const auto end_iter = closure->result.values.end();
+
+        // 4xx : Invalid request
+        // 207 : No route found
+        // 208 : No edge found
+        if (result_code / 100 == 4 || result_code == 207 || result_code == 208)
+        {
+            if (message_iter != end_iter)
+            {
+                throw std::logic_error(closure->result.values["status_message"].get<osrm::json::String>().value.c_str());
+            }
+            else
+            {
+                throw std::logic_error("invalid request");
+            }
+        }
+        if (message_iter != end_iter)
+        {
+            closure->result.values.erase(message_iter);
+        }
     }
     catch (std::exception const &ex)
     {
