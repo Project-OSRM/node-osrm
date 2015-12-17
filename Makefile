@@ -39,10 +39,6 @@ clean:
 grind:
 	valgrind --leak-check=full node node_modules/.bin/_mocha
 
-rebuild:
-	@make clean
-	@make
-
 shm: ./test/data/Makefile
 	$(MAKE) -C ./test/data
 	$(OSRM_DATASTORE) ./test/data/berlin-latest.osrm
