@@ -56,7 +56,7 @@ before_install:
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python2.7/site-packages;
   elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python/site-packages;
-    brew update && brew install md5sum
+    brew install md5sha1sum
   fi
 - source ./scripts/install_node.sh ${NODE_VERSION}
 
