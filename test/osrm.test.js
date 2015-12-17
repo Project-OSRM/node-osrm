@@ -1,6 +1,6 @@
 var OSRM = require('../');
 var test = require('tape');
-var berlin_path = "data/berlin-latest.osrm";
+var berlin_path = "test/data/berlin-latest.osrm";
 
 ///////////////////////////// CONSTRUCTOR TESTS ////////////////////////////////
 
@@ -18,7 +18,7 @@ test('constructor: throws if necessary files do not exist', function(assert) {
 
 test('constructor: takes a shared memory argument', function(assert) {
     assert.plan(1);
-    var osrm = new OSRM({path: "berlin-latest.osrm", shared_memory: false});
+    var osrm = new OSRM({path: berlin_path, shared_memory: false});
     osrm.route({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]}, function(err, route) {
         assert.ifError(err);
     });
@@ -39,7 +39,7 @@ test('constructor: throws if given a non-bool shared_memory option', function(as
 test('constructor: throws if given a non-string/obj argument', function(assert) {
     assert.plan(1);
     assert.throws(function() { var osrm = new OSRM(true); },
-        /first argument must be a path string or params object/);
+        /parameter must be a path string or options object/);
 });
 
 /////////////////////////////// ROUTE TESTS ////////////////////////////////////
@@ -111,7 +111,6 @@ if (process.platform === 'darwin') {
 
 test('route: routes Berlin with geometry compression', function(assert) {
     assert.plan(2);
-    var osrm = new OSRM("berlin-latest.osrm");
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
