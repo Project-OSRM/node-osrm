@@ -53,10 +53,12 @@ berlin-latest.osrm: berlin-latest.osm.pbf
 	./lib/binding/osrm-extract berlin-latest.osm.pbf -p test/data/car.lua
 
 berlin-latest.osrm.hsgr: berlin-latest.osrm
-	./lib/binding/osrm-prepare berlin-latest.osrm -p test/data/car.lua && \
-    ./lib/binding/osrm-datastore berlin-latest.osrm
+	./lib/binding/osrm-prepare berlin-latest.osrm -p test/data/car.lua
 
-test: berlin-latest.osrm.hsgr
+shm: berlin-lastest.osrm.hsgr
+	./lib/binding/osrm-datastore berlin-latest.osrm
+
+test: shm
 	npm test
 
-.PHONY: test clean build
+.PHONY: test clean build shm
