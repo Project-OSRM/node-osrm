@@ -39,6 +39,7 @@ template <class T, class... Types> std::unique_ptr<T> make_unique(Types &&... Ar
 // Supports
 libosrm_config_ptr argumentsToLibOSRMConfig(const Nan::FunctionCallbackInfo<v8::Value> &args)
 {
+    Nan::HandleScope scope;
     auto lib_config = make_unique<LibOSRMConfig>();
 
     if (args.Length() == 0)
@@ -93,6 +94,7 @@ libosrm_config_ptr argumentsToLibOSRMConfig(const Nan::FunctionCallbackInfo<v8::
 boost::optional<std::vector<FixedPointCoordinate>>
 parseCoordinateArray(const v8::Local<v8::Array> &coordinates_array)
 {
+    Nan::HandleScope scope;
     boost::optional<std::vector<FixedPointCoordinate>> resulting_coordinates;
     std::vector<FixedPointCoordinate> temp_coordinates;
 
@@ -124,6 +126,7 @@ parseCoordinateArray(const v8::Local<v8::Array> &coordinates_array)
 // Parses all the non-service specific parameters
 route_parameters_ptr argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args)
 {
+    Nan::HandleScope scope;
     auto params = make_unique<RouteParameters>();
 
     if (args.Length() < 2)
@@ -288,6 +291,7 @@ void Engine::Initialize(v8::Handle<v8::Object> target)
 
 void Engine::New(const Nan::FunctionCallbackInfo<v8::Value> &args)
 {
+    Nan::HandleScope scope;
     if (!args.IsConstructCall())
     {
         Nan::ThrowTypeError("Cannot call constructor as function, you need to use 'new' "
@@ -324,6 +328,7 @@ struct RunQueryBaton
 
 void Engine::route(const Nan::FunctionCallbackInfo<v8::Value> &args)
 {
+    Nan::HandleScope scope;
     auto params = argumentsToParameter(args);
     if (!params)
         return;
@@ -335,6 +340,7 @@ void Engine::route(const Nan::FunctionCallbackInfo<v8::Value> &args)
 
 void Engine::match(const Nan::FunctionCallbackInfo<v8::Value> &args)
 {
+    Nan::HandleScope scope;
     auto params = argumentsToParameter(args);
     if (!params)
         return;
@@ -392,6 +398,7 @@ void Engine::match(const Nan::FunctionCallbackInfo<v8::Value> &args)
 // uses the same options as viaroute
 void Engine::trip(const Nan::FunctionCallbackInfo<v8::Value> &args)
 {
+    Nan::HandleScope scope;
     auto params = argumentsToParameter(args);
     if (!params)
         return;
@@ -403,6 +410,7 @@ void Engine::trip(const Nan::FunctionCallbackInfo<v8::Value> &args)
 
 void Engine::table(const Nan::FunctionCallbackInfo<v8::Value> &args)
 {
+    Nan::HandleScope scope;
     auto params = argumentsToParameter(args);
     if (!params)
         return;
@@ -479,6 +487,7 @@ void Engine::table(const Nan::FunctionCallbackInfo<v8::Value> &args)
 
 void Engine::nearest(const Nan::FunctionCallbackInfo<v8::Value> &args)
 {
+    Nan::HandleScope scope;
     if (args.Length() < 2)
     {
         Nan::ThrowTypeError("two arguments required");
@@ -510,6 +519,7 @@ void Engine::nearest(const Nan::FunctionCallbackInfo<v8::Value> &args)
 
 void Engine::Run(const Nan::FunctionCallbackInfo<v8::Value> &args, route_parameters_ptr params)
 {
+    Nan::HandleScope scope;
     v8::Local<v8::Value> callback = args[args.Length() - 1];
 
     if (!callback->IsFunction())
@@ -545,6 +555,7 @@ void Engine::AsyncRun(uv_work_t *req)
 
 void Engine::AfterRun(uv_work_t *req)
 {
+    Nan::HandleScope scope;
     RunQueryBaton *closure = static_cast<RunQueryBaton *>(req->data);
     Nan::TryCatch try_catch;
     if (closure->error.size() > 0)
