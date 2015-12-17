@@ -542,7 +542,6 @@ void Engine::Run(const Nan::FunctionCallbackInfo<v8::Value> &args, route_paramet
 
 void Engine::AsyncRun(uv_work_t *req)
 {
-    Nan::HandleScope scope;
     RunQueryBaton *closure = static_cast<RunQueryBaton *>(req->data);
     try
     {
