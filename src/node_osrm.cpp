@@ -62,7 +62,7 @@ libosrm_config_ptr argumentsToLibOSRMConfig(const Nan::FunctionCallbackInfo<v8::
     }
     else if (!args[0]->IsObject())
     {
-        Nan::ThrowError("parameter must be path or options object");
+        Nan::ThrowError("parameter must be a path or options object");
         return libosrm_config_ptr();
     }
 
