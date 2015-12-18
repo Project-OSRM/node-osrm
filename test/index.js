@@ -37,7 +37,7 @@ test('constructor: throws if given a non-bool shared_memory option', function(as
 test('constructor: throws if given a non-string/obj argument', function(assert) {
     assert.plan(1);
     assert.throws(function() { var osrm = new OSRM(true); },
-        /parameter must be a path string or options object/);
+        /parameter must be a path or options object/);
 });
 
 require('./route.js');

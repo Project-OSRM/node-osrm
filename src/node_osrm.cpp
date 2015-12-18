@@ -62,7 +62,7 @@ libosrm_config_ptr argumentsToLibOSRMConfig(const Nan::FunctionCallbackInfo<v8::
     }
     else if (!args[0]->IsObject())
     {
-        Nan::ThrowError("parameter must be path or options object.");
+        Nan::ThrowError("parameter must be path or options object");
         return libosrm_config_ptr();
     }
 
@@ -78,7 +78,15 @@ libosrm_config_ptr argumentsToLibOSRMConfig(const Nan::FunctionCallbackInfo<v8::
     }
     if (!shared_memory->IsUndefined())
     {
-        lib_config->use_shared_memory = Nan::To<bool>(shared_memory).FromJust();
+        if (shared_memory->IsBoolean())
+        {
+            lib_config->use_shared_memory = Nan::To<bool>(shared_memory).FromJust();
+        }
+        else
+        {
+            Nan::ThrowError("shared_memory option must be a boolean");
+            return libosrm_config_ptr();
+        }
     }
 
     if (path->IsUndefined() && !lib_config->use_shared_memory)
@@ -162,6 +170,7 @@ route_parameters_ptr argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Va
         {
             std::copy(maybe_coordinates->begin(), maybe_coordinates->end(),
                       std::back_inserter(params->coordinates));
+            params->uturns.insert(params->uturns.end(), maybe_coordinates->size(), false);
             params->is_source.insert(params->is_source.end(), maybe_coordinates->size(), true);
             params->is_destination.insert(params->is_destination.end(), maybe_coordinates->size(),
                                           true);
@@ -450,6 +459,7 @@ void Engine::table(const Nan::FunctionCallbackInfo<v8::Value> &args)
         {
             std::copy(maybe_sources->begin(), maybe_sources->end(),
                       std::back_inserter(params->coordinates));
+            params->uturns.insert(params->uturns.end(), maybe_sources->size(), false);
             params->is_source.insert(params->is_source.end(), maybe_sources->size(), true);
             params->is_destination.insert(params->is_destination.end(), maybe_sources->size(),
                                           false);
@@ -467,6 +477,7 @@ void Engine::table(const Nan::FunctionCallbackInfo<v8::Value> &args)
         {
             std::copy(maybe_destinations->begin(), maybe_destinations->end(),
                       std::back_inserter(params->coordinates));
+            params->uturns.insert(params->uturns.end(), maybe_destinations->size(), false);
             params->is_source.insert(params->is_source.end(), maybe_destinations->size(), false);
             params->is_destination.insert(params->is_destination.end(), maybe_destinations->size(),
                                           true);
