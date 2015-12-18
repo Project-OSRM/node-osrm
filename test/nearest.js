@@ -6,7 +6,6 @@ test('nearest', function(assert) {
     assert.plan(3);
     var osrm = new OSRM(berlin_path);
     osrm.nearest([52.4224, 13.333086], function(err, result) {
-        console.log(JSON.stringify(result));
         assert.ifError(err);
         assert.equal(result.mapped_coordinate.length, 2);
         assert.ok(result.hasOwnProperty('name'));
