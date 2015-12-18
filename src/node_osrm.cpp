@@ -556,7 +556,28 @@ void Engine::AsyncRun(uv_work_t *req)
     RunQueryBaton *closure = static_cast<RunQueryBaton *>(req->data);
     try
     {
-        closure->machine->this_->RunQuery(*closure->params, closure->result);
+        const auto result_code = closure->machine->this_->RunQuery(*closure->params, closure->result);
+        const auto message_iter = closure->result.values.find("status_message");
+        const auto end_iter = closure->result.values.end();
+
+        // 4xx : Invalid request
+        // 207 : No route found
+        // 208 : No edge found
+        if (result_code / 100 == 4 || result_code == 207 || result_code == 208)
+        {
+            if (message_iter != end_iter)
+            {
+                throw std::logic_error(closure->result.values["status_message"].get<osrm::json::String>().value.c_str());
+            }
+            else
+            {
+                throw std::logic_error("invalid request");
+            }
+        }
+        if (message_iter != end_iter)
+        {
+            closure->result.values.erase(message_iter);
+        }
     }
     catch (std::exception const &ex)
     {

@@ -7,7 +7,7 @@ test('route: routes Berlin', function(assert) {
     var osrm = new OSRM(berlin_path);
     osrm.route({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]}, function(err, route) {
         assert.ifError(err);
-        assert.equal(route.status_message, 'Found route between points');
+        assert.ok(route.route_summary);
     });
 });
 
@@ -49,7 +49,7 @@ test('route: takes jsonp parameter', function(assert) {
     var osrm = new OSRM(berlin_path);
     osrm.route({coordinates: [[52.519930,13.438640], [52.513191,13.415852]], jsonpParameter: 'function'}, function(err, route) {
         assert.ifError(err);
-        assert.equal(route.status_message, 'Found route between points');
+        assert.ok(route.route_summary);
     });
 });
 
@@ -62,7 +62,7 @@ if (process.platform === 'darwin') {
       var osrm = new OSRM();
       osrm.route({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]}, function(err, route) {
           assert.ifError(err);
-          assert.equal(route.status_message, 'Found route between points');
+          assert.ok(route.route_summary);
       });
   });
 }
@@ -88,7 +88,7 @@ test('route: routes Berlin without geometry compression', function(assert) {
     };
     osrm.route(options, function(err, route) {
         assert.ifError(err);
-        assert.equal(route.status_message,'Found route between points');
+        assert.ok(route.route_summary);
         assert.ok(Array.isArray(route.route_geometry));
     });
 });
@@ -105,10 +105,10 @@ test('route: routes Berlin with options', function(assert) {
     };
     osrm.route(options, function(err, route) {
         assert.ifError(err);
-        assert.equal(route.status_message,'Found route between points');
-        assert.equal(undefined, route.route_instructions);
-        assert.equal(undefined, route.alternative_geometries);
-        assert.equal(undefined, route.route_geometry);
+        assert.ok(route.route_summary);
+        assert.notOk(route.route_instructions);
+        assert.notOk(route.alternative_geometries);
+        assert.notOk(route.route_geometry);
     });
 });
 
@@ -122,7 +122,7 @@ test('route: routes Berlin with hints', function(assert) {
     };
     osrm.route(options, function(err, first) {
         assert.ifError(err);
-        assert.equal(first.status_message, 'Found route between points');
+        assert.ok(first.route_summary);
         var checksum = first.hint_data.checksum;
         assert.equal("number", typeof(checksum));
 
