@@ -10,7 +10,7 @@ CURRENT_DIR=$(pwd)
 # default to clang
 CXX=${CXX:-clang++}
 TARGET=${TARGET:-Release}
-OSRM_RELEASE=${OSRM_RELEASE:-"v4.8.1"}
+OSRM_RELEASE=${OSRM_RELEASE:-"develop"}
 OSRM_REPO=${OSRM_REPO:-"https://github.com/Project-OSRM/osrm-backend.git"}
 
 function all_deps() {
