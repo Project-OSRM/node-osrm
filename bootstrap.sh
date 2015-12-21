@@ -12,6 +12,7 @@ CXX=${CXX:-clang++}
 TARGET=${TARGET:-Release}
 OSRM_RELEASE=${OSRM_RELEASE:-"develop"}
 OSRM_REPO=${OSRM_REPO:-"https://github.com/Project-OSRM/osrm-backend.git"}
+OSRM_DIR=deps/osrm-backend-${TARGET}
 
 function all_deps() {
     dep cmake 3.2.2 &
@@ -62,6 +63,36 @@ function localize() {
     move_tool osrm-prepare
 }
 
+function build_osrm() {
+    mkdir -p ${OSRM_DIR}
+    git clone ${OSRM_REPO} ${OSRM_DIR}
+    pushd ${OSRM_DIR}
+
+    echo "Using OSRM ${OSRM_RELEASE}"
+    echo "Using OSRM ${OSRM_REPO}"
+    git checkout .
+    git checkout ${OSRM_RELEASE}
+
+    # workaround https://github.com/Project-OSRM/node-osrm/issues/92
+    perl -i -p -e "s/-fprofile-arcs -ftest-coverage//g;" CMakeLists.txt
+    perl -i -p -e "s/\${CMAKE_CXX_FLAGS} -flto/\${CMAKE_CXX_FLAGS}/g;" CMakeLists.txt
+
+    rm -rf build
+    mkdir -p build
+    cd build
+    cmake ../ -DCMAKE_INSTALL_PREFIX=${MASON_HOME} \
+      -DCMAKE_CXX_COMPILER="$CXX" \
+      -DBoost_NO_SYSTEM_PATHS=ON \
+      -DTBB_INSTALL_DIR=${MASON_HOME} \
+      -DCMAKE_INCLUDE_PATH=${MASON_HOME}/include \
+      -DCMAKE_LIBRARY_PATH=${MASON_HOME}/lib \
+      -DCMAKE_BUILD_TYPE=${TARGET} \
+      -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}"
+    make -j${JOBS} && make install
+
+    popd
+}
+
 function main() {
     if [[ ! -d ./.mason ]]; then
         git clone --depth 1 https://github.com/mapbox/mason.git ./.mason
@@ -96,44 +127,17 @@ function main() {
     fi
 
     # make sure we rebuild if previous build was not successful
-    if [[ ! -f osrm-backend-${TARGET}/build/osrm-extract ]] || [[ ! -f ${MASON_HOME}/bin/osrm-extract ]]; then
-        mkdir -p osrm-backend-${TARGET}
-        git clone ${OSRM_REPO} osrm-backend-${TARGET}
-        cd osrm-backend-${TARGET}
-
-        echo "Using OSRM ${OSRM_RELEASE}"
-        echo "Using OSRM ${OSRM_REPO}"
-        git checkout .
-        git checkout ${OSRM_RELEASE}
-
-        # workaround https://github.com/Project-OSRM/node-osrm/issues/92
-        perl -i -p -e "s/-fprofile-arcs -ftest-coverage//g;" CMakeLists.txt
-        perl -i -p -e "s/\${CMAKE_CXX_FLAGS} -flto/\${CMAKE_CXX_FLAGS}/g;" CMakeLists.txt
-
-        rm -rf build
-        mkdir -p build
-        cd build
-        cmake ../ -DCMAKE_INSTALL_PREFIX=${MASON_HOME} \
-          -DCMAKE_CXX_COMPILER="$CXX" \
-          -DBoost_NO_SYSTEM_PATHS=ON \
-          -DTBB_INSTALL_DIR=${MASON_HOME} \
-          -DCMAKE_INCLUDE_PATH=${MASON_HOME}/include \
-          -DCMAKE_LIBRARY_PATH=${MASON_HOME}/lib \
-          -DCMAKE_BUILD_TYPE=${TARGET} \
-          -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}"
-        make -j${JOBS}
-        make install
-
+    if [[ ! -f ${OSRM_DIR}/build/osrm-extract ]] || [[ ! -f ${MASON_HOME}/bin/osrm-extract ]] ||
+       [[ ! -f ${OSRM_DIR}/build/osrm-prepare ]] || [[ ! -f ${MASON_HOME}/bin/osrm-prepare ]] ||
+       [[ ! -f ${OSRM_DIR}/build/osrm-datastore ]] || [[ ! -f ${MASON_HOME}/bin/osrm-datastore ]]; then
+        build_osrm
     fi
-
-    cd ${CURRENT_DIR}
 
     localize
 
     #if [[ `uname -s` == 'Darwin' ]]; then otool -L ./lib/binding/* || true; fi
     #if [[ `uname -s` == 'Linux' ]]; then readelf -d ./lib/binding/* || true; fi
     echo "success: now run 'npm install --build-from-source'"
-
 }
 
 main

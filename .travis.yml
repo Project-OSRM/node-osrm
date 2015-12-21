@@ -3,6 +3,19 @@ language: cpp
 git:
   depth: 10
 
+notifications:
+  email: false
+
+branches:
+  only:
+    - master
+    - develop
+
+cache:
+  directories:
+    - node_modules
+    - deps
+
 addons:
   apt:
     sources:
@@ -60,7 +73,7 @@ before_install:
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python2.7/site-packages;
    else
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python/site-packages;
-    brew install md5sha1sum
+    brew install md5sha1sum;
   fi
 # Mac OS X does not have nvm installed
 - source ./scripts/install_node.sh ${NODE_VERSION}
