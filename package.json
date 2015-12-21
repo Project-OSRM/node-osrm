@@ -6,12 +6,16 @@
   "author": "Dane Springmeyer <springmeyer>",
   "version": "4.9.0-develop.0",
   "main": "./lib/osrm.js",
+  "license": "BSD",
   "bugs": {
     "email": "dane@mapbox.com",
     "url": "https://github.com/Project-OSRM/node-osrm/issues"
   },
   "keywords": [
-    "routing"
+    "routing",
+    "matching",
+    "distance table",
+    "TSP"
   ],
   "repository": {
     "type": "git",
@@ -31,17 +35,12 @@
   "bundledDependencies": [
     "node-pre-gyp"
   ],
-  "licenses": [
-    {
-      "type": "BSD"
-    }
-  ],
   "devDependencies": {
     "tape": "^4.2.2",
     "aws-sdk": "~2.0.31"
   },
   "engines": {
-    "node": "0.10.x"
+    "node": ">=0.10 <=0.12"
   },
   "scripts": {
     "prepublish": "npm ls",
