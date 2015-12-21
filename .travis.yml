@@ -16,27 +16,33 @@ sudo: false
 
 matrix:
   include:
+     # Linux
+     - os: linux
+       compiler: gcc
+       env: NODE_VERSION="5" TARGET=Release
+     - os: linux
+       compiler: gcc
+       env: NODE_VERSION="4" TARGET=Release
+     - os: linux
+       compiler: gcc
+       env: NODE_VERSION="0.12" TARGET=Release
+     - os: linux
+       compiler: gcc
+       env: NODE_VERSION="0.10" TARGET=Release
+     - os: linux
+       compiler: gcc
+       env: NODE_VERSION="0.10" TARGET=Debug NPM_FLAGS="--debug"
+     # OS X
+     - os: osx
+       compiler: clang
+       env: NODE_VERSION="0.12" TARGET=Release
+     - os: osx
+       compiler: clang
+       env: NODE_VERSION="0.10" TARGET=Release
      # Coverage
      - os: osx
        compiler: clang
        env: NODE_VERSION="0.10" COVERAGE=true TARGET=Debug NPM_FLAGS="--debug"
-     # Linux
-     - os: linux
-       compiler: gcc
-       env: NODE_VERSION="0.12.0" TARGET=Release
-     - os: linux
-       compiler: gcc
-       env: NODE_VERSION="0.10.36" TARGET=Release
-     - os: linux
-       compiler: gcc
-       env: NODE_VERSION="0.10.36" TARGET=Debug NPM_FLAGS="--debug"
-     # OS X
-     - os: osx
-       compiler: clang
-       env: NODE_VERSION="0.12.0" TARGET=Release
-     - os: osx
-       compiler: clang
-       env: NODE_VERSION="0.10.36" TARGET=Release
 
 env:
   global:
@@ -54,7 +60,9 @@ before_install:
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python2.7/site-packages;
    else
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python/site-packages;
-   fi;
+    brew install md5sha1sum
+  fi
+# Mac OS X does not have nvm installed
 - source ./scripts/install_node.sh ${NODE_VERSION}
 
 install:
@@ -74,5 +82,8 @@ script:
 - make test || RESULT=$?
 - for i in $(find ./ -maxdepth 1 -name 'core*' -print); do gdb $(which node) $i -ex "thread apply all bt" -ex "set pagination 0" -batch; done;
 - if [[ ${RESULT} != 0 ]]; then exit $RESULT; fi
-- if [[ ${COVERAGE} == true ]]; then ./mason_packages/.link/bin/cpp-coveralls --exclude node_modules --exclude mason_packages --exclude tests --build-root build --gcov-options '\-lp' --exclude doc --exclude build/Release/obj/gen; fi;
-- if [[ ${COVERAGE} != true ]]; then ./scripts/publish.sh; fi;
+- if [[ ${COVERAGE} == true ]]; then
+    ./mason_packages/.link/bin/cpp-coveralls --exclude node_modules --exclude mason_packages --exclude tests --build-root build --gcov-options '\-lp' --exclude doc --exclude build/Release/obj/gen;
+  else
+    ./scripts/publish.sh;
+  fi;
