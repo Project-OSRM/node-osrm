@@ -3,11 +3,18 @@ language: cpp
 git:
   depth: 10
 
+cache:
+  directories:
+  - test/data
+  - mason_packages
+  - node_modules
+
 addons:
   apt:
     sources:
      - ubuntu-toolchain-r-test
     packages:
+     - coreutils
      - g++-4.8
      - gdb
 
@@ -41,20 +48,22 @@ matrix:
 env:
   global:
    - JOBS: "3"
-   - OSRM_RELEASE: "v4.8.1"
+   - OSRM_RELEASE: "v4.9.0-rc6"
    - secure: KitzGZjoDblX/3heajcvssGz0JnJ/k02dr2tu03ksUV+6MogC3RSQudqyKY57+f8VyZrcllN/UOlJ0Q/3iG38Oz8DljC+7RZxtkVmE1SFBoOezKCdhcvWM12G3uqPs7hhrRxuUgIh0C//YXEkulUrqa2H1Aj2xeen4E3FAqEoy0=
    - secure: WLGmxl6VTVWhXGm6X83GYNYzPNsvTD+9usJOKM5YBLAdG7cnOBQBNiCCUKc9OZMMZVUr3ec2/iigakH5Y8Yc+U6AlWKzlORyqWLuk4nFuoedu62x6ocQkTkuOc7mHiYhKd21xTGMYauaZRS6kugv4xkpGES2UjI2T8cjZ+LN2jU=
 
 before_install:
 - scripts/validate_tag.sh
 - export COVERAGE=${COVERAGE:-false}
-- if [[ $(uname -s) == 'Linux' ]]; then
+- |
+  if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
     export CXX="g++-4.8";
     export CC="gcc-4.8";
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python2.7/site-packages;
-   else
+  elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python/site-packages;
-   fi;
+    brew install md5sha1sum
+  fi
 - source ./scripts/install_node.sh ${NODE_VERSION}
 
 install:

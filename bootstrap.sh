@@ -10,7 +10,7 @@ CURRENT_DIR=$(pwd)
 # default to clang
 CXX=${CXX:-clang++}
 TARGET=${TARGET:-Release}
-OSRM_RELEASE=${OSRM_RELEASE:-"v4.8.1"}
+OSRM_RELEASE=${OSRM_RELEASE:-"v4.9.0-rc3"}
 OSRM_REPO=${OSRM_REPO:-"https://github.com/Project-OSRM/osrm-backend.git"}
 
 function all_deps() {
@@ -36,10 +36,6 @@ function all_deps() {
 
 function move_tool() {
     cp ${MASON_HOME}/bin/$1 "${TARGET_DIR}/"
-    if [[ `uname -s` == 'Darwin' ]]; then
-        install_name_tool -change libtbb.dylib @loader_path/libtbb.dylib ${TARGET_DIR}/$1
-        install_name_tool -change libtbbmalloc.dylib @loader_path/libtbbmalloc.dylib ${TARGET_DIR}/$1
-    fi
 }
 
 function copy_tbb() {
@@ -70,6 +66,11 @@ function main() {
     export MASON_HOME=$(pwd)/mason_packages/.link
     if [[ ! -d ${MASON_HOME} ]]; then
         all_deps
+    fi
+    # fix install name of tbb
+    if [[ `uname -s` == 'Darwin' ]]; then
+        install_name_tool -id @loader_path/libtbb.dylib ${MASON_HOME}/lib/libtbb.dylib
+        install_name_tool -id @loader_path/libtbb.dylib ${MASON_HOME}/lib/libtbbmalloc.dylib
     fi
     export PATH=${MASON_HOME}/bin:$PATH
     export PKG_CONFIG_PATH=${MASON_HOME}/lib/pkgconfig
@@ -105,10 +106,6 @@ function main() {
         echo "Using OSRM ${OSRM_REPO}"
         git checkout .
         git checkout ${OSRM_RELEASE}
-
-        # workaround https://github.com/Project-OSRM/node-osrm/issues/92
-        perl -i -p -e "s/-fprofile-arcs -ftest-coverage//g;" CMakeLists.txt
-        perl -i -p -e "s/\${CMAKE_CXX_FLAGS} -flto/\${CMAKE_CXX_FLAGS}/g;" CMakeLists.txt
 
         rm -rf build
         mkdir -p build

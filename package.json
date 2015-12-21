@@ -4,7 +4,7 @@
   "url": "https://github.com/Project-OSRM/node-osrm",
   "homepage": "http://project-osrm.org",
   "author": "Dane Springmeyer <springmeyer>",
-  "version": "4.8.1",
+  "version": "4.9.0-rc4",
   "main": "./lib/osrm.js",
   "bugs": {
     "email": "dane@mapbox.com",
@@ -26,7 +26,7 @@
     "package_name": "{node_abi}-{platform}-{arch}.tar.gz"
   },
   "dependencies": {
-    "nan": "~1.8.4",
+    "nan": "^2.1.0",
     "node-pre-gyp": "~0.6.7"
   },
   "bundledDependencies": [
@@ -47,6 +47,6 @@
   "scripts": {
     "prepublish": "npm ls",
     "install": "node-pre-gyp install --fallback-to-build",
-    "test": "node test/osrm.test.js"
+    "test": "node test/index.js"
   }
 }
