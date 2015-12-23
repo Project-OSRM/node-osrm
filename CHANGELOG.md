@@ -1,5 +1,11 @@
 ## node-osrm changelog
 
+### 4.9.0
+ - Uses OSRM 4.9.0
+ - `table` now supports `sources` and `destinations` options for asymmetric queries
+ - `status` and `status_message` were removed. `No route found` (207) and `No matching edge segment found` (208) now throw `Error` Objects (as well as all `400` errors).
+ - Ported to NAN2 to support for Node 4.x and 5.x
+
 ### 4.8.1
 
  - Update OSRM to v4.8.1
