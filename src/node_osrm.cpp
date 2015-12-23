@@ -48,6 +48,7 @@ libosrm_config_ptr argumentsToLibOSRMConfig(const Nan::FunctionCallbackInfo<v8::
     }
     else if (args.Length() > 1)
     {
+        Nan::ThrowError("only accepts one parameter");
         return libosrm_config_ptr();
     }
 
@@ -132,7 +133,7 @@ parseCoordinateArray(const v8::Local<v8::Array> &coordinates_array)
 }
 
 // Parses all the non-service specific parameters
-route_parameters_ptr argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args)
+route_parameters_ptr argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, bool requires_coordinates)
 {
     Nan::HandleScope scope;
     auto params = make_unique<RouteParameters>();
@@ -152,7 +153,7 @@ route_parameters_ptr argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Va
     v8::Local<v8::Object> obj = Nan::To<v8::Object>(args[0]).ToLocalChecked();
 
     v8::Local<v8::Value> coordinates = obj->Get(Nan::New("coordinates").ToLocalChecked());
-    if (coordinates->IsUndefined())
+    if (coordinates->IsUndefined() && requires_coordinates)
     {
         Nan::ThrowError("must provide a coordinates property");
         return route_parameters_ptr();
@@ -180,8 +181,9 @@ route_parameters_ptr argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Va
             return route_parameters_ptr();
         }
     }
-    else
+    else if (!coordinates->IsUndefined())
     {
+        BOOST_ASSERT(!coordinates->IsArray());
         Nan::ThrowError("coordinates must be an array of (lat/long) pairs");
         return route_parameters_ptr();
     }
@@ -381,7 +383,7 @@ struct RunQueryBaton
 void Engine::route(const Nan::FunctionCallbackInfo<v8::Value> &args)
 {
     Nan::HandleScope scope;
-    auto params = argumentsToParameter(args);
+    auto params = argumentsToParameter(args, true);
     if (!params)
         return;
 
@@ -393,7 +395,7 @@ void Engine::route(const Nan::FunctionCallbackInfo<v8::Value> &args)
 void Engine::match(const Nan::FunctionCallbackInfo<v8::Value> &args)
 {
     Nan::HandleScope scope;
-    auto params = argumentsToParameter(args);
+    auto params = argumentsToParameter(args, true);
     if (!params)
         return;
 
@@ -451,7 +453,7 @@ void Engine::match(const Nan::FunctionCallbackInfo<v8::Value> &args)
 void Engine::trip(const Nan::FunctionCallbackInfo<v8::Value> &args)
 {
     Nan::HandleScope scope;
-    auto params = argumentsToParameter(args);
+    auto params = argumentsToParameter(args, true);
     if (!params)
         return;
 
@@ -463,7 +465,7 @@ void Engine::trip(const Nan::FunctionCallbackInfo<v8::Value> &args)
 void Engine::table(const Nan::FunctionCallbackInfo<v8::Value> &args)
 {
     Nan::HandleScope scope;
-    auto params = argumentsToParameter(args);
+    auto params = argumentsToParameter(args, false);
     if (!params)
         return;
 

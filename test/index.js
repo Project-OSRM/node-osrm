@@ -8,6 +8,18 @@ test('constructor: throws if new keyword is not used', function(assert) {
       /Cannot call constructor as function, you need to use 'new' keyword/);
 });
 
+test('constructor: uses defaults with no parameter', function(assert) {
+    assert.plan(1);
+    var osrm = new OSRM();
+    assert.ok(osrm);
+});
+
+test('constructor: does not accept more than one parameter', function(assert) {
+    assert.plan(1);
+    assert.throws(function() { new OSRM({}, {}); },
+        /only accepts one parameter/);
+});
+
 test('constructor: throws if necessary files do not exist', function(assert) {
     assert.plan(1);
     assert.throws(function() { new OSRM("missing.osrm"); },
