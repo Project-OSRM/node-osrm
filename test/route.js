@@ -112,6 +112,47 @@ test('route: routes Berlin with options', function(assert) {
     });
 });
 
+test('route: integer bearing values', function(assert) {
+    assert.plan(2);
+    var osrm = new OSRM(berlin_path);
+    var options = {
+        coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
+        bearings: [200, 250],
+    };
+    osrm.route(options, function(err, route) {
+        assert.ifError(err);
+        assert.ok(route.route_summary);
+    });
+});
+
+test('route: array bearing values', function(assert) {
+    assert.plan(2);
+    var osrm = new OSRM(berlin_path);
+    var options = {
+        coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
+        bearings: [[200, 180], [250, 180]],
+    };
+    osrm.route(options, function(err, route) {
+        assert.ifError(err);
+        assert.ok(route.route_summary);
+    });
+});
+
+test('route: invalid bearing values', function(assert) {
+    assert.plan(2);
+    var osrm = new OSRM(berlin_path);
+    assert.throws(function() { osrm.route({
+        coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
+        bearings: [[400, 180], [-250, 180]],
+    }, function(err, route) {}) },
+        /Bearing needs to be in range/);
+    assert.throws(function() { osrm.route({
+        coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
+        bearings: [[200], [250, 180]],
+    }, function(err, route) {}) },
+        /Bearing must be an array of/);
+});
+
 test('route: routes Berlin with hints', function(assert) {
     assert.plan(5);
     var osrm = new OSRM(berlin_path);

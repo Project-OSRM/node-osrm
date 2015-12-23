@@ -28,14 +28,15 @@ Matches given coordinates to the road network
 
 ### Parameters
 
-* `coordinates` **`Array<Array<Number>>`** The point to match as a latitude, longitude array.
-* `timestamps` **`Array<Number>`** An array of UNIX style timestamps corresponding to the input coordinates (eg: 1424684612).
-* `classify` **`[Boolean]`** Return a confidence value for this matching. (optional, default `false`)
-* `gps_precision` **`[Number]`** Specify gps precision as standart deviation in meters. (optional, default `5`)
-* `matching_beta` **`[Number]`** Specify beta value for matching algorithm. (optional, default `5`)
-* `geometry` **`[Boolean]`** Return the route geometry. (optional, default `true`)
-* `compression` **`[Boolean]`** Compress route geometry as a polyline; geometry is an array of [lat, lng] pairs if false. (optional, default `true`)
+* `options` **`Object`** Object literal containing parameters for the match query.
+  * `options.coordinates` **`Array<Array<Number>>`** The point to match as a latitude, longitude array.
+  * `options.bearings` **`Array<Number>`** or **`Array<Array<Number>>`** Either list of approximate bearing values of the segments to snap to or `[bearing, range]`
+  * `options.timestamps` **`Array<Number>`** An array of UNIX style timestamps corresponding to the input coordinates (eg: 1424684612).
+  * `options.classify` **`[Boolean]`** Return a confidence value for this matching. (optional, default `false`)
+  * `options.gps_precision` **`[Number]`** Specify gps precision as standart deviation in meters. (optional, default `5`)
+  * `options.matching_beta` **`[Number]`** Specify beta value for matching algorithm. (optional, default `5`)
 
+For other parameters see [osrm.route Parameters](#route_parameters). `trip` does not support computing alternatives.
 
 ### Examples
 
@@ -85,6 +86,7 @@ Computes a route between coordinates over the network.
 
 * `options` **`Object`** Object literal containing parameters for the route query.
   * `options.coordinates` **`Array<Array<Number>>`** Via points to route represented by an array of number arrays expressing coordinate pairs as latitude, longitude.
+  * `options.bearings` **`Array<Number>`** or **`Array<Array<Number>>`** Either list of approximate bearing values of the segments to snap to or `[bearing, range]`
   * `options.alternateRoute` **`[Boolean]`** Return an alternate route. (optional, default `false`)
   * `options.checksum` **`[Number]`** [Checksum](https://en.wikipedia.org/wiki/Checksum) of the network dataset.
   * `options.zoomLevel` **`[Number]`** Determines the level of generalization. The default zoom 18 performs no generalization. (optional, default `18`)
@@ -111,9 +113,10 @@ Computes distance tables for the given via points. Currently all pair-wise dista
 
 ### Parameters
 
-* `coordinates` **`Array<Array<Number>>`** Array of coordinate pairs as latitude, longitude representing the via points to be computed.
-* `sources` **`Array<Array<Number>>`** Array of coordinate pairs as latitude, longitude representing the via points to be computed. Conflicts with `coordinates`.
-* `destinations` **`Array<Array<Number>>`** Array of coordinate pairs as latitude, longitude representing the via points to be computed. Conflicts with `coordinates`.
+* `options` **`Object`** Object literal containing parameters for the table query.
+  * `options.coordinates` **`Array<Array<Number>>`** Array of coordinate pairs as latitude, longitude representing the via points to be computed.
+  * `options.sources` **`Array<Array<Number>>`** Array of coordinate pairs as latitude, longitude representing the via points to be computed. Conflicts with `coordinates`.
+  * `options.destinations` **`Array<Array<Number>>`** Array of coordinate pairs as latitude, longitude representing the via points to be computed. Conflicts with `coordinates`.
 
 
 ### Examples
@@ -151,7 +154,8 @@ Calculates a short roundtrip that visits every given coordinate.
 
 ### Parameters
 
-* `coordinates` **`Array<Array<Number>>`** The point to match as a latitude, longitude array.
+* `options` **`Object`** Object literal containing parameters for the trip query.
+* `options.coordinates` **`Array<Array<Number>>`** The point to match as a latitude, longitude array.
 
 For other parameters see [osrm.route Parameters](#route_parameters). `trip` does not support computing alternatives.
 

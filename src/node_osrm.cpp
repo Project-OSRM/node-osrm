@@ -186,6 +186,49 @@ route_parameters_ptr argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Va
         return route_parameters_ptr();
     }
 
+    if (obj->Has(Nan::New("bearings").ToLocalChecked()))
+    {
+        v8::Local<v8::Value> bearings = obj->Get(Nan::New("bearings").ToLocalChecked());
+        auto bearings_array = v8::Local<v8::Array>::Cast(bearings);
+        for (auto i = 0u; i <  bearings_array->Length(); ++i)
+        {
+            v8::Local<v8::Value> value = bearings_array->Get(i);
+            int bearing;
+            boost::optional<int> bearing_range;
+            if (value->IsArray())
+            {
+                auto bearing_and_range = v8::Local<v8::Array>::Cast(value);
+                if (bearing_and_range->Length() == 2)
+                {
+                    bearing = static_cast<int>(bearing_and_range->Get(0)->NumberValue());
+                    bearing_range = boost::make_optional(static_cast<int>(bearing_and_range->Get(1)->NumberValue()));
+                }
+                else
+                {
+                    Nan::ThrowError("Bearing must be an array of [bearing, range]");
+                    return route_parameters_ptr();
+                }
+            }
+            else if (value->IsNumber())
+            {
+                bearing = static_cast<int>(value->NumberValue());
+            }
+            else
+            {
+                  Nan::ThrowError("Bearing needs to be integer or pair of integers");
+                  return route_parameters_ptr();
+            }
+
+            if (bearing < 0 || bearing >= 360)
+            {
+                Nan::ThrowError("Bearing needs to be in range 0..360");
+                return route_parameters_ptr();
+            }
+
+            params->bearings.emplace_back(bearing, bearing_range);
+        }
+    }
+
     if (obj->Has(Nan::New("alternateRoute").ToLocalChecked()))
     {
         params->alternate_route =
@@ -556,7 +599,8 @@ void Engine::AsyncRun(uv_work_t *req)
     RunQueryBaton *closure = static_cast<RunQueryBaton *>(req->data);
     try
     {
-        const auto result_code = closure->machine->this_->RunQuery(*closure->params, closure->result);
+        const auto result_code =
+            closure->machine->this_->RunQuery(*closure->params, closure->result);
         const auto message_iter = closure->result.values.find("status_message");
         const auto end_iter = closure->result.values.end();
 
@@ -567,7 +611,9 @@ void Engine::AsyncRun(uv_work_t *req)
         {
             if (message_iter != end_iter)
             {
-                throw std::logic_error(closure->result.values["status_message"].get<osrm::json::String>().value.c_str());
+                throw std::logic_error(closure->result.values["status_message"]
+                                           .get<osrm::json::String>()
+                                           .value.c_str());
             }
             else
             {
