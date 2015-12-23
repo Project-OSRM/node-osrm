@@ -60,7 +60,7 @@ test('table: distance table in Berlin with sources/destinations', function(asser
 });
 
 test('table: throws on invalid arguments', function(assert) {
-    assert.plan(5);
+    assert.plan(7);
     var osrm = new OSRM(berlin_path);
     var options = {};
     assert.throws(function() { osrm.table(options); },
@@ -77,6 +77,13 @@ test('table: throws on invalid arguments', function(assert) {
     options.coordinates = [[52.542648],[13.393252]];
     assert.throws(function() { osrm.table(options, function(err, response) {}) },
         "coordinates must be an array of (lat/long) pairs");
+    options.coordinates = [[52.542648,13.393252], [52.542648,13.393252]];
+    options.sources = [[52.542648,13.393252], [52.542648,13.393252]];
+    assert.throws(function() { osrm.table(options, function(err, response) {}) },
+        /Both sources and destinations need to be specified/);
+    options.destinations = [[52.542648,13.393252], [52.542648,13.393252]];
+    assert.throws(function() { osrm.table(options, function(err, response) {}) },
+        /You can either specify sources and destinations, or coordinates/);
 });
 
 test('table: throws on invalid arguments', function(assert) {

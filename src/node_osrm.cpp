@@ -492,7 +492,7 @@ void Engine::table(const Nan::FunctionCallbackInfo<v8::Value> &args)
 
     if (!destinations->IsUndefined() && !sources->IsUndefined() && params->coordinates.size() > 0)
     {
-        Nan::ThrowError("You can either specifiy sources and destinations, or coordinates");
+        Nan::ThrowError("You can either specify sources and destinations, or coordinates");
         return;
     }
 
