@@ -1,4 +1,8 @@
 #http://www.gnu.org/prep/standards/html_node/Standard-Targets.html#Standard-Targets
+TOOL_ROOT?=$(shell pwd)/lib/binding
+OSRM_DATASTORE:=$(TOOL_ROOT)/osrm-datastore
+export TOOL_ROOT
+export OSRM_DATASTORE
 
 all: build
 
@@ -26,37 +30,20 @@ verbose: pkgconfig ./node_modules
 
 clean:
 	@rm -rf ./build
-	rm -rf ./lib/binding/
+	rm -rf ./lib/binding/*
 	rm -rf ./node_modules/
 	rm -f ./*tgz
-	rm -f ./*.osrm*
 	rm -rf ./mason_packages
 	rm -rf ./osrm-backend-*
 
 grind:
 	valgrind --leak-check=full node node_modules/.bin/_mocha
 
-testpack:
-	rm -f ./*tgz
-	npm pack
-	tar -ztvf *tgz
-	rm -f ./*tgz
+shm: ./test/data/Makefile
+	$(MAKE) -C ./test/data
+	$(OSRM_DATASTORE) ./test/data/berlin-latest.osrm
 
-rebuild:
-	@make clean
-	@make
-
-berlin-latest.osm.pbf:
-	wget http://download.geofabrik.de/europe/germany/berlin-latest.osm.pbf
-
-berlin-latest.osrm: berlin-latest.osm.pbf
-	./lib/binding/osrm-extract berlin-latest.osm.pbf -p test/data/car.lua
-
-berlin-latest.osrm.hsgr: berlin-latest.osrm
-	./lib/binding/osrm-prepare berlin-latest.osrm -p test/data/car.lua && \
-    ./lib/binding/osrm-datastore berlin-latest.osrm
-
-test: berlin-latest.osrm.hsgr
+test: shm
 	npm test
 
-.PHONY: test clean build
+.PHONY: test clean build shm
