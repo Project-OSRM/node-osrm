@@ -49,6 +49,12 @@ matrix:
      # OS X
      - os: osx
        compiler: clang
+       env: NODE_VERSION="5" TARGET=Release
+     - os: osx
+       compiler: clang
+       env: NODE_VERSION="4" TARGET=Release
+     - os: osx
+       compiler: clang
        env: NODE_VERSION="0.12" TARGET=Release
      - os: osx
        compiler: clang
