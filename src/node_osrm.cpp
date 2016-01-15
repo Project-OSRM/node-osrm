@@ -25,9 +25,9 @@
 namespace node_osrm
 {
 
-using osrm_ptr = std::unique_ptr<OSRM>;
-using libosrm_config_ptr = std::unique_ptr<LibOSRMConfig>;
-using route_parameters_ptr = std::unique_ptr<RouteParameters>;
+using osrm_ptr = std::unique_ptr<osrm::OSRM>;
+using libosrm_config_ptr = std::unique_ptr<osrm::LibOSRMConfig>;
+using route_parameters_ptr = std::unique_ptr<osrm::RouteParameters>;
 namespace
 {
 template <class T, class... Types> std::unique_ptr<T> make_unique(Types &&... Args)
@@ -40,7 +40,7 @@ template <class T, class... Types> std::unique_ptr<T> make_unique(Types &&... Ar
 libosrm_config_ptr argumentsToLibOSRMConfig(const Nan::FunctionCallbackInfo<v8::Value> &args)
 {
     Nan::HandleScope scope;
-    auto lib_config = make_unique<LibOSRMConfig>();
+    auto lib_config = make_unique<osrm::LibOSRMConfig>();
 
     if (args.Length() == 0)
     {
@@ -100,12 +100,12 @@ libosrm_config_ptr argumentsToLibOSRMConfig(const Nan::FunctionCallbackInfo<v8::
     return lib_config;
 }
 
-boost::optional<std::vector<FixedPointCoordinate>>
+boost::optional<std::vector<osrm::FixedPointCoordinate>>
 parseCoordinateArray(const v8::Local<v8::Array> &coordinates_array)
 {
     Nan::HandleScope scope;
-    boost::optional<std::vector<FixedPointCoordinate>> resulting_coordinates;
-    std::vector<FixedPointCoordinate> temp_coordinates;
+    boost::optional<std::vector<osrm::FixedPointCoordinate>> resulting_coordinates;
+    std::vector<osrm::FixedPointCoordinate> temp_coordinates;
 
     for (uint32_t i = 0; i < coordinates_array->Length(); ++i)
     {
@@ -125,8 +125,8 @@ parseCoordinateArray(const v8::Local<v8::Array> &coordinates_array)
         }
 
         temp_coordinates.emplace_back(
-            static_cast<int>(coordinate_pair->Get(0)->NumberValue() * COORDINATE_PRECISION),
-            static_cast<int>(coordinate_pair->Get(1)->NumberValue() * COORDINATE_PRECISION));
+            static_cast<int>(coordinate_pair->Get(0)->NumberValue() * osrm::COORDINATE_PRECISION),
+            static_cast<int>(coordinate_pair->Get(1)->NumberValue() * osrm::COORDINATE_PRECISION));
     }
     resulting_coordinates = boost::make_optional(std::move(temp_coordinates));
     return resulting_coordinates;
@@ -136,7 +136,7 @@ parseCoordinateArray(const v8::Local<v8::Array> &coordinates_array)
 route_parameters_ptr argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, bool requires_coordinates)
 {
     Nan::HandleScope scope;
-    auto params = make_unique<RouteParameters>();
+    auto params = make_unique<osrm::RouteParameters>();
 
     if (args.Length() < 2)
     {
@@ -318,7 +318,7 @@ class Engine final : public Nan::ObjectWrap
     static void AfterRun(uv_work_t *);
 
   private:
-    Engine(LibOSRMConfig &lib_config) : Nan::ObjectWrap(), this_(make_unique<OSRM>(lib_config)) {}
+    Engine(osrm::LibOSRMConfig &lib_config) : Nan::ObjectWrap(), this_(make_unique<osrm::OSRM>(lib_config)) {}
 
     static Nan::Persistent<v8::Function> constructor;
     osrm_ptr this_;
@@ -564,12 +564,12 @@ void Engine::nearest(const Nan::FunctionCallbackInfo<v8::Value> &args)
         return;
     }
 
-    route_parameters_ptr params = make_unique<RouteParameters>();
+    route_parameters_ptr params = make_unique<osrm::RouteParameters>();
 
     params->service = "nearest";
     params->coordinates.emplace_back(
-        static_cast<int>(coordinate_pair->Get(0)->NumberValue() * COORDINATE_PRECISION),
-        static_cast<int>(coordinate_pair->Get(1)->NumberValue() * COORDINATE_PRECISION));
+        static_cast<int>(coordinate_pair->Get(0)->NumberValue() * osrm::COORDINATE_PRECISION),
+        static_cast<int>(coordinate_pair->Get(1)->NumberValue() * osrm::COORDINATE_PRECISION));
     Run(args, std::move(params));
 }
 
