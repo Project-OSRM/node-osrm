@@ -10,8 +10,9 @@ CURRENT_DIR=$(pwd)
 # default to clang
 CXX=${CXX:-clang++}
 TARGET=${TARGET:-Release}
-OSRM_RELEASE=${OSRM_RELEASE:-"v4.8.0"}
+OSRM_RELEASE=${OSRM_RELEASE:-"develop"}
 OSRM_REPO=${OSRM_REPO:-"https://github.com/Project-OSRM/osrm-backend.git"}
+OSRM_DIR=deps/osrm-backend-${TARGET}
 
 function all_deps() {
     dep cmake 3.2.2 &
@@ -28,8 +29,6 @@ function all_deps() {
     dep boost_libdate_time 1.57.0 &
     dep expat 2.1.0 &
     dep stxxl 1.4.1 &
-    dep osmpbf 1.3.3 &
-    dep protobuf 2.6.1 &
     dep bzip 1.0.6 &
     dep zlib system &
     dep tbb 43_20150316 &
@@ -38,10 +37,6 @@ function all_deps() {
 
 function move_tool() {
     cp ${MASON_HOME}/bin/$1 "${TARGET_DIR}/"
-    if [[ `uname -s` == 'Darwin' ]]; then
-        install_name_tool -change libtbb.dylib @loader_path/libtbb.dylib ${TARGET_DIR}/$1
-        install_name_tool -change libtbbmalloc.dylib @loader_path/libtbbmalloc.dylib ${TARGET_DIR}/$1
-    fi
 }
 
 function copy_tbb() {
@@ -64,6 +59,32 @@ function localize() {
     move_tool osrm-prepare
 }
 
+function build_osrm() {
+    mkdir -p ${OSRM_DIR}
+    git clone ${OSRM_REPO} ${OSRM_DIR}
+    pushd ${OSRM_DIR}
+
+    echo "Using OSRM ${OSRM_RELEASE}"
+    echo "Using OSRM ${OSRM_REPO}"
+    git checkout .
+    git checkout ${OSRM_RELEASE}
+
+    rm -rf build
+    mkdir -p build
+    cd build
+    cmake ../ -DCMAKE_INSTALL_PREFIX=${MASON_HOME} \
+      -DCMAKE_CXX_COMPILER="$CXX" \
+      -DBoost_NO_SYSTEM_PATHS=ON \
+      -DTBB_INSTALL_DIR=${MASON_HOME} \
+      -DCMAKE_INCLUDE_PATH=${MASON_HOME}/include \
+      -DCMAKE_LIBRARY_PATH=${MASON_HOME}/lib \
+      -DCMAKE_BUILD_TYPE=${TARGET} \
+      -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}"
+    make -j${JOBS} && make install
+
+    popd
+}
+
 function main() {
     if [[ ! -d ./.mason ]]; then
         git clone --depth 1 https://github.com/mapbox/mason.git ./.mason
@@ -72,6 +93,11 @@ function main() {
     export MASON_HOME=$(pwd)/mason_packages/.link
     if [[ ! -d ${MASON_HOME} ]]; then
         all_deps
+    fi
+    # fix install name of tbb
+    if [[ `uname -s` == 'Darwin' ]]; then
+        install_name_tool -id @loader_path/libtbb.dylib ${MASON_HOME}/lib/libtbb.dylib
+        install_name_tool -id @loader_path/libtbb.dylib ${MASON_HOME}/lib/libtbbmalloc.dylib
     fi
     export PATH=${MASON_HOME}/bin:$PATH
     export PKG_CONFIG_PATH=${MASON_HOME}/lib/pkgconfig
@@ -98,45 +124,17 @@ function main() {
     fi
 
     # make sure we rebuild if previous build was not successful
-    if [[ ! -f osrm-backend-${TARGET}/build/osrm-extract ]] || [[ ! -f ${MASON_HOME}/bin/osrm-extract ]]; then
-        mkdir -p osrm-backend-${TARGET}
-        git clone ${OSRM_REPO} osrm-backend-${TARGET}
-        cd osrm-backend-${TARGET}
-
-        echo "Using OSRM ${OSRM_RELEASE}"
-        echo "Using OSRM ${OSRM_REPO}"
-        git checkout .
-        git checkout ${OSRM_RELEASE}
-
-        # workaround https://github.com/Project-OSRM/node-osrm/issues/92
-        perl -i -p -e "s/-fprofile-arcs -ftest-coverage//g;" CMakeLists.txt
-        perl -i -p -e "s/\${CMAKE_CXX_FLAGS} -flto/\${CMAKE_CXX_FLAGS}/g;" CMakeLists.txt
-
-        rm -rf build
-        mkdir -p build
-        cd build
-        cmake ../ -DCMAKE_INSTALL_PREFIX=${MASON_HOME} \
-          -DCMAKE_CXX_COMPILER="$CXX" \
-          -DBoost_NO_SYSTEM_PATHS=ON \
-          -DTBB_INSTALL_DIR=${MASON_HOME} \
-          -DCMAKE_INCLUDE_PATH=${MASON_HOME}/include \
-          -DCMAKE_LIBRARY_PATH=${MASON_HOME}/lib \
-          -DCMAKE_BUILD_TYPE=${TARGET} \
-          -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}" \
-          -DDEBUG_GEOMETRY=ON
-        make -j${JOBS}
-        make install
-
+    if [[ ! -f ${OSRM_DIR}/build/osrm-extract ]] || [[ ! -f ${MASON_HOME}/bin/osrm-extract ]] ||
+       [[ ! -f ${OSRM_DIR}/build/osrm-prepare ]] || [[ ! -f ${MASON_HOME}/bin/osrm-prepare ]] ||
+       [[ ! -f ${OSRM_DIR}/build/osrm-datastore ]] || [[ ! -f ${MASON_HOME}/bin/osrm-datastore ]]; then
+        build_osrm
     fi
-
-    cd ${CURRENT_DIR}
 
     localize
 
     #if [[ `uname -s` == 'Darwin' ]]; then otool -L ./lib/binding/* || true; fi
     #if [[ `uname -s` == 'Linux' ]]; then readelf -d ./lib/binding/* || true; fi
     echo "success: now run 'npm install --build-from-source'"
-
 }
 
 main

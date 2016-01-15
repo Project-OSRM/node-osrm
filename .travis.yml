@@ -3,11 +3,25 @@ language: cpp
 git:
   depth: 10
 
+notifications:
+  email: false
+
+branches:
+  only:
+    - master
+    - develop
+
+cache:
+  directories:
+    - node_modules
+    - deps
+
 addons:
   apt:
     sources:
      - ubuntu-toolchain-r-test
     packages:
+     - coreutils
      - g++-4.8
      - gdb
 
@@ -16,45 +30,60 @@ sudo: false
 
 matrix:
   include:
+     # Linux
+     - os: linux
+       compiler: gcc
+       env: NODE_VERSION="5" TARGET=Release
+     - os: linux
+       compiler: gcc
+       env: NODE_VERSION="4" TARGET=Release
+     - os: linux
+       compiler: gcc
+       env: NODE_VERSION="0.12" TARGET=Release
+     - os: linux
+       compiler: gcc
+       env: NODE_VERSION="0.10" TARGET=Release
+     - os: linux
+       compiler: gcc
+       env: NODE_VERSION="0.10" TARGET=Debug NPM_FLAGS="--debug"
+     # OS X
+     - os: osx
+       compiler: clang
+       env: NODE_VERSION="5" TARGET=Release
+     - os: osx
+       compiler: clang
+       env: NODE_VERSION="4" TARGET=Release
+     - os: osx
+       compiler: clang
+       env: NODE_VERSION="0.12" TARGET=Release
+     - os: osx
+       compiler: clang
+       env: NODE_VERSION="0.10" TARGET=Release
      # Coverage
      - os: osx
        compiler: clang
        env: NODE_VERSION="0.10" COVERAGE=true TARGET=Debug NPM_FLAGS="--debug"
-     # Linux
-     - os: linux
-       compiler: gcc
-       env: NODE_VERSION="0.12.0" TARGET=Release
-     - os: linux
-       compiler: gcc
-       env: NODE_VERSION="0.10.36" TARGET=Release
-     - os: linux
-       compiler: gcc
-       env: NODE_VERSION="0.10.36" TARGET=Debug NPM_FLAGS="--debug"
-     # OS X
-     - os: osx
-       compiler: clang
-       env: NODE_VERSION="0.12.0" TARGET=Release
-     - os: osx
-       compiler: clang
-       env: NODE_VERSION="0.10.36" TARGET=Release
 
 env:
   global:
    - JOBS: "3"
-   - OSRM_RELEASE: "4680d591ad672cbb348a8ecfb6663f5db9c60923"
+   - OSRM_RELEASE: "c9d9df50f7e3736bdb8e16cbc4db007fa2e28f6a"
    - secure: KitzGZjoDblX/3heajcvssGz0JnJ/k02dr2tu03ksUV+6MogC3RSQudqyKY57+f8VyZrcllN/UOlJ0Q/3iG38Oz8DljC+7RZxtkVmE1SFBoOezKCdhcvWM12G3uqPs7hhrRxuUgIh0C//YXEkulUrqa2H1Aj2xeen4E3FAqEoy0=
    - secure: WLGmxl6VTVWhXGm6X83GYNYzPNsvTD+9usJOKM5YBLAdG7cnOBQBNiCCUKc9OZMMZVUr3ec2/iigakH5Y8Yc+U6AlWKzlORyqWLuk4nFuoedu62x6ocQkTkuOc7mHiYhKd21xTGMYauaZRS6kugv4xkpGES2UjI2T8cjZ+LN2jU=
 
 before_install:
 - scripts/validate_tag.sh
 - export COVERAGE=${COVERAGE:-false}
-- if [[ $(uname -s) == 'Linux' ]]; then
+- |
+  if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
     export CXX="g++-4.8";
     export CC="gcc-4.8";
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python2.7/site-packages;
-   else
+  elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python/site-packages;
-   fi;
+    brew install md5sha1sum;
+  fi
+# Mac OS X does not have nvm installed
 - source ./scripts/install_node.sh ${NODE_VERSION}
 
 install:
@@ -74,5 +103,8 @@ script:
 - make test || RESULT=$?
 - for i in $(find ./ -maxdepth 1 -name 'core*' -print); do gdb $(which node) $i -ex "thread apply all bt" -ex "set pagination 0" -batch; done;
 - if [[ ${RESULT} != 0 ]]; then exit $RESULT; fi
-- if [[ ${COVERAGE} == true ]]; then ./mason_packages/.link/bin/cpp-coveralls --exclude node_modules --exclude mason_packages --exclude tests --build-root build --gcov-options '\-lp' --exclude doc --exclude build/Release/obj/gen; fi;
-- if [[ ${COVERAGE} != true ]]; then ./scripts/publish.sh; fi;
+- if [[ ${COVERAGE} == true ]]; then
+    ./mason_packages/.link/bin/cpp-coveralls --exclude node_modules --exclude mason_packages --exclude tests --build-root build --gcov-options '\-lp' --exclude doc --exclude build/Release/obj/gen;
+  else
+    ./scripts/publish.sh;
+  fi;

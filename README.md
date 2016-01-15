@@ -2,8 +2,11 @@
 
 Provides read-only bindings to the [Open Source Routing Machine - OSRM](https://github.com/Project-OSRM/osrm-backend), a routing engine for OpenStreetMap data implementing high-performance algorithms for shortest paths in road networks.
 
-[![Build Status](https://travis-ci.org/Project-OSRM/node-osrm.svg?branch=master)](https://travis-ci.org/Project-OSRM/node-osrm)
-[![Coverage Status](https://coveralls.io/repos/Project-OSRM/node-osrm/badge.svg?branch=sudo-false)](https://coveralls.io/r/Project-OSRM/node-osrm?branch=sudo-false)
+
+| build config |  branch | status |
+|:-------------|:--------|:------------|
+| Linux/OS X   | master  | [![Build Status](https://travis-ci.org/Project-OSRM/node-osrm.svg?branch=master)](https://travis-ci.org/Project-OSRM/node-osrm) [![Coverage Status](https://coveralls.io/repos/Project-OSRM/node-osrm/badge.svg?branch=master)](https://coveralls.io/r/Project-OSRM/node-osrm?branch=master) |
+| Linux/OS X   | develop | [![Build Status](https://travis-ci.org/Project-OSRM/node-osrm.svg?branch=develop)](https://travis-ci.org/Project-OSRM/node-osrm) [![Coverage Status](https://coveralls.io/repos/Project-OSRM/node-osrm/badge.svg?branch=develop)](https://coveralls.io/r/Project-OSRM/node-osrm?branch=develop) |
 
 # Depends
 
