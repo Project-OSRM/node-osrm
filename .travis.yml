@@ -105,6 +105,6 @@ script:
 - if [[ ${RESULT} != 0 ]]; then exit $RESULT; fi
 - if [[ ${COVERAGE} == true ]]; then
     ./mason_packages/.link/bin/cpp-coveralls --exclude node_modules --exclude mason_packages --exclude tests --build-root build --gcov-options '\-lp' --exclude doc --exclude build/Release/obj/gen;
-  else
+  elif [[ ${TARGET} == 'Release' ]]; then
     ./scripts/publish.sh;
   fi;
