@@ -1,5 +1,8 @@
 ## node-osrm changelog
 
+### 4.9.1
+ - Uses OSRM 4.9.1
+
 ### 4.9.0
  - Uses OSRM 4.9.0
  - `table` now supports `sources` and `destinations` options for asymmetric queries
