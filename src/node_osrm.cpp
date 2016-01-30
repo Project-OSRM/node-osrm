@@ -6,7 +6,7 @@
 // OSRM
 #include <osrm/route_parameters.hpp>
 #include <osrm/json_container.hpp>
-#include <osrm/libosrm_config.hpp>
+#include <osrm/engine_config.hpp>
 #include <osrm/osrm.hpp>
 
 #include <boost/optional.hpp>
@@ -26,7 +26,7 @@ namespace node_osrm
 {
 
 using osrm_ptr = std::unique_ptr<osrm::OSRM>;
-using libosrm_config_ptr = std::unique_ptr<osrm::LibOSRMConfig>;
+using engine_config_ptr = std::unique_ptr<osrm::EngineConfig>;
 using route_parameters_ptr = std::unique_ptr<osrm::RouteParameters>;
 namespace
 {
@@ -37,34 +37,34 @@ template <class T, class... Types> std::unique_ptr<T> make_unique(Types &&... Ar
 }
 
 // Supports
-libosrm_config_ptr argumentsToLibOSRMConfig(const Nan::FunctionCallbackInfo<v8::Value> &args)
+engine_config_ptr argumentsToEngineConfig(const Nan::FunctionCallbackInfo<v8::Value> &args)
 {
     Nan::HandleScope scope;
-    auto lib_config = make_unique<osrm::LibOSRMConfig>();
+    auto engine_config = make_unique<osrm::EngineConfig>();
 
     if (args.Length() == 0)
     {
-        return lib_config;
+        return engine_config;
     }
     else if (args.Length() > 1)
     {
         Nan::ThrowError("only accepts one parameter");
-        return libosrm_config_ptr();
+        return engine_config_ptr();
     }
 
     BOOST_ASSERT(args.Length() == 1);
 
     if (args[0]->IsString())
     {
-        lib_config->server_paths["base"] =
+        engine_config->server_paths["base"] =
             *v8::String::Utf8Value(Nan::To<v8::String>(args[0]).ToLocalChecked());
-        lib_config->use_shared_memory = false;
-        return lib_config;
+        engine_config->use_shared_memory = false;
+        return engine_config;
     }
     else if (!args[0]->IsObject())
     {
         Nan::ThrowError("parameter must be a path or options object");
-        return libosrm_config_ptr();
+        return engine_config_ptr();
     }
 
     BOOST_ASSERT(args[0]->IsObject());
@@ -74,30 +74,30 @@ libosrm_config_ptr argumentsToLibOSRMConfig(const Nan::FunctionCallbackInfo<v8::
     auto shared_memory = params->Get(Nan::New("shared_memory").ToLocalChecked());
     if (!path->IsUndefined())
     {
-        lib_config->server_paths["base"] =
+        engine_config->server_paths["base"] =
             *v8::String::Utf8Value(Nan::To<v8::String>(path).ToLocalChecked());
     }
     if (!shared_memory->IsUndefined())
     {
         if (shared_memory->IsBoolean())
         {
-            lib_config->use_shared_memory = Nan::To<bool>(shared_memory).FromJust();
+            engine_config->use_shared_memory = Nan::To<bool>(shared_memory).FromJust();
         }
         else
         {
             Nan::ThrowError("shared_memory option must be a boolean");
-            return libosrm_config_ptr();
+            return engine_config_ptr();
         }
     }
 
-    if (path->IsUndefined() && !lib_config->use_shared_memory)
+    if (path->IsUndefined() && !engine_config->use_shared_memory)
     {
         Nan::ThrowError("shared_memory must be enabled if no path is "
                         "specified");
-        return libosrm_config_ptr();
+        return engine_config_ptr();
     }
 
-    return lib_config;
+    return engine_config;
 }
 
 boost::optional<std::vector<osrm::FixedPointCoordinate>>
@@ -318,7 +318,7 @@ class Engine final : public Nan::ObjectWrap
     static void AfterRun(uv_work_t *);
 
   private:
-    Engine(osrm::LibOSRMConfig &lib_config) : Nan::ObjectWrap(), this_(make_unique<osrm::OSRM>(lib_config)) {}
+    Engine(osrm::EngineConfig &engine_config) : Nan::ObjectWrap(), this_(make_unique<osrm::OSRM>(engine_config)) {}
 
     static Nan::Persistent<v8::Function> constructor;
     osrm_ptr this_;
@@ -355,12 +355,12 @@ void Engine::New(const Nan::FunctionCallbackInfo<v8::Value> &args)
 
     try
     {
-        auto lib_config_ptr = argumentsToLibOSRMConfig(args);
-        if (!lib_config_ptr)
+        auto engine_config_ptr = argumentsToEngineConfig(args);
+        if (!engine_config_ptr)
         {
             return;
         }
-        auto engine_ptr = new Engine(*lib_config_ptr);
+        auto engine_ptr = new Engine(*engine_config_ptr);
         engine_ptr->Wrap(args.This());
         args.GetReturnValue().Set(args.This());
     }
