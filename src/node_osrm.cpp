@@ -646,7 +646,7 @@ void Engine::AfterRun(uv_work_t *req)
     else
     {
         v8::Local<v8::Value> result;
-        osrm::json::render(result, closure->result);
+        renderToV8(result, closure->result);
         v8::Local<v8::Value> argv[2] = {Nan::Null(), result};
         Nan::MakeCallback(Nan::GetCurrentContext()->Global(), Nan::New(closure->cb), 2, argv);
     }
