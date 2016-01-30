@@ -58,7 +58,7 @@ struct V8Renderer : mapbox::util::static_visitor<>
         for (const auto &keyValue : object.values)
         {
             v8::Local<v8::Value> child;
-            mapbox::util::apply_visitor(v8_renderer(child), keyValue.second);
+            mapbox::util::apply_visitor(V8Renderer(child), keyValue.second);
             obj->Set(Nan::New(keyValue.first).ToLocalChecked(), child);
         }
         out = obj;
@@ -70,7 +70,7 @@ struct V8Renderer : mapbox::util::static_visitor<>
         for (auto i = 0u; i < array.values.size(); ++i)
         {
             v8::Local<v8::Value> child;
-            mapbox::util::apply_visitor(v8_renderer(child), array.values[i]);
+            mapbox::util::apply_visitor(V8Renderer(child), array.values[i]);
             a->Set(i, child);
         }
         out = a;
