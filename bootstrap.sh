@@ -60,18 +60,25 @@ function localize() {
 }
 
 function build_osrm() {
-    mkdir -p ${OSRM_DIR}
-    git clone ${OSRM_REPO} ${OSRM_DIR}
-    pushd ${OSRM_DIR}
+    if [[ ! -d ${OSRM_DIR} ]]; then
+        echo "Fresh clone."
+        mkdir -p ${OSRM_DIR}
+        git clone ${OSRM_REPO} ${OSRM_DIR}
+        pushd ${OSRM_DIR}
+    else
+        echo "Already cloned, fetching."
+        pushd ${OSRM_DIR}
+        git fetch
+    fi
+
 
     echo "Using OSRM ${OSRM_RELEASE}"
     echo "Using OSRM ${OSRM_REPO}"
-    git checkout .
     git checkout ${OSRM_RELEASE}
+    git reset --hard origin/${OSRM_RELEASE}
 
-    rm -rf build
     mkdir -p build
-    cd build
+    pushd build
     cmake ../ -DCMAKE_INSTALL_PREFIX=${MASON_HOME} \
       -DCMAKE_CXX_COMPILER="$CXX" \
       -DBoost_NO_SYSTEM_PATHS=ON \
@@ -81,6 +88,7 @@ function build_osrm() {
       -DCMAKE_BUILD_TYPE=${TARGET} \
       -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}"
     make -j${JOBS} && make install
+    popd
 
     popd
 }
@@ -123,12 +131,7 @@ function main() {
         LINK_FLAGS="${LINK_FLAGS} "'-Wl,-z,origin -Wl,-rpath=\$ORIGIN'
     fi
 
-    # make sure we rebuild if previous build was not successful
-    if [[ ! -f ${OSRM_DIR}/build/osrm-extract ]] || [[ ! -f ${MASON_HOME}/bin/osrm-extract ]] ||
-       [[ ! -f ${OSRM_DIR}/build/osrm-prepare ]] || [[ ! -f ${MASON_HOME}/bin/osrm-prepare ]] ||
-       [[ ! -f ${OSRM_DIR}/build/osrm-datastore ]] || [[ ! -f ${MASON_HOME}/bin/osrm-datastore ]]; then
-        build_osrm
-    fi
+    build_osrm
 
     localize
 
