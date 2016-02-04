@@ -4,7 +4,7 @@
   "url": "https://github.com/Project-OSRM/node-osrm",
   "homepage": "http://project-osrm.org",
   "author": "Dane Springmeyer <springmeyer>",
-  "version": "4.9.0-develop.0",
+  "version": "4.9.0-traffic-data.1",
   "main": "./lib/osrm.js",
   "license": "BSD",
   "bugs": {

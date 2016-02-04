@@ -10,7 +10,7 @@ CURRENT_DIR=$(pwd)
 # default to clang
 CXX=${CXX:-clang++}
 TARGET=${TARGET:-Release}
-OSRM_RELEASE=${OSRM_RELEASE:-"develop"}
+OSRM_RELEASE=${OSRM_RELEASE:-"60a06e0ee79ab429bc1131beae13459d4bf00693"}
 OSRM_REPO=${OSRM_REPO:-"https://github.com/Project-OSRM/osrm-backend.git"}
 OSRM_DIR=deps/osrm-backend-${TARGET}
 
@@ -79,7 +79,8 @@ function build_osrm() {
       -DCMAKE_INCLUDE_PATH=${MASON_HOME}/include \
       -DCMAKE_LIBRARY_PATH=${MASON_HOME}/lib \
       -DCMAKE_BUILD_TYPE=${TARGET} \
-      -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}"
+      -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}" \
+      -DDEBUG_GEOMETRY=ON
     make -j${JOBS} && make install
 
     popd
