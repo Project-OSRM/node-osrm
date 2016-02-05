@@ -420,6 +420,10 @@ void Engine::match(const Nan::FunctionCallbackInfo<v8::Value> &args)
     {
         params->matching_beta = obj->Get(Nan::New("matching_beta").ToLocalChecked())->NumberValue();
     }
+    if (obj->Has(Nan::New("matching_prune_factor").ToLocalChecked()))
+    {
+        params->matching_beta = obj->Get(Nan::New("matching_prune_factor").ToLocalChecked())->NumberValue();
+    }
 
     if (timestamps->IsArray())
     {
