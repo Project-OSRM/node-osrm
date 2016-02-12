@@ -75,7 +75,6 @@ function build_osrm() {
     echo "Using OSRM ${OSRM_RELEASE}"
     echo "Using OSRM ${OSRM_REPO}"
     git checkout ${OSRM_RELEASE}
-    git reset --hard origin/${OSRM_RELEASE}
 
     mkdir -p build
     pushd build
