@@ -67,7 +67,7 @@ matrix:
 env:
   global:
    - JOBS: "3"
-   - OSRM_RELEASE: "dad3caf922548ad06aefa1053304367e741d4df2"
+   - OSRM_RELEASE: "00a1ebb8bae8568fefd346332b05731b585f649d"
    - secure: KitzGZjoDblX/3heajcvssGz0JnJ/k02dr2tu03ksUV+6MogC3RSQudqyKY57+f8VyZrcllN/UOlJ0Q/3iG38Oz8DljC+7RZxtkVmE1SFBoOezKCdhcvWM12G3uqPs7hhrRxuUgIh0C//YXEkulUrqa2H1Aj2xeen4E3FAqEoy0=
    - secure: WLGmxl6VTVWhXGm6X83GYNYzPNsvTD+9usJOKM5YBLAdG7cnOBQBNiCCUKc9OZMMZVUr3ec2/iigakH5Y8Yc+U6AlWKzlORyqWLuk4nFuoedu62x6ocQkTkuOc7mHiYhKd21xTGMYauaZRS6kugv4xkpGES2UjI2T8cjZ+LN2jU=
 
