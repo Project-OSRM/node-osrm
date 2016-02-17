@@ -35,6 +35,7 @@ clean:
 	rm -f ./*tgz
 	rm -rf ./mason_packages
 	rm -rf ./osrm-backend-*
+	rm -rf ./deps
 
 grind:
 	valgrind --leak-check=full node node_modules/.bin/_mocha
