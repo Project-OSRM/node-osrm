@@ -44,15 +44,6 @@ test('route: throws with bad params', function(assert) {
         /hint must be null or string/);
 });
 
-test('route: takes jsonp parameter', function(assert) {
-    assert.plan(2);
-    var osrm = new OSRM(berlin_path);
-    osrm.route({coordinates: [[52.519930,13.438640], [52.513191,13.415852]], jsonpParameter: 'function'}, function(err, route) {
-        assert.ifError(err);
-        assert.ok(route.route_summary);
-    });
-});
-
 if (process.platform === 'darwin') {
   // shared memory does not work on Mac OS for now.
   test.skip('route: routes Berlin using shared memory', function(assert) {});
