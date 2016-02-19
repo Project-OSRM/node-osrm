@@ -312,6 +312,7 @@ class Engine final : public Nan::ObjectWrap
     static void table(const Nan::FunctionCallbackInfo<v8::Value> &args);
     static void match(const Nan::FunctionCallbackInfo<v8::Value> &args);
     static void trip(const Nan::FunctionCallbackInfo<v8::Value> &args);
+    static void tile(const Nan::FunctionCallbackInfo<v8::Value> &args);
 
     static void Run(const Nan::FunctionCallbackInfo<v8::Value> &args, route_parameters_ptr);
     static void AsyncRun(uv_work_t *);
@@ -338,6 +339,7 @@ void Engine::Initialize(v8::Handle<v8::Object> target)
     SetPrototypeMethod(function_template, "table", table);
     SetPrototypeMethod(function_template, "match", match);
     SetPrototypeMethod(function_template, "trip", trip);
+    SetPrototypeMethod(function_template, "tile", tile);
 
     constructor.Reset(function_template->GetFunction());
     Nan::Set(target, Nan::New("OSRM").ToLocalChecked(), function_template->GetFunction());
@@ -575,6 +577,48 @@ void Engine::nearest(const Nan::FunctionCallbackInfo<v8::Value> &args)
     params->coordinates.emplace_back(
         static_cast<int>(coordinate_pair->Get(0)->NumberValue() * osrm::COORDINATE_PRECISION),
         static_cast<int>(coordinate_pair->Get(1)->NumberValue() * osrm::COORDINATE_PRECISION));
+    Run(args, std::move(params));
+}
+
+void Engine::tile(const Nan::FunctionCallbackInfo<v8::Value> &args)
+{
+    Nan::HandleScope scope;
+    if (args.Length() < 2)
+    {
+        Nan::ThrowTypeError("two arguments required");
+        return;
+    }
+
+    v8::Local<v8::Object> obj = Nan::To<v8::Object>(args[0]).ToLocalChecked();
+
+    v8::Local<v8::Value> x = obj->Get(Nan::New("x").ToLocalChecked());
+    if (!x->IsNumber() && !x->IsUndefined())
+    {
+        Nan::ThrowError("tile x coordinate must be supplied");
+        return;
+    }
+
+    v8::Local<v8::Value> y = obj->Get(Nan::New("y").ToLocalChecked());
+    if (!y->IsNumber() && !y->IsUndefined())
+    {
+        Nan::ThrowError("tile y coordinate must be supplied");
+        return;
+    }
+
+    v8::Local<v8::Value> z = obj->Get(Nan::New("z").ToLocalChecked());
+    if (!z->IsNumber() && !z->IsUndefined())
+    {
+        Nan::ThrowError("tile z coordinate must be supplied"); 
+        return;
+    }
+
+
+    route_parameters_ptr params = make_unique<osrm::RouteParameters>();
+
+    params->service = "tile";
+    params->z = z->NumberValue();
+    params->x = x->NumberValue();
+    params->y = y->NumberValue();
     Run(args, std::move(params));
 }
 
