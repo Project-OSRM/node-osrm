@@ -31,12 +31,6 @@ berlin-latest.osm.pbf:
 
 berlin-latest.osrm: berlin-latest.osm.pbf car.lua $(OSRM_EXTRACT)
 	@echo "Verifiyng data file integrity..."
-	cat data.md5sum
-	@echo "--"
-	md5sum car.lua
-	md5sum berlin-latest.osm
-	md5sum lib/access.lua
-	@echo "--"
 	md5sum -c data.md5sum
 	@echo "Running osrm-extract..."
 	$(OSRM_EXTRACT) berlin-latest.osm.pbf -p car.lua
