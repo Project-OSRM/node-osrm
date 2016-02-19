@@ -62,4 +62,5 @@ require('./trip.js');
 require('./match.js');
 require('./table.js');
 require('./nearest.js');
+require('./tile.js');
 
