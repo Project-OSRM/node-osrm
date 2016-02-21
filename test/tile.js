@@ -8,6 +8,6 @@ test('tile', function(assert) {
     osrm.tile({z: 15, x: 17603, y: 10747}, function(err, result) {
         assert.ifError(err);
         assert.ok(result.hasOwnProperty('pbf'));
-        assert.equal(result.pbf.length, 21789);
+        assert.equal(result.pbf.length, 13289);
     });
 });
