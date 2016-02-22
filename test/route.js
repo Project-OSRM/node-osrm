@@ -1,6 +1,6 @@
 var OSRM = require('../');
 var test = require('tape');
-var berlin_path = require('./constants').data_path;
+var berlin_path = "test/data/berlin-latest.osrm";
 
 test('route: routes Berlin', function(assert) {
     assert.plan(5);
