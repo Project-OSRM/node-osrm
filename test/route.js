@@ -3,11 +3,14 @@ var test = require('tape');
 var berlin_path = require('./osrm-data-path').data_path;
 
 test('route: routes Berlin', function(assert) {
-    assert.plan(2);
+    assert.plan(5);
     var osrm = new OSRM(berlin_path);
     osrm.route({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]}, function(err, route) {
         assert.ifError(err);
-        assert.ok(route.route_summary);
+        assert.ok(route.waypoints);
+        assert.ok(route.routes);
+        assert.ok(route.routes.length);
+        assert.ok(route.routes[0].geometry);
     });
 });
 
@@ -53,7 +56,7 @@ if (process.platform === 'darwin') {
       var osrm = new OSRM();
       osrm.route({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]}, function(err, route) {
           assert.ifError(err);
-          assert.ok(route.route_summary);
+          assert.ok(Array.isArray(route.routes));
       });
   });
 }
@@ -66,21 +69,22 @@ test('route: routes Berlin with geometry compression', function(assert) {
     };
     osrm.route(options, function(err, route) {
         assert.ifError(err);
-        assert.equal('string', typeof route.route_geometry);
+        assert.equal('string', typeof route.routes[0].geometry);
     });
 });
 
 test('route: routes Berlin without geometry compression', function(assert) {
-    assert.plan(3);
+    assert.plan(4);
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
-        compression: false
+        geometries: 'geojson'
     };
     osrm.route(options, function(err, route) {
         assert.ifError(err);
-        assert.ok(route.route_summary);
-        assert.ok(Array.isArray(route.route_geometry));
+        assert.ok(Array.isArray(route.routes));
+        assert.ok(Array.isArray(route.routes[0].geometry.coordinates));
+        assert.equal(route.routes[0].geometry.type, 'LineString');
     });
 });
 
@@ -89,31 +93,29 @@ test('route: routes Berlin with options', function(assert) {
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
-        zoomLevel: 17,
-        alternateRoute: false,
-        printInstructions: false,
-        geometry: false
+        alternative: false,
+        steps: false,
+        uturns: [true, false],
+        overview: 'false'
     };
     osrm.route(options, function(err, route) {
         assert.ifError(err);
-        assert.ok(route.route_summary);
-        assert.notOk(route.route_instructions);
-        assert.notOk(route.alternative_geometries);
-        assert.notOk(route.route_geometry);
+        assert.ok(route.routes);
+        assert.ok(route.routes[0].legs.every(function(l) { return Array.isArray(l.steps) && !l.steps.length; }));
+        assert.equal(route.routes.length, 1);
+        assert.notOk(route.routes[0].geometry);
     });
 });
 
-test('route: integer bearing values', function(assert) {
-    assert.plan(2);
+test('route: integer bearing values no longer supported', function(assert) {
+    assert.plan(1);
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
         bearings: [200, 250],
     };
-    osrm.route(options, function(err, route) {
-        assert.ifError(err);
-        assert.ok(route.route_summary);
-    });
+    assert.throws(function() { osrm.route(options, function(err, route) {}); },
+        "Bearing must be an array of [bearing, range] or null");
 });
 
 test('route: array bearing values', function(assert) {
@@ -125,7 +127,7 @@ test('route: array bearing values', function(assert) {
     };
     osrm.route(options, function(err, route) {
         assert.ifError(err);
-        assert.ok(route.route_summary);
+        assert.ok(route.routes[0]);
     });
 });
 
@@ -136,7 +138,7 @@ test('route: invalid bearing values', function(assert) {
         coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
         bearings: [[400, 180], [-250, 180]],
     }, function(err, route) {}) },
-        /Bearing needs to be in range/);
+        /Bearing values need to be in range 0..360/);
     assert.throws(function() { osrm.route({
         coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
         bearings: [[200], [250, 180]],
@@ -149,17 +151,16 @@ test('route: routes Berlin with hints', function(assert) {
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
-        alternateRoute: false,
-        printInstructions: false
+        alternative: false,
+        steps: false
     };
     osrm.route(options, function(err, first) {
         assert.ifError(err);
-        assert.ok(first.route_summary);
-        var checksum = first.hint_data.checksum;
-        assert.equal("number", typeof(checksum));
+        assert.ok(first.waypoints);
+        var hints = first.waypoints.map(function(wp) { return wp.hint; });
+        assert.ok(hints.every(function(h) { return typeof h === 'string'; }));
 
-        options.hints = first.hint_data.locations;
-        options.checksum = checksum;
+        options.hints = hints;
 
         osrm.route(options, function(err, second) {
             assert.ifError(err);
@@ -173,9 +174,9 @@ test('route: routes Berlin with null hints', function(assert) {
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
-        alternateRoute: false,
-        printInstructions: false,
-        hints: ['', '', '']
+        alternative: false,
+        steps: false,
+        hints: [null, null]
     };
     osrm.route(options, function(err, second) {
         assert.ifError(err);
