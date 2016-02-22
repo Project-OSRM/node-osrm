@@ -180,20 +180,8 @@ bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, Para
         auto maybe_coordinates = parseCoordinateArray(coordinates_array);
         if (maybe_coordinates)
         {
-            auto actual_coordinates = *maybe_coordinates;
-            std::vector<osrm::FixedPointCoordinate> coords;
-            for (uint32_t i = 0; i < maybe_coordinates->size(); ++i)
-            {
-                //std::clog << actual_coordinates[i];
-                coords.push_back(osrm::FixedPointCoordinate(actual_coordinates[i].lat,actual_coordinates[i].lon));
-
-            }
-            params->coordinates = std::move(coords);
-            /*
             std::copy(maybe_coordinates->begin(), maybe_coordinates->end(),
                       std::back_inserter(params->coordinates));
-                      */
-
         }
         else
         {
@@ -240,6 +228,11 @@ bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, Para
 
                     bearing = osrm::engine::api::BaseParameters::Bearing { bearing_first, bearing_second };
                 }
+                else
+                {
+                    Nan::ThrowError("Bearing must be an array of [bearing, range] or null");
+                    return false;
+                }
             }
             else
             {
@@ -267,11 +260,17 @@ bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, Para
             v8::Local<v8::Value> hint = hints_array->Get(i);
             if (hint->IsString())
             {
+                if (hint->ToString()->Length() == 0)
+                {
+                    Nan::ThrowError("hint cannot be an empty string");
+                    return false;
+                }
+
                 params->hints.push_back(osrm::engine::Hint::FromBase64(*v8::String::Utf8Value(hint)));
             }
             else if (hint->IsNull())
             {
-                params->hints.push_back(osrm::engine::Hint::FromBase64(*v8::String::Utf8Value(hint)));
+                params->hints.emplace_back();
             }
             else
             {
@@ -599,8 +598,8 @@ class Engine final : public Nan::ObjectWrap
 
     static void ParseResult(const osrm::engine::Status result_status_code, osrm::json::Object result);
 
-    template <typename BatonType, typename ParamType>
-    static void Run(const Nan::FunctionCallbackInfo<v8::Value> &args, ParamType params);
+    template <typename BatonType, typename ParamType, typename AsyncType, typename AfterType>
+    static void Run(const Nan::FunctionCallbackInfo<v8::Value> &args, ParamType params, AsyncType async_fn, AfterType after_fn);
 
     static void AsyncRunRoute(uv_work_t *);
     static void AsyncRunNearest(uv_work_t *);
@@ -713,7 +712,7 @@ void Engine::route(const Nan::FunctionCallbackInfo<v8::Value> &args)
 
     BOOST_ASSERT(params->IsValid());
 
-    Run<RouteQueryBaton>(args, std::move(params));
+    Run<RouteQueryBaton>(args, std::move(params), AsyncRunRoute, AfterRunRoute);
 }
 
 // TODO:
@@ -797,7 +796,7 @@ void Engine::table(const Nan::FunctionCallbackInfo<v8::Value> &args)
 
     BOOST_ASSERT(params->IsValid());
 
-    Run<TableQueryBaton>(args, std::move(params));
+    Run<TableQueryBaton>(args, std::move(params), AsyncRunTable, AfterRunTable);
 }
 
 void Engine::nearest(const Nan::FunctionCallbackInfo<v8::Value> &args)
@@ -809,11 +808,11 @@ void Engine::nearest(const Nan::FunctionCallbackInfo<v8::Value> &args)
 
     BOOST_ASSERT(params->IsValid());
 
-    Run<NearestQueryBaton>(args, std::move(params));
+    Run<NearestQueryBaton>(args, std::move(params), AsyncRunNearest, AfterRunNearest);
 }
 
-template <typename BatonType, typename ParamType>
-void Engine::Run(const Nan::FunctionCallbackInfo<v8::Value> &args, ParamType params)
+template <typename BatonType, typename ParamType, typename AsyncType, typename AfterType>
+void Engine::Run(const Nan::FunctionCallbackInfo<v8::Value> &args, ParamType params, AsyncType asnyc_fn, AfterType after_fn)
 {
     Nan::HandleScope scope;
     v8::Local<v8::Value> callback = args[args.Length() - 1];
@@ -830,8 +829,8 @@ void Engine::Run(const Nan::FunctionCallbackInfo<v8::Value> &args, ParamType par
     closure->params = std::move(params);
     closure->error = "";
     closure->cb.Reset(callback.As<v8::Function>());
-    uv_queue_work(uv_default_loop(), &closure->request, AsyncRunRoute,
-                  reinterpret_cast<uv_after_work_cb>(AfterRunRoute));
+    uv_queue_work(uv_default_loop(), &closure->request, asnyc_fn,
+                  reinterpret_cast<uv_after_work_cb>(after_fn));
     closure->machine->Ref();
     return;
 }
