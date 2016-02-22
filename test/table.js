@@ -10,10 +10,10 @@ test('table: distance table in Berlin', function(assert) {
     };
     osrm.table(options, function(err, table) {
         assert.ifError(err);
-        assert.ok(Array.isArray(table.distance_table), 'result must be an array');
-        var row_count = table.distance_table.length;
+        assert.ok(Array.isArray(table.durations), 'result must be an array');
+        var row_count = table.durations.length;
         for (var i = 0; i < row_count; ++i) {
-            var column = table.distance_table[i];
+            var column = table.durations[i];
             var column_count = column.length;
             assert.equal(row_count, column_count);
             for (var j = 0; j < column_count; ++j) {
@@ -34,15 +34,16 @@ test('table: distance table in Berlin with sources/destinations', function(asser
     assert.plan(6);
     var osrm = new OSRM(berlin_path);
     var options = {
-        sources: [[52.519930,13.438640]],
-        destinations: [[52.519930,13.438640], [52.513191,13.415852]]
+        coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
+        sources: [0],
+        destinations: [0,1]
     };
     osrm.table(options, function(err, table) {
         assert.ifError(err);
-        assert.ok(Array.isArray(table.distance_table), 'result must be an array');
-        var row_count = table.distance_table.length;
+        assert.ok(Array.isArray(table.durations), 'result must be an array');
+        var row_count = table.durations.length;
         for (var i = 0; i < row_count; ++i) {
-            var column = table.distance_table[i];
+            var column = table.durations[i];
             var column_count = column.length;
             assert.equal(options.destinations.length, column_count);
             for (var j = 0; j < column_count; ++j) {
@@ -77,12 +78,14 @@ test('table: throws on invalid arguments', function(assert) {
     options.coordinates = [[52.542648],[13.393252]];
     assert.throws(function() { osrm.table(options, function(err, response) {}) },
         "coordinates must be an array of (lat/long) pairs");
+
+    // does not throw: the following two have been changed in OSRM v5
     options.coordinates = [[52.542648,13.393252], [52.542648,13.393252]];
-    options.sources = [[52.542648,13.393252], [52.542648,13.393252]];
-    assert.throws(function() { osrm.table(options, function(err, response) {}) },
+    options.sources = [0, 1];
+    assert.doesNotThrow(function() { osrm.table(options, function(err, response) {}) },
         /Both sources and destinations need to be specified/);
-    options.destinations = [[52.542648,13.393252], [52.542648,13.393252]];
-    assert.throws(function() { osrm.table(options, function(err, response) {}) },
+    options.destinations = [0, 1];
+    assert.doesNotThrow(function() { osrm.table(options, function(err, response) {}) },
         /You can either specify sources and destinations, or coordinates/);
 });
 
