@@ -22,7 +22,7 @@
       'conditions': [
         [ 'OS=="linux"', {
           'cflags_cc' : [
-              '-std=c++11'
+              '-std=c++14'
           ],
           'libraries':[
               '-Wl,-rpath=<!@(pkg-config libosrm --variable=libdir)',
@@ -38,7 +38,7 @@
         ['OS=="mac"', {
           'xcode_settings': {
             'CLANG_CXX_LIBRARY': 'libc++',
-            'CLANG_CXX_LANGUAGE_STANDARD':'c++11',
+            'CLANG_CXX_LANGUAGE_STANDARD':'c++14',
             'GCC_VERSION': 'com.apple.compilers.llvm.clang.1_0',
             'MACOSX_DEPLOYMENT_TARGET':'10.8',
             'OTHER_LDFLAGS':[
