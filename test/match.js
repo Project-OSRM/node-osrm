@@ -3,7 +3,7 @@ var test = require('tape');
 var berlin_path = "test/data/berlin-latest.osrm";
 
 test('match: match in Berlin', function(assert) {
-    assert.plan(2);
+    assert.plan(5);
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[52.542648,13.393252], [52.543079,13.394780], [52.542107,13.397389]],
@@ -12,17 +12,25 @@ test('match: match in Berlin', function(assert) {
     osrm.match(options, function(err, response) {
         assert.ifError(err);
         assert.equal(response.matchings.length, 1);
+        assert.ok(response.matchings.every(function(m) {
+            return !!m.distance && !!m.duration && Array.isArray(m.legs) && !!m.geometry && m.confidence > 0;
+        }))
+        assert.equal(response.tracepoints.length, 3);
+        assert.ok(response.tracepoints.every(function(t) {
+            return !!t.hint && !isNaN(t.matchings_index) && !isNaN(t.waypoint_index) && !!t.name;
+        }));
     });
 });
 
 test('match: match in Berlin without timestamps', function(assert) {
-    assert.plan(2);
+    assert.plan(3);
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[52.542648,13.393252], [52.543079,13.394780], [52.542107,13.397389]]
     };
     osrm.match(options, function(err, response) {
         assert.ifError(err);
+        assert.equal(response.tracepoints.length, 3);
         assert.equal(response.matchings.length, 1);
     });
 });
@@ -41,16 +49,17 @@ test('match: match in Berlin with geometry compression', function(assert) {
 });
 
 test('match: match in Berlin without geometry compression', function(assert) {
-    assert.plan(3);
+    assert.plan(4);
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[52.542648,13.393252], [52.543079,13.394780], [52.542107,13.397389]],
-        compression: false
+        geometries: 'geojson'
     };
     osrm.match(options, function(err, response) {
         assert.ifError(err);
         assert.equal(response.matchings.length, 1);
-        assert.ok(response.matchings[0].geometry instanceof Array);
+        assert.ok(response.matchings[0].geometry instanceof Object);
+        assert.ok(Array.isArray(response.matchings[0].geometry.coordinates));
     });
 });
 
@@ -60,10 +69,10 @@ test('match: match in Berlin with all options', function(assert) {
     var options = {
         coordinates: [[52.542648,13.393252], [52.543079,13.394780], [52.542107,13.397389]],
         timestamps: [1424684612, 1424684616, 1424684620],
-        classify: true,
-        gps_precision: 4.07,
-        matching_beta: 10.0,
-        geometry: false
+        radiuses: [4.07, 4.07, 4.07],
+        steps: false,
+        overview: 'false',
+        geometries: 'geojson'
     };
     osrm.match(options, function(err, response) {
         assert.ifError(err);
