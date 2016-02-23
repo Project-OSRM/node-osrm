@@ -19,10 +19,10 @@ test('table: distance table in Berlin', function(assert) {
             for (var j = 0; j < column_count; ++j) {
                 if (i == j) {
                     // check that diagonal is zero
-                    assert.equal(0, column[j], "diagonal must be zero");
+                    assert.equal(0, column[j], 'diagonal must be zero');
                 } else {
                     // everything else is non-zero
-                    assert.notEqual(0, column[j], "other entries must be non-zero");
+                    assert.notEqual(0, column[j], 'other entries must be non-zero');
                 }
             }
         }
@@ -49,10 +49,10 @@ test('table: distance table in Berlin with sources/destinations', function(asser
             for (var j = 0; j < column_count; ++j) {
                 if (i == j) {
                     // check that diagonal is zero
-                    assert.equal(0, column[j], "diagonal must be zero");
+                    assert.equal(0, column[j], 'diagonal must be zero');
                 } else {
                     // everything else is non-zero
-                    assert.notEqual(0, column[j], "other entries must be non-zero");
+                    assert.notEqual(0, column[j], 'other entries must be non-zero');
                 }
             }
         }
@@ -61,27 +61,48 @@ test('table: distance table in Berlin with sources/destinations', function(asser
 });
 
 test('table: throws on invalid arguments', function(assert) {
-    assert.plan(7);
+    assert.plan(13);
     var osrm = new OSRM(berlin_path);
     var options = {};
     assert.throws(function() { osrm.table(options); },
         /two arguments required/);
     options.coordinates = null;
     assert.throws(function() { osrm.table(options, function() {}); },
-        "coordinates must be an array of (lat/long) pairs");
+        'coordinates must be an array of (lat/long) pairs');
     options.coordinates = [[52.542648,13.393252]];
     assert.throws(function() { osrm.table(options, function(err, response) {}) },
         /at least two coordinates must be provided/);
     options.coordinates = [52.542648,13.393252];
     assert.throws(function() { osrm.table(options, function(err, response) {}) },
-        "coordinates must be an array of (lat/long) pairs");
+        'coordinates must be an array of (lat/long) pairs');
     options.coordinates = [[52.542648],[13.393252]];
     assert.throws(function() { osrm.table(options, function(err, response) {}) },
-        "coordinates must be an array of (lat/long) pairs");
+        'coordinates must be an array of (lat/long) pairs');
+
+    options.coordinates = [[52.542648,13.393252], [52.542648,13.393252]];
+    options.sources = true;
+    assert.throws(function() { osrm.table(options, function(err, response) {}) },
+        'sources must be an array of indices (or undefined)');
+    options.sources = [0, 4];
+    assert.throws(function() { osrm.table(options, function(err, response) {}) },
+        'source indices must be less than or equal to the number of coordinates');
+    options.sources = [0.3, 1.1];
+    assert.throws(function() { osrm.table(options, function(err, response) {}) },
+        'source must be an integer');
+
+    options.destinations = true;
+    assert.throws(function() { osrm.table(options, function(err, response) {}) },
+        'destinations must be an array of indices (or undefined)');
+    options.destinations = [0, 4];
+    assert.throws(function() { osrm.table(options, function(err, response) {}) },
+        'destination indices must be less than or equal to the number of coordinates');
+    options.destinations = [0.3, 1.1];
+    assert.throws(function() { osrm.table(options, function(err, response) {}) },
+        'destination must be an integer');
 
     // does not throw: the following two have been changed in OSRM v5
-    options.coordinates = [[52.542648,13.393252], [52.542648,13.393252]];
     options.sources = [0, 1];
+    delete options.destinations;
     assert.doesNotThrow(function() { osrm.table(options, function(err, response) {}) },
         /Both sources and destinations need to be specified/);
     options.destinations = [0, 1];
