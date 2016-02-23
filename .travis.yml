@@ -12,7 +12,7 @@ addons:
      - ubuntu-toolchain-r-test
     packages:
      - coreutils
-     - g++-4.8
+     - g++-5
      - gdb
 
 # TODO: no core files on sudo:false machines until https://github.com/travis-ci/travis-ci/issues/3754 is resolved
@@ -32,9 +32,11 @@ matrix:
        env: NODE="0.10" TARGET=Debug PUBLISHABLE=true
      # OS X
      - os: osx
+       osx_image: xcode7.3
        compiler: clang
        env: NODE="4" TARGET=Release PUBLISHABLE=true
      - os: osx
+       osx_image: xcode7.3
        compiler: clang
        env: NODE="0.10" TARGET=Release PUBLISHABLE=true
      - os: osx
@@ -42,6 +44,7 @@ matrix:
        env: NODE="0.10" TARGET=Debug PUBLISHABLE=true
      # Coverage
      - os: osx
+       osx_image: xcode7.3
        compiler: clang
        env: NODE="0.10" COVERAGE=true TARGET=Debug PUBLISHABLE=false
 
@@ -56,8 +59,9 @@ before_install:
 - export COVERAGE=${COVERAGE:-false}
 - |
   if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-    export CXX="g++-4.8";
-    export CC="gcc-4.8";
+    export CXX="g++-5";
+    export CC="gcc-5";
+    export CPP="cpp-5";
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python2.7/site-packages;
   elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
     sudo sysctl -w kern.sysv.shmmax=4294967296
