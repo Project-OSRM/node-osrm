@@ -62,6 +62,10 @@ before_install:
     export CXX="g++-5";
     export CC="gcc-5";
     export CPP="cpp-5";
+    # GCC binutils wrapper for potential use with LTO (-flto)
+    export AR="gcc-ar-5"
+    export NM="gcc-nm-5"
+    export RANLIB="gcc-ranlib-5"
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python2.7/site-packages;
   elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
     sudo sysctl -w kern.sysv.shmmax=4294967296
