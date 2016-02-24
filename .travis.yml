@@ -6,16 +6,6 @@ git:
 notifications:
   email: false
 
-branches:
-  only:
-    - master
-    - develop
-
-#cache:
-#  directories:
-#    - node_modules
-#    - deps
-
 addons:
   apt:
     sources:
