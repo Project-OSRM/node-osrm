@@ -75,7 +75,6 @@ function build_osrm() {
     echo "Using OSRM ${OSRM_RELEASE}"
     echo "Using OSRM ${OSRM_REPO}"
     git checkout ${OSRM_RELEASE}
-    git reset --hard origin/${OSRM_RELEASE}
 
     mkdir -p build
     pushd build
@@ -86,7 +85,8 @@ function build_osrm() {
       -DCMAKE_INCLUDE_PATH=${MASON_HOME}/include \
       -DCMAKE_LIBRARY_PATH=${MASON_HOME}/lib \
       -DCMAKE_BUILD_TYPE=${TARGET} \
-      -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}"
+      -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}" \
+      -DDEBUG_GEOMETRY=ON
     make -j${JOBS} && make install
     popd
 
