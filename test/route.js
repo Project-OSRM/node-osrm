@@ -175,13 +175,18 @@ test('route: integer bearing values no longer supported', function(assert) {
         'Bearing must be an array of [bearing, range] or null');
 });
 
-test('route: array bearing values', function(assert) {
-    assert.plan(2);
+test('route: valid bearing values', function(assert) {
+    assert.plan(4);
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         bearings: [[200, 180], [250, 180]],
     };
+    osrm.route(options, function(err, route) {
+        assert.ifError(err);
+        assert.ok(route.routes[0]);
+    });
+    options.bearings = [null, [250, 180]];
     osrm.route(options, function(err, route) {
         assert.ifError(err);
         assert.ok(route.routes[0]);
