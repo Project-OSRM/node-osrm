@@ -86,14 +86,14 @@ test('match: throws on missing arguments', function(assert) {
     assert.plan(1);
     var osrm = new OSRM(berlin_path);
     assert.throws(function() { osrm.match({}) },
-        /two arguments required/);
+        /Two arguments required/);
 });
 
 test('match: throws on non-object arg', function(assert) {
     assert.plan(1);
     var osrm = new OSRM(berlin_path);
     assert.throws(function() { osrm.match(null, function(err, response) {}) },
-        /first arg must be an object/);
+        /First arg must be an object/);
 });
 
 test('match: throws on invalid coordinates param', function(assert) {
@@ -103,16 +103,16 @@ test('match: throws on invalid coordinates param', function(assert) {
         coordinates: ''
     };
     assert.throws(function() { osrm.match(options, function(err, response) {}) },
-        "coordinates must be an array of (lat/long) pairs");
+        'Coordinates must be an array of (lat/long) pairs');
     options.coordinates = [[52.542648,13.393252]];
     assert.throws(function() { osrm.match(options, function(err, response) {}) },
-        /at least two coordinates must be provided/);
+        /At least two coordinates must be provided/);
     options.coordinates = [52.542648,13.393252];
     assert.throws(function() { osrm.match(options, function(err, response) {}) },
-        "coordinates must be an array of (lat/long) pairs");
+        'Coordinates must be an array of (lat/long) pairs');
     options.coordinates = [[52.542648],[13.393252]];
     assert.throws(function() { osrm.match(options, function(err, response) {}) },
-        "coordinates must be an array of (lat/long) pairs");
+        'Coordinates must be an array of (lat/long) pairs');
 });
 
 test('match: throws on invalid timestamps param', function(assert) {
@@ -120,14 +120,14 @@ test('match: throws on invalid timestamps param', function(assert) {
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[52.542648,13.393252], [52.543079,13.394780], [52.542107,13.397389]],
-        timestamps: "timestamps"
+        timestamps: 'timestamps'
     };
     assert.throws(function() { osrm.match(options, function(err, response) {}) },
-        "timestamps must be an array of integers (or undefined)");
+        'Timestamps must be an array of integers (or undefined)');
     options.timestamps = ['invalid', 'timestamp', 'array'];
     assert.throws(function() { osrm.match(options, function(err, response) {}) },
-        /timestamps array items must be numbers/);
+        /Timestamps array items must be numbers/);
     options.timestamps = [1424684612, 1424684616];
     assert.throws(function() { osrm.match(options, function(err, response) {}) },
-        /timestamp array must have the same size as the coordinates array/);
+        /Timestamp array must have the same size as the coordinates array/);
 });
