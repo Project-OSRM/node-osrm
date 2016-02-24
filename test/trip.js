@@ -34,32 +34,44 @@ test('trip: throws with too few or invalid args', function(assert) {
     assert.plan(2);
     var osrm = new OSRM(berlin_path);
     assert.throws(function() { osrm.trip({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]}) },
-        /two arguments required/);
+        /Two arguments required/);
     assert.throws(function() { osrm.trip(null, function(err, trip) {}) },
-        /first arg must be an object/);
+        /First arg must be an object/);
 });
 
 test('trip: throws with bad params', function(assert) {
-    assert.plan(7);
+    assert.plan(8);
     var osrm = new OSRM(berlin_path);
     assert.throws(function () { osrm.trip({coordinates: []}, function(err) {}) });
     assert.throws(function() { osrm.trip({}, function(err, trip) {}) },
-        /must provide a coordinates property/);
-    assert.throws(function() { osrm.trip({coordinates: null}, function(err, trip) {}) },
-        "coordinates must be an array of (lat/long) pairs");
-    assert.throws(function() { osrm.trip({coordinates: [52.519930, 13.438640]}, function(err, trip) {}) },
-        "coordinates must be an array of (lat/long) pairs");
-    assert.throws(function() { osrm.trip({coordinates: [[52.519930], [13.438640]]}, function(err, trip) {}) },
-        "coordinates must be an array of (lat/long) pairs");
-    assert.throws(function() { osrm.trip({coordinates: [[52.519930,13.438640], [52.513191,13.415852]], hints: null}, function(err, trip) {}) },
-        "hints must be an array of strings/null");
+        /Must provide a coordinates property/);
+    assert.throws(function() { osrm.trip({
+        coordinates: null
+    }, function(err, trip) {}) },
+        'Coordinates must be an array of (lat/long) pairs');
+    assert.throws(function() { osrm.trip({
+        coordinates: [52.519930, 13.438640]
+    }, function(err, trip) {}) },
+        'Coordinates must be an array of (lat/long) pairs');
+    assert.throws(function() { osrm.trip({
+        coordinates: [[52.519930], [13.438640]]
+    }, function(err, trip) {}) },
+        'Coordinates must be an array of (lat/long) pairs');
+    assert.throws(function() { osrm.trip({
+        coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
+        hints: null
+    }, function(err, trip) {}) },
+        'Hints must be an array of strings/null');
     var options = {
         coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
         printInstructions: false,
-        hints: [[52.519930,13.438640]]
+        hints: [52.519930,13.438640]
     };
     assert.throws(function() { osrm.trip(options, function(err, trip) {}) },
-        /hint must be null or string/);
+        /Hint must be null or string/);
+    options.hints = [null];
+    assert.throws(function() { osrm.trip(options, function(err, trip) {}) },
+        /Hints array must have the same length as coordinates array/);
 });
 
 if (process.platform === 'darwin') {
@@ -155,7 +167,7 @@ test('trip: routes Berlin with null hints', function(assert) {
     var options = {
         coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
         printInstructions: false,
-        hints: [null, null, null]
+        hints: [null, null]
     };
     osrm.trip(options, function(err, second) {
         assert.ifError(err);

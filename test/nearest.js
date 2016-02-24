@@ -32,10 +32,10 @@ test('nearest: throws on invalid args', function(assert) {
     var osrm = new OSRM(berlin_path);
     var options = {};
     assert.throws(function() { osrm.nearest(options); },
-        /two arguments required/);
+        /Two arguments required/);
     assert.throws(function() { osrm.nearest(null, function(err, res) {}); },
-        /first arg must be an object/);
+        /First arg must be an object/);
     options.coordinates = [52.4224];
     assert.throws(function() { osrm.nearest(options, function(err, res) {}); },
-        /coordinates must be an array of /);
+        /Coordinates must be an array of /);
 });
