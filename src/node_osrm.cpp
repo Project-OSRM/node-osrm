@@ -110,12 +110,12 @@ engine_config_ptr argumentsToEngineConfig(const Nan::FunctionCallbackInfo<v8::Va
     return engine_config;
 }
 
-boost::optional<std::vector<osrm::FixedPointCoordinate>>
+boost::optional<std::vector<osrm::Coordinate>>
 parseCoordinateArray(const v8::Local<v8::Array> &coordinates_array)
 {
     Nan::HandleScope scope;
-    boost::optional<std::vector<osrm::FixedPointCoordinate>> resulting_coordinates;
-    std::vector<osrm::FixedPointCoordinate> temp_coordinates;
+    boost::optional<std::vector<osrm::Coordinate>> resulting_coordinates;
+    std::vector<osrm::Coordinate> temp_coordinates;
 
     for (uint32_t i = 0; i < coordinates_array->Length(); ++i)
     {
@@ -123,20 +123,20 @@ parseCoordinateArray(const v8::Local<v8::Array> &coordinates_array)
 
         if (!coordinate->IsArray())
         {
-            Nan::ThrowError("Coordinates must be an array of (lat/long) pairs");
+            Nan::ThrowError("Coordinates must be an array of (lon/lat) pairs");
             return resulting_coordinates;
         }
 
         v8::Local<v8::Array> coordinate_pair = v8::Local<v8::Array>::Cast(coordinate);
         if (coordinate_pair->Length() != 2)
         {
-            Nan::ThrowError("Coordinates must be an array of (lat/long) pairs");
+            Nan::ThrowError("Coordinates must be an array of (lon/lat) pairs");
             return resulting_coordinates;
         }
 
         temp_coordinates.emplace_back(
-            static_cast<int>(coordinate_pair->Get(0)->NumberValue() * osrm::COORDINATE_PRECISION),
-            static_cast<int>(coordinate_pair->Get(1)->NumberValue() * osrm::COORDINATE_PRECISION));
+            osrm::util::FloatLongitude(coordinate_pair->Get(0)->NumberValue()),
+            osrm::util::FloatLatitude(coordinate_pair->Get(1)->NumberValue()));
     }
 
     resulting_coordinates = boost::make_optional(std::move(temp_coordinates));
@@ -196,7 +196,7 @@ bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, Para
     else if (!coordinates->IsUndefined())
     {
         BOOST_ASSERT(!coordinates->IsArray());
-        Nan::ThrowError("Coordinates must be an array of (lat/long) pairs");
+        Nan::ThrowError("Coordinates must be an array of (lon/lat) pairs");
         return false;
     }
 

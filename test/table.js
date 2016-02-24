@@ -6,7 +6,7 @@ test('table: distance table in Berlin', function(assert) {
     assert.plan(9);
     var osrm = new OSRM(berlin_path);
     var options = {
-        coordinates: [[52.519930,13.438640], [52.513191,13.415852]]
+        coordinates: [[13.43864,52.51993],[13.415852,52.513191]]
     };
     osrm.table(options, function(err, table) {
         assert.ifError(err);
@@ -34,7 +34,7 @@ test('table: distance table in Berlin with sources/destinations', function(asser
     assert.plan(6);
     var osrm = new OSRM(berlin_path);
     var options = {
-        coordinates: [[52.519930,13.438640], [52.513191,13.415852]],
+        coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         sources: [0],
         destinations: [0,1]
     };
@@ -69,17 +69,17 @@ test('table: throws on invalid arguments', function(assert) {
     options.coordinates = null;
     assert.throws(function() { osrm.table(options, function() {}); },
         'Coordinates must be an array of (lat/long) pairs');
-    options.coordinates = [[52.542648,13.393252]];
+    options.coordinates = [[13.393252,52.542648]];
     assert.throws(function() { osrm.table(options, function(err, response) {}) },
         /At least two coordinates must be provided/);
-    options.coordinates = [52.542648,13.393252];
+    options.coordinates = [13.393252,52.542648];
     assert.throws(function() { osrm.table(options, function(err, response) {}) },
         'Coordinates must be an array of (lat/long) pairs');
-    options.coordinates = [[52.542648],[13.393252]];
+    options.coordinates = [[13.393252],[52.542648]];
     assert.throws(function() { osrm.table(options, function(err, response) {}) },
         'Coordinates must be an array of (lat/long) pairs');
 
-    options.coordinates = [[52.542648,13.393252], [52.542648,13.393252]];
+    options.coordinates = [[13.393252,52.542648],[13.393252,52.542648]];
     options.sources = true;
     assert.throws(function() { osrm.table(options, function(err, response) {}) },
         'Sources must be an array of indices (or undefined)');
