@@ -221,9 +221,12 @@ bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, Para
         for (uint32_t i = 0; i < bearings_array->Length(); ++i)
         {
             v8::Local<v8::Value> bearing_raw = bearings_array->Get(i);
-            boost::optional<osrm::engine::api::BaseParameters::Bearing> bearing;
 
-            if (!bearing_raw->IsNull() && bearing_raw->IsArray())
+            if (bearing_raw->IsNull())
+            {
+                params->bearings.emplace_back();
+            }
+            else if (bearing_raw->IsArray())
             {
                 auto bearing_pair = v8::Local<v8::Array>::Cast(bearing_raw);
                 if (bearing_pair->Length() == 2)
@@ -244,7 +247,7 @@ bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, Para
                         return false;
                     }
 
-                    bearing = osrm::engine::api::BaseParameters::Bearing { bearing_first, bearing_second };
+                    params->bearings.push_back(osrm::engine::api::BaseParameters::Bearing {bearing_first, bearing_second});
                 }
                 else
                 {
@@ -257,8 +260,6 @@ bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, Para
                 Nan::ThrowError("Bearing must be an array of [bearing, range] or null");
                 return false;
             }
-
-            params->bearings.push_back(std::move(bearing));
         }
     }
 
