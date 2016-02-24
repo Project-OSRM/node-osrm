@@ -58,7 +58,7 @@ engine_config_ptr argumentsToEngineConfig(const Nan::FunctionCallbackInfo<v8::Va
     }
     else if (args.Length() > 1)
     {
-        Nan::ThrowError("only accepts one parameter");
+        Nan::ThrowError("Only accepts one parameter");
         return engine_config_ptr();
     }
 
@@ -73,7 +73,7 @@ engine_config_ptr argumentsToEngineConfig(const Nan::FunctionCallbackInfo<v8::Va
     }
     else if (!args[0]->IsObject())
     {
-        Nan::ThrowError("parameter must be a path or options object");
+        Nan::ThrowError("Parameter must be a path or options object");
         return engine_config_ptr();
     }
 
@@ -95,14 +95,14 @@ engine_config_ptr argumentsToEngineConfig(const Nan::FunctionCallbackInfo<v8::Va
         }
         else
         {
-            Nan::ThrowError("shared_memory option must be a boolean");
+            Nan::ThrowError("Shared_memory option must be a boolean");
             return engine_config_ptr();
         }
     }
 
     if (path->IsUndefined() && !engine_config->use_shared_memory)
     {
-        Nan::ThrowError("shared_memory must be enabled if no path is "
+        Nan::ThrowError("Shared_memory must be enabled if no path is "
                         "specified");
         return engine_config_ptr();
     }
@@ -123,14 +123,14 @@ parseCoordinateArray(const v8::Local<v8::Array> &coordinates_array)
 
         if (!coordinate->IsArray())
         {
-            Nan::ThrowError("coordinates must be an array of (lat/long) pairs");
+            Nan::ThrowError("Coordinates must be an array of (lat/long) pairs");
             return resulting_coordinates;
         }
 
         v8::Local<v8::Array> coordinate_pair = v8::Local<v8::Array>::Cast(coordinate);
         if (coordinate_pair->Length() != 2)
         {
-            Nan::ThrowError("coordinates must be an array of (lat/long) pairs");
+            Nan::ThrowError("Coordinates must be an array of (lat/long) pairs");
             return resulting_coordinates;
         }
 
@@ -151,13 +151,13 @@ bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, Para
 
     if (args.Length() < 2)
     {
-        Nan::ThrowTypeError("two arguments required");
+        Nan::ThrowTypeError("Two arguments required");
         return false;
     }
 
     if (!args[0]->IsObject())
     {
-        Nan::ThrowTypeError("first arg must be an object");
+        Nan::ThrowTypeError("First arg must be an object");
         return false;
     }
 
@@ -166,7 +166,7 @@ bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, Para
     v8::Local<v8::Value> coordinates = obj->Get(Nan::New("coordinates").ToLocalChecked());
     if (coordinates->IsUndefined())
     {
-        Nan::ThrowError("must provide a coordinates property");
+        Nan::ThrowError("Must provide a coordinates property");
         return false;
     }
     else if (coordinates->IsArray())
@@ -174,12 +174,12 @@ bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, Para
         auto coordinates_array = v8::Local<v8::Array>::Cast(coordinates);
         if (coordinates_array->Length() < 2 && requires_coordinates)
         {
-            Nan::ThrowError("at least two coordinates must be provided");
+            Nan::ThrowError("At least two coordinates must be provided");
             return false;
         }
         else if (!requires_coordinates && coordinates_array->Length() != 1)
         {
-            Nan::ThrowError("exactly one coordinate pair must be provided");
+            Nan::ThrowError("Exactly one coordinate pair must be provided");
             return false;
         }
         auto maybe_coordinates = parseCoordinateArray(coordinates_array);
@@ -196,14 +196,27 @@ bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, Para
     else if (!coordinates->IsUndefined())
     {
         BOOST_ASSERT(!coordinates->IsArray());
-        Nan::ThrowError("coordinates must be an array of (lat/long) pairs");
+        Nan::ThrowError("Coordinates must be an array of (lat/long) pairs");
         return false;
     }
 
     if (obj->Has(Nan::New("bearings").ToLocalChecked()))
     {
         v8::Local<v8::Value> bearings = obj->Get(Nan::New("bearings").ToLocalChecked());
+
+        if (!bearings->IsArray())
+        {
+            Nan::ThrowError("Bearings must be an array of arrays of numbers");
+            return false;
+        }
+
         auto bearings_array = v8::Local<v8::Array>::Cast(bearings);
+
+        if (bearings_array->Length() != params->coordinates.size())
+        {
+            Nan::ThrowError("Bearings array must have the same length as coordinates array");
+            return false;
+        }
 
         for (uint32_t i = 0; i < bearings_array->Length(); ++i)
         {
@@ -255,11 +268,18 @@ bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, Para
 
         if (!hints->IsArray())
         {
-            Nan::ThrowError("hints must be an array of strings/null");
+            Nan::ThrowError("Hints must be an array of strings/null");
             return false;
         }
 
         v8::Local<v8::Array> hints_array = v8::Local<v8::Array>::Cast(hints);
+
+        if (hints_array->Length() != params->coordinates.size())
+        {
+            Nan::ThrowError("Hints array must have the same length as coordinates array");
+            return false;
+        }
+
         for (uint32_t i = 0; i < hints_array->Length(); ++i)
         {
             v8::Local<v8::Value> hint = hints_array->Get(i);
@@ -267,7 +287,7 @@ bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, Para
             {
                 if (hint->ToString()->Length() == 0)
                 {
-                    Nan::ThrowError("hint cannot be an empty string");
+                    Nan::ThrowError("Hint cannot be an empty string");
                     return false;
                 }
 
@@ -279,7 +299,7 @@ bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, Para
             }
             else
             {
-                Nan::ThrowError("hint must be null or string");
+                Nan::ThrowError("Hint must be null or string");
                 return false;
             }
         }
@@ -291,11 +311,18 @@ bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, Para
 
         if (!radiuses->IsArray())
         {
-            Nan::ThrowError("radiuses must be an array of non-negative doubles or null");
+            Nan::ThrowError("Radiuses must be an array of non-negative doubles or null");
             return false;
         }
 
         v8::Local<v8::Array> radiuses_array = v8::Local<v8::Array>::Cast(radiuses);
+
+        if (radiuses_array->Length() != params->coordinates.size())
+        {
+            Nan::ThrowError("Radiuses array must have the same length as coordinates array");
+            return false;
+        }
+
         for (uint32_t i = 0; i < radiuses_array->Length(); ++i)
         {
             v8::Local<v8::Value> radius = radiuses_array->Get(i);
@@ -309,7 +336,7 @@ bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, Para
             }
             else
             {
-                Nan::ThrowError("radius must be non-negative double or null");
+                Nan::ThrowError("Radius must be non-negative double or null");
                 return false;
             }
         }
@@ -332,7 +359,7 @@ bool parseCommonParameters(const v8::Local<v8::Object> obj, ParamType &params)
 
         if (!geometries->IsString())
         {
-            Nan::ThrowError("geometries must be a string: [polyline, geojson]");
+            Nan::ThrowError("Geometries must be a string: [polyline, geojson]");
             return false;
         }
 
@@ -359,7 +386,7 @@ bool parseCommonParameters(const v8::Local<v8::Object> obj, ParamType &params)
 
         if (!overview->IsString())
         {
-            Nan::ThrowError("overview must be a string: [simplified, full, false]");
+            Nan::ThrowError("Overview must be a string: [simplified, full, false]");
             return false;
         }
 
@@ -401,7 +428,7 @@ route_parameters_ptr argumentsToRouteParameter(const Nan::FunctionCallbackInfo<v
 
         if (!uturns->IsArray())
         {
-            Nan::ThrowError("uturns must be an array of booleans");
+            Nan::ThrowError("Uturns must be an array of booleans");
             return route_parameters_ptr();
         }
 
@@ -415,7 +442,7 @@ route_parameters_ptr argumentsToRouteParameter(const Nan::FunctionCallbackInfo<v
             }
             else
             {
-                Nan::ThrowError("uturn must be boolean");
+                Nan::ThrowError("Uturn must be boolean");
                 return route_parameters_ptr();
             }
         }
@@ -449,7 +476,7 @@ nearest_parameters_ptr argumentsToNearestParameter(const Nan::FunctionCallbackIn
 
         if (!number->IsUint32())
         {
-            Nan::ThrowError("number must be an integer greater than or equal to 1");
+            Nan::ThrowError("Number must be an integer greater than or equal to 1");
             return nearest_parameters_ptr();
         }
         else
@@ -458,7 +485,7 @@ nearest_parameters_ptr argumentsToNearestParameter(const Nan::FunctionCallbackIn
 
             if (number_value < 1)
             {
-                Nan::ThrowError("number must be an integer greater than or equal to 1");
+                Nan::ThrowError("Number must be an integer greater than or equal to 1");
                 return nearest_parameters_ptr();
             }
 
@@ -483,7 +510,7 @@ table_parameters_ptr argumentsToTableParameter(const Nan::FunctionCallbackInfo<v
 
         if (!sources->IsArray())
         {
-            Nan::ThrowError("sources must be an array of indices (or undefined)");
+            Nan::ThrowError("Sources must be an array of indices (or undefined)");
             return table_parameters_ptr();
         }
 
@@ -496,7 +523,7 @@ table_parameters_ptr argumentsToTableParameter(const Nan::FunctionCallbackInfo<v
                 size_t source_value = static_cast<size_t>(source->NumberValue());
                 if (source_value > params->coordinates.size())
                 {
-                    Nan::ThrowError("source indices must be less than or equal to the number of coordinates");
+                    Nan::ThrowError("Source indices must be less than or equal to the number of coordinates");
                     return table_parameters_ptr();
                 }
 
@@ -504,7 +531,7 @@ table_parameters_ptr argumentsToTableParameter(const Nan::FunctionCallbackInfo<v
             }
             else
             {
-                Nan::ThrowError("source must be a integer");
+                Nan::ThrowError("Source must be an integer");
                 return table_parameters_ptr();
             }
         }
@@ -516,7 +543,7 @@ table_parameters_ptr argumentsToTableParameter(const Nan::FunctionCallbackInfo<v
 
         if (!destinations->IsArray())
         {
-            Nan::ThrowError("destinations must be an array of indices (or undefined)");
+            Nan::ThrowError("Destinations must be an array of indices (or undefined)");
             return table_parameters_ptr();
         }
 
@@ -529,7 +556,7 @@ table_parameters_ptr argumentsToTableParameter(const Nan::FunctionCallbackInfo<v
                 size_t destination_value = static_cast<size_t>(destination->NumberValue());
                 if (destination_value > params->coordinates.size())
                 {
-                    Nan::ThrowError("destination indices must be less than or equal to the number of coordinates");
+                    Nan::ThrowError("Destination indices must be less than or equal to the number of coordinates");
                     return table_parameters_ptr();
                 }
 
@@ -537,7 +564,7 @@ table_parameters_ptr argumentsToTableParameter(const Nan::FunctionCallbackInfo<v
             }
             else
             {
-                Nan::ThrowError("destination must be a integer");
+                Nan::ThrowError("Destination must be an integer");
                 return table_parameters_ptr();
             }
         }
@@ -577,7 +604,7 @@ match_parameters_ptr argumentsToMatchParameter(const Nan::FunctionCallbackInfo<v
 
         if (!timestamps->IsArray())
         {
-            Nan::ThrowError("timestamps must be an array of integers (or undefined)");
+            Nan::ThrowError("Timestamps must be an array of integers (or undefined)");
             return match_parameters_ptr();
         }
 
@@ -585,7 +612,7 @@ match_parameters_ptr argumentsToMatchParameter(const Nan::FunctionCallbackInfo<v
 
         if (params->coordinates.size() != timestamps_array->Length())
         {
-            Nan::ThrowError("timestamp array must have the same size as the coordinates "
+            Nan::ThrowError("Timestamp array must have the same size as the coordinates "
                             "array");
             return match_parameters_ptr();
         }
@@ -595,7 +622,7 @@ match_parameters_ptr argumentsToMatchParameter(const Nan::FunctionCallbackInfo<v
             v8::Local<v8::Value> timestamp = timestamps_array->Get(i);
             if (!timestamp->IsNumber())
             {
-                Nan::ThrowError("timestamps array items must be numbers");
+                Nan::ThrowError("Timestamps array items must be numbers");
                 return match_parameters_ptr();
             }
             params->timestamps.emplace_back(static_cast<unsigned>(timestamp->NumberValue()));
