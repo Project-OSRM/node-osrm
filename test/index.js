@@ -34,7 +34,7 @@ test('constructor: throws if necessary files do not exist', function(assert) {
 test('constructor: takes a shared memory argument', function(assert) {
     assert.plan(1);
     var osrm = new OSRM({path: berlin_path, shared_memory: false});
-    osrm.route({coordinates: [[52.519930,13.438640], [52.513191,13.415852]]}, function(err, route) {
+    osrm.route({coordinates: [[13.43864,52.51993],[13.415852,52.513191]]}, function(err, route) {
         assert.ifError(err);
     });
 });

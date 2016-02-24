@@ -6,7 +6,7 @@ test('match: match in Berlin', function(assert) {
     assert.plan(5);
     var osrm = new OSRM(berlin_path);
     var options = {
-        coordinates: [[52.542648,13.393252], [52.543079,13.394780], [52.542107,13.397389]],
+        coordinates: [[13.393252,52.542648],[13.39478,52.543079],[13.397389,52.542107]],
         timestamps: [1424684612, 1424684616, 1424684620]
     };
     osrm.match(options, function(err, response) {
@@ -26,7 +26,7 @@ test('match: match in Berlin without timestamps', function(assert) {
     assert.plan(3);
     var osrm = new OSRM(berlin_path);
     var options = {
-        coordinates: [[52.542648,13.393252], [52.543079,13.394780], [52.542107,13.397389]]
+        coordinates: [[13.393252,52.542648],[13.39478,52.543079],[13.397389,52.542107]]
     };
     osrm.match(options, function(err, response) {
         assert.ifError(err);
@@ -39,7 +39,7 @@ test('match: match in Berlin with geometry compression', function(assert) {
     assert.plan(3);
     var osrm = new OSRM(berlin_path);
     var options = {
-        coordinates: [[52.542648,13.393252], [52.543079,13.394780], [52.542107,13.397389]]
+        coordinates: [[13.393252,52.542648],[13.39478,52.543079],[13.397389,52.542107]]
     };
     osrm.match(options, function(err, response) {
         assert.ifError(err);
@@ -52,7 +52,7 @@ test('match: match in Berlin without geometry compression', function(assert) {
     assert.plan(4);
     var osrm = new OSRM(berlin_path);
     var options = {
-        coordinates: [[52.542648,13.393252], [52.543079,13.394780], [52.542107,13.397389]],
+        coordinates: [[13.393252,52.542648],[13.39478,52.543079],[13.397389,52.542107]],
         geometries: 'geojson'
     };
     osrm.match(options, function(err, response) {
@@ -67,7 +67,7 @@ test('match: match in Berlin with all options', function(assert) {
     assert.plan(4);
     var osrm = new OSRM(berlin_path);
     var options = {
-        coordinates: [[52.542648,13.393252], [52.543079,13.394780], [52.542107,13.397389]],
+        coordinates: [[13.393252,52.542648],[13.39478,52.543079],[13.397389,52.542107]],
         timestamps: [1424684612, 1424684616, 1424684620],
         radiuses: [4.07, 4.07, 4.07],
         steps: false,
@@ -104,13 +104,13 @@ test('match: throws on invalid coordinates param', function(assert) {
     };
     assert.throws(function() { osrm.match(options, function(err, response) {}) },
         'Coordinates must be an array of (lat/long) pairs');
-    options.coordinates = [[52.542648,13.393252]];
+    options.coordinates = [[13.393252,52.542648]];
     assert.throws(function() { osrm.match(options, function(err, response) {}) },
         /At least two coordinates must be provided/);
-    options.coordinates = [52.542648,13.393252];
+    options.coordinates = [13.393252,52.542648];
     assert.throws(function() { osrm.match(options, function(err, response) {}) },
         'Coordinates must be an array of (lat/long) pairs');
-    options.coordinates = [[52.542648],[13.393252]];
+    options.coordinates = [[13.393252],[52.542648]];
     assert.throws(function() { osrm.match(options, function(err, response) {}) },
         'Coordinates must be an array of (lat/long) pairs');
 });
@@ -119,7 +119,7 @@ test('match: throws on invalid timestamps param', function(assert) {
     assert.plan(3);
     var osrm = new OSRM(berlin_path);
     var options = {
-        coordinates: [[52.542648,13.393252], [52.543079,13.394780], [52.542107,13.397389]],
+        coordinates: [[13.393252,52.542648],[13.39478,52.543079],[13.397389,52.542107]],
         timestamps: 'timestamps'
     };
     assert.throws(function() { osrm.match(options, function(err, response) {}) },
