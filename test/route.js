@@ -14,6 +14,23 @@ test('route: routes Berlin', function(assert) {
     });
 });
 
+test('route: provides alternatives, by default and when requested', function(assert) {
+    assert.plan(6);
+    var osrm = new OSRM(berlin_path);
+    var options = {coordinates: [[13.388860,52.517037], [13.370533,52.559447]]};
+    osrm.route(options, function(err, route) {
+        assert.ifError(err);
+        assert.ok(route.routes);
+        assert.equal(route.routes.length, 2);
+    });
+    options.alternative = true;
+    osrm.route(options, function(err, route) {
+        assert.ifError(err);
+        assert.ok(route.routes);
+        assert.equal(route.routes.length, 2);
+    });
+});
+
 test('route: throws with too few or invalid args', function(assert) {
     assert.plan(2);
     var osrm = new OSRM(berlin_path);
@@ -39,7 +56,7 @@ test('route: throws with bad params', function(assert) {
         'Hints must be an array of strings/null');
     var options = {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
-        alternateRoute: false,
+        alternative: false,
         printInstructions: false,
         hints: [13.438640, 52.519930]
     };
