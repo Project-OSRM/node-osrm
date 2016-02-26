@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 function dep() {
     ./.mason/mason install $1 $2
     ./.mason/mason link $1 $2
@@ -141,3 +143,4 @@ function main() {
 }
 
 main
+set +e
