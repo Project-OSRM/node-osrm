@@ -8,16 +8,11 @@ test('constructor: throws if new keyword is not used', function(assert) {
       /Cannot call constructor as function, you need to use 'new' keyword/);
 });
 
-if (process.platform === 'darwin') {
-  // shared memory does not work on Mac OS for now.
-  test.skip('constructor: uses defaults with no parameter', function(assert) {});
-} else {
-  test('constructor: uses defaults with no parameter', function(assert) {
-      assert.plan(1);
-      var osrm = new OSRM();
-      assert.ok(osrm);
-  });
-}
+test('constructor: uses defaults with no parameter', function(assert) {
+    assert.plan(1);
+    var osrm = new OSRM();
+    assert.ok(osrm);
+});
 
 test('constructor: does not accept more than one parameter', function(assert) {
     assert.plan(1);
