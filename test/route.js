@@ -64,19 +64,14 @@ test('route: throws with bad params', function(assert) {
         /Hint must be null or string/);
 });
 
-if (process.platform === 'darwin') {
-  // shared memory does not work on Mac OS for now.
-  test.skip('route: routes Berlin using shared memory', function(assert) {});
-} else {
-  test('route: routes Berlin using shared memory', function(assert) {
-      assert.plan(2);
-      var osrm = new OSRM();
-      osrm.route({coordinates: [[13.43864,52.51993],[13.415852,52.513191]]}, function(err, route) {
-          assert.ifError(err);
-          assert.ok(Array.isArray(route.routes));
-      });
+test('route: routes Berlin using shared memory', function(assert) {
+  assert.plan(2);
+  var osrm = new OSRM();
+  osrm.route({coordinates: [[13.43864,52.51993],[13.415852,52.513191]]}, function(err, route) {
+      assert.ifError(err);
+      assert.ok(Array.isArray(route.routes));
   });
-}
+});
 
 test('route: routes Berlin with geometry compression', function(assert) {
     assert.plan(2);
