@@ -75,21 +75,16 @@ test('trip: throws with bad params', function(assert) {
         /Hints array must have the same length as coordinates array/);
 });
 
-if (process.platform === 'darwin') {
-  // shared memory does not work on Mac OS for now.
-  test.skip('trip: routes Berlin using shared memory', function(assert) {});
-} else {
-  test('trip: routes Berlin using shared memory', function(assert) {
-      assert.plan(2);
-      var osrm = new OSRM();
-      osrm.trip({coordinates: [[13.43864,52.51993],[13.415852,52.513191]]}, function(err, trip) {
-          assert.ifError(err);
-          for (t = 0; t < trip.trips.length; t++) {
-            assert.ok(trip.trips[t].geometry);
-          }
-      });
+test('trip: routes Berlin using shared memory', function(assert) {
+  assert.plan(2);
+  var osrm = new OSRM();
+  osrm.trip({coordinates: [[13.43864,52.51993],[13.415852,52.513191]]}, function(err, trip) {
+      assert.ifError(err);
+      for (t = 0; t < trip.trips.length; t++) {
+        assert.ok(trip.trips[t].geometry);
+      }
   });
-}
+});
 
 test('trip: routes Berlin with hints', function(assert) {
     assert.plan(5);
