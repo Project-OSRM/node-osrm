@@ -134,9 +134,30 @@ parseCoordinateArray(const v8::Local<v8::Array> &coordinates_array)
             return resulting_coordinates;
         }
 
-        temp_coordinates.emplace_back(
-            osrm::util::FloatLongitude(coordinate_pair->Get(0)->NumberValue()),
-            osrm::util::FloatLatitude(coordinate_pair->Get(1)->NumberValue()));
+        if (!coordinate_pair->Get(0)->IsNumber() || !coordinate_pair->Get(1)->IsNumber())
+        {
+            Nan::ThrowError("Each member of a coordinate pair must be a number");
+            return resulting_coordinates;
+        }
+
+        double lon = coordinate_pair->Get(0)->NumberValue();
+        double lat = coordinate_pair->Get(1)->NumberValue();
+
+        if (std::isnan(lon) || std::isnan(lat) || std::isinf(lon) || std::isinf(lat))
+        {
+            Nan::ThrowError("Lng/Lat coordinates must be valid numbers");
+            return resulting_coordinates;
+        }
+
+        if (lon > 180 || lon < -180 || lat > 90 || lat < -90)
+        {
+            Nan::ThrowError("Lng/Lat coordinates must be within world bounds "
+                "(-180 < lng < 180, -90 < lat < 90)");
+            return resulting_coordinates;
+        }
+
+        temp_coordinates.emplace_back(osrm::util::FloatLongitude(std::move(lon)),
+                                      osrm::util::FloatLatitude(std::move(lat)));
     }
 
     resulting_coordinates = boost::make_optional(std::move(temp_coordinates));
@@ -145,7 +166,7 @@ parseCoordinateArray(const v8::Local<v8::Array> &coordinates_array)
 
 // Parses all the non-service specific parameters
 template <typename ParamType>
-bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, ParamType &params, bool requires_coordinates)
+bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, ParamType &params, bool requires_multiple_coordinates)
 {
     Nan::HandleScope scope;
 
@@ -172,12 +193,12 @@ bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, Para
     else if (coordinates->IsArray())
     {
         auto coordinates_array = v8::Local<v8::Array>::Cast(coordinates);
-        if (coordinates_array->Length() < 2 && requires_coordinates)
+        if (coordinates_array->Length() < 2 && requires_multiple_coordinates)
         {
             Nan::ThrowError("At least two coordinates must be provided");
             return false;
         }
-        else if (!requires_coordinates && coordinates_array->Length() != 1)
+        else if (!requires_multiple_coordinates && coordinates_array->Length() != 1)
         {
             Nan::ThrowError("Exactly one coordinate pair must be provided");
             return false;
@@ -415,10 +436,10 @@ bool parseCommonParameters(const v8::Local<v8::Object> obj, ParamType &params)
     return true;
 }
 
-route_parameters_ptr argumentsToRouteParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, bool requires_coordinates)
+route_parameters_ptr argumentsToRouteParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, bool requires_multiple_coordinates)
 {
     route_parameters_ptr params = make_unique<osrm::engine::api::RouteParameters>();
-    bool has_base_params = argumentsToParameter(args, params, requires_coordinates);
+    bool has_base_params = argumentsToParameter(args, params, requires_multiple_coordinates);
     if (!has_base_params) return route_parameters_ptr();
 
     v8::Local<v8::Object> obj = Nan::To<v8::Object>(args[0]).ToLocalChecked();
@@ -463,10 +484,10 @@ route_parameters_ptr argumentsToRouteParameter(const Nan::FunctionCallbackInfo<v
     return params;
 }
 
-nearest_parameters_ptr argumentsToNearestParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, bool requires_coordinates)
+nearest_parameters_ptr argumentsToNearestParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, bool requires_multiple_coordinates)
 {
     nearest_parameters_ptr params = make_unique<osrm::engine::api::NearestParameters>();
-    bool has_base_params = argumentsToParameter(args, params, requires_coordinates);
+    bool has_base_params = argumentsToParameter(args, params, requires_multiple_coordinates);
     if (!has_base_params) return nearest_parameters_ptr();
 
     v8::Local<v8::Object> obj = Nan::To<v8::Object>(args[0]).ToLocalChecked();
@@ -497,10 +518,10 @@ nearest_parameters_ptr argumentsToNearestParameter(const Nan::FunctionCallbackIn
     return params;
 }
 
-table_parameters_ptr argumentsToTableParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, bool requires_coordinates)
+table_parameters_ptr argumentsToTableParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, bool requires_multiple_coordinates)
 {
     table_parameters_ptr params = make_unique<osrm::engine::api::TableParameters>();
-    bool has_base_params = argumentsToParameter(args, params, requires_coordinates);
+    bool has_base_params = argumentsToParameter(args, params, requires_multiple_coordinates);
     if (!has_base_params) return table_parameters_ptr();
 
     v8::Local<v8::Object> obj = Nan::To<v8::Object>(args[0]).ToLocalChecked();
@@ -574,10 +595,10 @@ table_parameters_ptr argumentsToTableParameter(const Nan::FunctionCallbackInfo<v
     return params;
 }
 
-trip_parameters_ptr argumentsToTripParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, bool requires_coordinates)
+trip_parameters_ptr argumentsToTripParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, bool requires_multiple_coordinates)
 {
     trip_parameters_ptr params = make_unique<osrm::engine::api::TripParameters>();
-    bool has_base_params = argumentsToParameter(args, params, requires_coordinates);
+    bool has_base_params = argumentsToParameter(args, params, requires_multiple_coordinates);
     if (!has_base_params) return trip_parameters_ptr();
 
     v8::Local<v8::Object> obj = Nan::To<v8::Object>(args[0]).ToLocalChecked();
@@ -591,10 +612,10 @@ trip_parameters_ptr argumentsToTripParameter(const Nan::FunctionCallbackInfo<v8:
     return params;
 }
 
-match_parameters_ptr argumentsToMatchParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, bool requires_coordinates)
+match_parameters_ptr argumentsToMatchParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, bool requires_multiple_coordinates)
 {
     match_parameters_ptr params = make_unique<osrm::engine::api::MatchParameters>();
-    bool has_base_params = argumentsToParameter(args, params, requires_coordinates);
+    bool has_base_params = argumentsToParameter(args, params, requires_multiple_coordinates);
     if (!has_base_params) return match_parameters_ptr();
 
     v8::Local<v8::Object> obj = Nan::To<v8::Object>(args[0]).ToLocalChecked();
