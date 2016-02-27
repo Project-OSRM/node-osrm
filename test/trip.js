@@ -41,7 +41,7 @@ test('trip: throws with too few or invalid args', function(assert) {
 });
 
 test('trip: throws with bad params', function(assert) {
-    assert.plan(8);
+    assert.plan(9);
     var osrm = new OSRM(berlin_path);
     assert.throws(function () { osrm.trip({coordinates: []}, function(err) {}) });
     assert.throws(function() { osrm.trip({}, function(err, trip) {}) },
@@ -49,41 +49,45 @@ test('trip: throws with bad params', function(assert) {
     assert.throws(function() { osrm.trip({
         coordinates: null
     }, function(err, trip) {}) },
-        'Coordinates must be an array of (lat/long) pairs');
+        /Coordinates must be an array of \(lon\/lat\) pairs/);
     assert.throws(function() { osrm.trip({
         coordinates: [13.438640, 52.519930]
     }, function(err, trip) {}) },
-        'Coordinates must be an array of (lat/long) pairs');
+        /Coordinates must be an array of \(lon\/lat\) pairs/);
     assert.throws(function() { osrm.trip({
         coordinates: [[13.438640], [52.519930]]
     }, function(err, trip) {}) },
-        'Coordinates must be an array of (lat/long) pairs');
+        /Coordinates must be an array of \(lon\/lat\) pairs/);
     assert.throws(function() { osrm.trip({
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         hints: null
     }, function(err, trip) {}) },
-        'Hints must be an array of strings/null');
+        /Hints must be an array of strings\/null/);
     var options = {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         printInstructions: false,
         hints: [13.438640, 52.519930]
     };
-    assert.throws(function() { osrm.trip(options, function(err, trip) {}) },
+    assert.throws(function() { osrm.trip(options, function(err, trip) {}); },
         /Hint must be null or string/);
     options.hints = [null];
-    assert.throws(function() { osrm.trip(options, function(err, trip) {}) },
+    assert.throws(function() { osrm.trip(options, function(err, trip) {}); },
         /Hints array must have the same length as coordinates array/);
+    delete options.hints;
+    options.geometries = 'false';
+    assert.throws(function() { osrm.trip(options, function(err, trip) {}); },
+        /'geometries' param must be one of \[polyline, geojson\]/);
 });
 
 test('trip: routes Berlin using shared memory', function(assert) {
-  assert.plan(2);
-  var osrm = new OSRM();
-  osrm.trip({coordinates: [[13.43864,52.51993],[13.415852,52.513191]]}, function(err, trip) {
-      assert.ifError(err);
-      for (t = 0; t < trip.trips.length; t++) {
-        assert.ok(trip.trips[t].geometry);
-      }
-  });
+    assert.plan(2);
+    var osrm = new OSRM();
+    osrm.trip({coordinates: [[13.43864,52.51993],[13.415852,52.513191]]}, function(err, trip) {
+        assert.ifError(err);
+            for (t = 0; t < trip.trips.length; t++) {
+                assert.ok(trip.trips[t].geometry);
+            }
+    });
 });
 
 test('trip: routes Berlin with hints', function(assert) {
@@ -169,4 +173,3 @@ test('trip: routes Berlin with null hints', function(assert) {
         assert.ifError(err);
     });
 });
-

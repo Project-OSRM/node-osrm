@@ -14,6 +14,17 @@ test('route: routes Berlin', function(assert) {
     });
 });
 
+test('route: throws with too few or invalid args', function(assert) {
+    assert.plan(3);
+    var osrm = new OSRM(berlin_path);
+    assert.throws(function() { osrm.route({coordinates: [[13.43864,52.51993],[13.415852,52.513191]]}) },
+        /Two arguments required/);
+    assert.throws(function() { osrm.route(null, function(err, route) {}) },
+        /First arg must be an object/);
+    assert.throws(function() { osrm.route({coordinates: [[13.43864,52.51993],[13.415852,52.513191]]}, true)},
+        /last argument must be a callback function/);
+});
+
 test('route: provides alternatives, by default and when requested', function(assert) {
     assert.plan(6);
     var osrm = new OSRM(berlin_path);
@@ -31,32 +42,27 @@ test('route: provides alternatives, by default and when requested', function(ass
     });
 });
 
-test('route: throws with too few or invalid args', function(assert) {
-    assert.plan(2);
-    var osrm = new OSRM(berlin_path);
-    assert.throws(function() { osrm.route({coordinates: [[13.43864,52.51993],[13.415852,52.513191]]}) },
-        /Two arguments required/);
-    assert.throws(function() { osrm.route(null, function(err, route) {}) },
-        /First arg must be an object/);
-});
-
 test('route: throws with bad params', function(assert) {
-    assert.plan(7);
+    assert.plan(9);
     var osrm = new OSRM(berlin_path);
     assert.throws(function () { osrm.route({coordinates: []}, function(err) {}) });
     assert.throws(function() { osrm.route({}, function(err, route) {}) },
         /Must provide a coordinates property/);
     assert.throws(function() { osrm.route({coordinates: null}, function(err, route) {}) },
-        'Coordinates must be an array of (lat/long) pairs');
+        /Coordinates must be an array of \(lon\/lat\) pairs/);
     assert.throws(function() { osrm.route({coordinates: [13.438640, 52.519930]}, function(err, route) {}) },
-        'Coordinates must be an array of (lat/long) pairs');
+        /Coordinates must be an array of \(lon\/lat\) pairs/);
+    assert.throws(function() { osrm.route({coordinates: [[true, '52.519930'], [13.438640, 52.519930]]}, function(err, route) {}) },
+        /Each member of a coordinate pair must be a number/);
+    assert.throws(function() { osrm.route({coordinates: [[213.43864,252.51993],[413.415852,552.513191]]}, function(err, route) {}) },
+        /Lng\/Lat coordinates must be within world bounds \(-180 < lng < 180, -90 < lat < 90\)/);
     assert.throws(function() { osrm.route({coordinates: [[13.438640], [52.519930]]}, function(err, route) {}) },
-        'Coordinates must be an array of (lat/long) pairs');
+        /Coordinates must be an array of \(lon\/lat\) pairs/);
     assert.throws(function() { osrm.route({coordinates: [[13.43864,52.51993],[13.415852,52.513191]], hints: null}, function(err, route) {}) },
-        'Hints must be an array of strings/null');
+        /Hints must be an array of strings\/null/);
     var options = {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
-        alternative: false,
+        alternateRoute: false,
         printInstructions: false,
         hints: [13.438640, 52.519930]
     };
@@ -65,12 +71,12 @@ test('route: throws with bad params', function(assert) {
 });
 
 test('route: routes Berlin using shared memory', function(assert) {
-  assert.plan(2);
-  var osrm = new OSRM();
-  osrm.route({coordinates: [[13.43864,52.51993],[13.415852,52.513191]]}, function(err, route) {
-      assert.ifError(err);
-      assert.ok(Array.isArray(route.routes));
-  });
+    assert.plan(2);
+    var osrm = new OSRM();
+    osrm.route({coordinates: [[13.43864,52.51993],[13.415852,52.513191]]}, function(err, route) {
+        assert.ifError(err);
+        assert.ok(Array.isArray(route.routes));
+    });
 });
 
 test('route: routes Berlin with geometry compression', function(assert) {
@@ -128,52 +134,60 @@ test('route: routes Berlin with options', function(assert) {
             });
         });
     });
-
 });
 
 test('route: invalid route options', function(assert) {
-    assert.plan(8);
+    assert.plan(10);
     var osrm = new OSRM(berlin_path);
     assert.throws(function() { osrm.route({
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         uturns: true
     }, function(err, route) {}); },
-        'Uturns must be an array of booleans');
+        /Uturns must be an array of booleans/);
     assert.throws(function() { osrm.route({
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         uturns: [1, 3]
     }, function(err, route) {}); },
-        'Uturn must be boolean');
+        /Uturn must be boolean/);
     assert.throws(function() { osrm.route({
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         uturns: true
     }, function(err, route) {}); },
-        'Uturns must be an array of booleans');
+        /Uturns must be an array of booleans/);
     assert.throws(function() { osrm.route({
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         geometries: true
     }, function(err, route) {}); },
-        'Geometries must be a string: [polyline, geojson]');
+        /Geometries must be a string: \[polyline, geojson\]/);
     assert.throws(function() { osrm.route({
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         uturns: true
     }, function(err, route) {}); },
-        'Uturns must be an array of booleans');
+        /Uturns must be an array of booleans/);
     assert.throws(function() { osrm.route({
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         overview: false
     }, function(err, route) {}); },
-        'Overview must be a string: [simplified, full, false]');
+        /Overview must be a string: \[simplified, full, false\]/);
     assert.throws(function() { osrm.route({
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         overview: false
     }, function(err, route) {}); },
-        'Overview must be a string: [simplified, full, false]');
+        /Overview must be a string: \[simplified, full, false\]/);
     assert.throws(function() { osrm.route({
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         overview: 'maybe'
     }, function(err, route) {}); },
-        '\'overview\' param must be one of [simplified, full, false]');
+        /'overview' param must be one of \[simplified, full, false\]/);
+    assert.throws(function() { osrm.route({
+        coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
+        geometries: 'maybe'
+    }, function(err, route) {}); },
+        /'geometries' param must be one of \[polyline, geojson\]/);
+    assert.throws(function() { osrm.route({
+        coordinates: [[NaN, -NaN],[Infinity, -Infinity]]
+    }, function(err, route) {}); },
+        /Lng\/Lat coordinates must be valid numbers/);
 });
 
 test('route: integer bearing values no longer supported', function(assert) {
@@ -184,7 +198,7 @@ test('route: integer bearing values no longer supported', function(assert) {
         bearings: [200, 250],
     };
     assert.throws(function() { osrm.route(options, function(err, route) {}); },
-        'Bearing must be an array of [bearing, range] or null');
+        /Bearing must be an array of \[bearing, range\] or null/);
 });
 
 test('route: valid bearing values', function(assert) {
@@ -206,7 +220,7 @@ test('route: valid bearing values', function(assert) {
 });
 
 test('route: invalid bearing values', function(assert) {
-    assert.plan(5);
+    assert.plan(6);
     var osrm = new OSRM(berlin_path);
     assert.throws(function() { osrm.route({
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
@@ -222,17 +236,22 @@ test('route: invalid bearing values', function(assert) {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         bearings: [[400, 109], [100, 720]],
     }, function(err, route) {}) },
-        'Bearing values need to be numbers in range 0..360');
+        /Bearing values need to be in range 0..360/);
     assert.throws(function() { osrm.route({
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         bearings: 400,
     }, function(err, route) {}) },
-        'Bearing values need to be numbers in range 0..360');
+        /Bearings must be an array of arrays of numbers/);
     assert.throws(function() { osrm.route({
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         bearings: [[100, 100]],
     }, function(err, route) {}) },
-        'Bearings array must have the same length as coordinates array');
+        /Bearings array must have the same length as coordinates array/);
+    assert.throws(function() { osrm.route({
+        coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
+        bearings: [Infinity, Infinity],
+    }, function(err, route) {}) },
+        /Bearing must be an array of \[bearing, range\] or null/);
 });
 
 test('route: routes Berlin with hints', function(assert) {
@@ -278,11 +297,11 @@ test('route: throws on bad hints', function(assert) {
     assert.throws(function() { osrm.route({
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         hints: ['', '']
-    })}, 'Hint cannot be an empty string');
+    }, function(err, route) {})}, /Hint cannot be an empty string/);
     assert.throws(function() { osrm.route({
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         hints: [null]
-    })}, 'Hints array must have the same length as coordinates array');
+    }, function(err, route) {})}, /Hints array must have the same length as coordinates array/);
 });
 
 test('route: routes Berlin with valid radius values', function(assert) {
@@ -320,15 +339,15 @@ test('route: throws on bad radiuses', function(assert) {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         radiuses: 10
     }, function(err, route) {}) },
-        'Radiuses must be an array of non-negative doubles or null');
+        /Radiuses must be an array of non-negative doubles or null/);
     assert.throws(function() { osrm.route({
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         radiuses: ['magic', 'numbers']
     }, function(err, route) {}) },
-        'Radiuses must be an array of non-negative doubles or null');
+        /Radius must be non-negative double or null/);
     assert.throws(function() { osrm.route({
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         radiuses: [10]
     }, function(err, route) {}) },
-        'Radiuses array must have the same length as coordinates array');
+        /Radiuses array must have the same length as coordinates array/);
 });

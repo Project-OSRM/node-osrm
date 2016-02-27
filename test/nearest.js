@@ -28,7 +28,7 @@ test('nearest: can ask for multiple nearest pts', function(assert) {
 });
 
 test('nearest: throws on invalid args', function(assert) {
-    assert.plan(3);
+    assert.plan(6);
     var osrm = new OSRM(berlin_path);
     var options = {};
     assert.throws(function() { osrm.nearest(options); },
@@ -38,4 +38,14 @@ test('nearest: throws on invalid args', function(assert) {
     options.coordinates = [52.4224];
     assert.throws(function() { osrm.nearest(options, function(err, res) {}); },
         /Coordinates must be an array of /);
+    options.coordinates = [[13.333086, 52.4224],[13.333086, 52.5224]];
+    assert.throws(function() { osrm.nearest(options, function(err, res) {}); },
+        /Exactly one coordinate pair must be provided/);
+    options.coordinates = [[13.333086, 52.4224]];
+    options.number = 3.14159;
+    assert.throws(function() { osrm.nearest(options, function(err, res) {}); },
+        /Number must be an integer greater than or equal to 1/);
+    options.number = 0;
+    assert.throws(function() { osrm.nearest(options, function(err, res) {}); },
+        /Number must be an integer greater than or equal to 1/);
 });

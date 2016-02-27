@@ -68,37 +68,38 @@ test('table: throws on invalid arguments', function(assert) {
         /Two arguments required/);
     options.coordinates = null;
     assert.throws(function() { osrm.table(options, function() {}); },
-        'Coordinates must be an array of (lat/long) pairs');
+        /Coordinates must be an array of \(lon\/lat\) pairs/);
     options.coordinates = [[13.393252,52.542648]];
     assert.throws(function() { osrm.table(options, function(err, response) {}) },
         /At least two coordinates must be provided/);
     options.coordinates = [13.393252,52.542648];
     assert.throws(function() { osrm.table(options, function(err, response) {}) },
-        'Coordinates must be an array of (lat/long) pairs');
+        /Coordinates must be an array of \(lon\/lat\) pairs/);
     options.coordinates = [[13.393252],[52.542648]];
     assert.throws(function() { osrm.table(options, function(err, response) {}) },
-        'Coordinates must be an array of (lat/long) pairs');
+        /Coordinates must be an array of \(lon\/lat\) pairs/);
 
     options.coordinates = [[13.393252,52.542648],[13.393252,52.542648]];
     options.sources = true;
     assert.throws(function() { osrm.table(options, function(err, response) {}) },
-        'Sources must be an array of indices (or undefined)');
+        /Sources must be an array of indices \(or undefined\)/);
     options.sources = [0, 4];
     assert.throws(function() { osrm.table(options, function(err, response) {}) },
-        'Source indices must be less than or equal to the number of coordinates');
+        /Source indices must be less than or equal to the number of coordinates/);
     options.sources = [0.3, 1.1];
     assert.throws(function() { osrm.table(options, function(err, response) {}) },
-        'Source must be an integer');
+        /Source must be an integer/);
 
     options.destinations = true;
+    delete options.sources;
     assert.throws(function() { osrm.table(options, function(err, response) {}) },
-        'Destinations must be an array of indices (or undefined)');
+        /Destinations must be an array of indices \(or undefined\)/);
     options.destinations = [0, 4];
     assert.throws(function() { osrm.table(options, function(err, response) {}) },
-        'Destination indices must be less than or equal to the number of coordinates');
+        /Destination indices must be less than or equal to the number of coordinates/);
     options.destinations = [0.3, 1.1];
     assert.throws(function() { osrm.table(options, function(err, response) {}) },
-        'Destination must be an integer');
+        /Destination must be an integer/);
 
     // does not throw: the following two have been changed in OSRM v5
     options.sources = [0, 1];
@@ -116,4 +117,3 @@ test('table: throws on invalid arguments', function(assert) {
     assert.throws(function() { osrm.table(null, function() {}); },
         /First arg must be an object/);
 });
-
