@@ -53,8 +53,8 @@ test('constructor: throws if given a non-string/obj argument', function(assert) 
 });
 
 require('./route.js');
-require('./trip.js');
+// require('./trip.js');
 require('./match.js');
-require('./table.js');
+// require('./table.js');
 require('./tile.js');
 require('./nearest.js');

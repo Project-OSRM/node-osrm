@@ -717,10 +717,10 @@ void Engine::Initialize(v8::Handle<v8::Object> target)
 
     SetPrototypeMethod(function_template, "route", route);
     SetPrototypeMethod(function_template, "nearest", nearest);
-    SetPrototypeMethod(function_template, "table", table);
+    // SetPrototypeMethod(function_template, "table", table);
     SetPrototypeMethod(function_template, "tile", tile);
     SetPrototypeMethod(function_template, "match", match);
-    SetPrototypeMethod(function_template, "trip", trip);
+    // SetPrototypeMethod(function_template, "trip", trip);
 
     constructor.Reset(function_template->GetFunction());
     Nan::Set(target, Nan::New("OSRM").ToLocalChecked(), function_template->GetFunction());
@@ -920,9 +920,7 @@ void Engine::ParseResult(const osrm::engine::Status result_status_code, osrm::js
     const auto result_code = static_cast<int>(result_status_code);
 
     // 4xx : Invalid request
-    // 207 : No route found
-    // 208 : No edge found
-    if (result_code / 100 == 4 || result_code == 207 || result_code == 208)
+    if (result_code / 100 == 4)
     {
         if (message_iter != end_iter)
         {
