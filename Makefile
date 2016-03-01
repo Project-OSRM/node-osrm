@@ -1,50 +1,51 @@
-#http://www.gnu.org/prep/standards/html_node/Standard-Targets.html#Standard-Targets
-TOOL_ROOT?=$(shell pwd)/lib/binding
-OSRM_DATASTORE:=$(TOOL_ROOT)/osrm-datastore
-export TOOL_ROOT
-export OSRM_DATASTORE
+# http://www.gnu.org/prep/standards/html_node/Standard-Targets.html#Standard-Targets
 
 all: build
 
 pkgconfig:
 	@if [[ `which pkg-config` ]]; then echo "Success: Found pkg-config"; else "echo you need pkg-config installed" && exit 1; fi;
 
-./node_modules/node-pre-gyp:
-	npm install node-pre-gyp
+./osrm-settings.env:
+	./bootstrap.sh
 
-./node_modules: ./node_modules/node-pre-gyp
-	source ./bootstrap.sh && npm install `node -e "console.log(Object.keys(require('./package.json').dependencies).join(' '))"` \
+./node_modules/nan:
+	npm install `node -e "console.log(Object.keys(require('./package.json').dependencies).join(' '))"` \
 	`node -e "console.log(Object.keys(require('./package.json').devDependencies).join(' '))"` --clang=1
 
-./build: pkgconfig ./node_modules
-	source ./bootstrap.sh && ./node_modules/.bin/node-pre-gyp configure build --loglevel=error --clang=1
+./node_modules: ./node_modules/nan
+	npm install node-pre-gyp
 
-debug: pkgconfig ./node_modules
-	export TARGET=Debug && source ./bootstrap.sh && ./node_modules/.bin/node-pre-gyp configure build --debug --clang=1
+./build: ./osrm-settings.env pkgconfig ./node_modules
+	source ./osrm-settings.env && ./node_modules/.bin/node-pre-gyp configure build --loglevel=error --clang=1
 
-coverage: pkgconfig ./node_modules
-	source ./bootstrap.sh && ./node_modules/.bin/node-pre-gyp configure build --debug --clang=1 --coverage=true
+debug: pkgconfig ./node_modules ./osrm-settings.env
+	export TARGET=Debug && ./bootstrap.sh && source ./osrm-settings.env && ./node_modules/.bin/node-pre-gyp configure build --debug --clang=1
 
-verbose: pkgconfig ./node_modules
-	source ./bootstrap.sh && ./node_modules/.bin/node-pre-gyp configure build --loglevel=verbose --clang=1
+coverage: pkgconfig ./node_modules ./osrm-settings.env
+	source ./osrm-settings.env && ./node_modules/.bin/node-pre-gyp configure build --debug --clang=1 --coverage=true
+
+verbose: pkgconfig ./node_modules ./osrm-settings.env
+	source ./osrm-settings.env && ./node_modules/.bin/node-pre-gyp configure build --loglevel=verbose --clang=1
 
 clean:
-	@rm -rf ./build
+	(source ./osrm-settings.env && cd test/data/ && $(MAKE) clean)
+	rm -rf ./build
 	rm -rf ./lib/binding/*
 	rm -rf ./node_modules/
 	rm -f ./*tgz
 	rm -rf ./mason_packages
 	rm -rf ./osrm-backend-*
 	rm -rf ./deps
+	rm -f ./osrm-settings.env
 
 grind:
 	valgrind --leak-check=full node node_modules/.bin/_mocha
 
-shm: ./test/data/Makefile
-	$(MAKE) -C ./test/data
-	$(OSRM_DATASTORE) ./test/data/berlin-latest.osrm
+shm: ./osrm-settings.env ./test/data/Makefile
+	source ./osrm-settings.env && $(MAKE) -C ./test/data
+	source ./osrm-settings.env && osrm-datastore ./test/data/berlin-latest.osrm
 
-test: shm
+test: ./osrm-settings.env shm
 	npm test
 
 .PHONY: test clean build shm

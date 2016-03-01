@@ -125,9 +125,12 @@ osrm.route(query, function (err, result) {
 
 You can build from source by using [mason](https://github.com/mapbox/mason).
 Just go to your node-osrm folder and run:
+
 ```
-. ./bootstrap.sh
+./bootstrap.sh
+source ./osrm-settings.env
 ```
+
 This will download and build the current version of osrm-backend and set all needed variables.
 After having run `bootstrap.sh` successfully, run:
 ```

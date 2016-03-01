@@ -7,14 +7,30 @@ function dep() {
     ./.mason/mason link $1 $2
 }
 
-CURRENT_DIR=$(pwd)
-
 # default to clang
-CXX=${CXX:-clang++}
-TARGET=${TARGET:-Release}
-OSRM_RELEASE=${OSRM_RELEASE:-"develop"}
-OSRM_REPO=${OSRM_REPO:-"https://github.com/Project-OSRM/osrm-backend.git"}
-OSRM_DIR=deps/osrm-backend-${TARGET}
+export CXX=${CXX:-clang++}
+export TARGET=${TARGET:-Release}
+export OSRM_RELEASE=${OSRM_RELEASE:-"develop"}
+export TOOL_ROOT=${TOOL_ROOT:-$(pwd)/lib/binding}
+export OSRM_REPO=${OSRM_REPO:-"https://github.com/Project-OSRM/osrm-backend.git"}
+export OSRM_DIR=$(pwd)/deps/osrm-backend-${TARGET}
+
+echo
+echo "*******************"
+echo -e "OSRM_RELEASE set to:   \033[1m\033[36m ${OSRM_RELEASE}\033[0m"
+echo -e "TARGET set to:         \033[1m\033[36m ${TARGET}\033[0m"
+echo -e "TOOL_ROOT set to:      \033[1m\033[36m ${TOOL_ROOT}\033[0m"
+echo -e "OSRM_DIR set to:       \033[1m\033[36m ${OSRM_DIR}\033[0m"
+echo "*******************"
+echo
+echo
+
+if [[ `which pkg-config` ]]; then
+    echo "Success: Found pkg-config";
+else
+    echo "echo you need pkg-config installed";
+    exit 1;
+fi;
 
 function all_deps() {
     dep cmake 3.2.2 &
@@ -38,24 +54,24 @@ function all_deps() {
 }
 
 function move_tool() {
-    cp ${MASON_HOME}/bin/$1 "${TARGET_DIR}/"
+    cp ${MASON_HOME}/bin/$1 "${TOOL_ROOT}/"
 }
 
 function copy_tbb() {
     if [[ `uname -s` == 'Darwin' ]]; then
-        cp ${MASON_HOME}/lib/libtbb.dylib ${TARGET_DIR}/
-        cp ${MASON_HOME}/lib/libtbbmalloc.dylib ${TARGET_DIR}/
+        cp ${MASON_HOME}/lib/libtbb.dylib ${TOOL_ROOT}/
+        cp ${MASON_HOME}/lib/libtbbmalloc.dylib ${TOOL_ROOT}/
     else
-        cp ${MASON_HOME}/lib/libtbb.so.2 ${TARGET_DIR}/
-        cp ${MASON_HOME}/lib/libtbbmalloc.so.2 ${TARGET_DIR}/
-        cp ${MASON_HOME}/lib/libtbbmalloc_proxy.so.2 ${TARGET_DIR}/
+        cp ${MASON_HOME}/lib/libtbb.so.2 ${TOOL_ROOT}/
+        cp ${MASON_HOME}/lib/libtbbmalloc.so.2 ${TOOL_ROOT}/
+        cp ${MASON_HOME}/lib/libtbbmalloc_proxy.so.2 ${TOOL_ROOT}/
     fi
 }
 
 function localize() {
-    mkdir -p ${TARGET_DIR}
+    mkdir -p ${TOOL_ROOT}
     copy_tbb
-    cp ${MASON_HOME}/bin/lua ${TARGET_DIR}
+    cp ${MASON_HOME}/bin/lua ${TOOL_ROOT}
     move_tool osrm-extract
     move_tool osrm-datastore
     move_tool osrm-prepare
@@ -73,11 +89,7 @@ function build_osrm() {
         git fetch
     fi
 
-
-    echo "Using OSRM ${OSRM_RELEASE}"
-    echo "Using OSRM ${OSRM_REPO}"
     git checkout ${OSRM_RELEASE}
-    git reset --hard origin/${OSRM_RELEASE}
 
     mkdir -p build
     pushd build
@@ -93,6 +105,18 @@ function build_osrm() {
     popd
 
     popd
+}
+
+# NOTE: the `osrm-settings.env` is used by test/run (which is run by `make test`)
+function setup_runtime_settings() {
+    echo "export OSRM_RELEASE=${OSRM_RELEASE}" > osrm-settings.env
+    echo "export TOOL_ROOT=${TOOL_ROOT}" >> osrm-settings.env
+    echo "export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}" >> osrm-settings.env
+    echo "export C_INCLUDE_PATH=${C_INCLUDE_PATH}" >> osrm-settings.env
+    echo "export CPLUS_INCLUDE_PATH=${CPLUS_INCLUDE_PATH}" >> osrm-settings.env
+    echo "export LIBRARY_PATH=${LIBRARY_PATH}" >> osrm-settings.env
+    echo "export PATH=${TOOL_ROOT}:"'$PATH' >> osrm-settings.env
+    echo "generated osrm-settings.env"
 }
 
 function main() {
@@ -126,8 +150,6 @@ function main() {
         npm install node-pre-gyp
     fi
 
-    export TARGET_DIR=$(./node_modules/.bin/node-pre-gyp reveal module_path --silent)
-
     LINK_FLAGS=""
     if [[ $(uname -s) == 'Linux' ]]; then
         LINK_FLAGS="${LINK_FLAGS} "'-Wl,-z,origin -Wl,-rpath=\$ORIGIN'
@@ -137,9 +159,12 @@ function main() {
 
     localize
 
-    #if [[ `uname -s` == 'Darwin' ]]; then otool -L ./lib/binding/* || true; fi
-    #if [[ `uname -s` == 'Linux' ]]; then readelf -d ./lib/binding/* || true; fi
-    echo "success: now run 'npm install --build-from-source'"
+    setup_runtime_settings
+    if [[ ${TARGET} == 'Debug' ]]; then
+        echo "success: now run 'npm install --build-from-source --debug'"
+    else
+        echo "success: now run 'npm install --build-from-source'"
+    fi
 }
 
 main
