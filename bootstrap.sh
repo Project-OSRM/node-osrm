@@ -51,8 +51,8 @@ function all_deps() {
     wait
 }
 
-function move_tool() {
-    cp ${MASON_HOME}/bin/$1 "${TARGET_DIR}/"
+function move_tools() {
+    cp -r ${MASON_HOME}/bin/osrm-* "${TARGET_DIR}/"
 }
 
 function copy_tbb() {
@@ -70,9 +70,7 @@ function localize() {
     mkdir -p ${TARGET_DIR}
     copy_tbb
     cp ${MASON_HOME}/bin/lua ${TARGET_DIR}
-    move_tool osrm-extract
-    move_tool osrm-datastore
-    move_tool osrm-prepare
+    move_tools
 }
 
 function build_osrm() {

@@ -59,12 +59,11 @@ The `node-osrm` module consumes data processed by OSRM core.
 This repository contains a Makefile that does this automatically:
 
 - Downloads an OSM extract
-- Runs `osrm-extract` and `osrm-prepare`
-- Has a OSRM config (ini) file that references the prepared data
+- Runs osrm tools to prepare data
 
 Just run:
 
-    make berlin-latest.osrm.hsgr
+    make test
 
 Once that is done then you can calculate routes in Javascript like:
 
