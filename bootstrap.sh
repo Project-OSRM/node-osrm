@@ -111,9 +111,7 @@ function main() {
     fi
     export MASON_DIR=$(pwd)/.mason
     export MASON_HOME=$(pwd)/mason_packages/.link
-    if [[ ! -d ${MASON_HOME} ]]; then
-        all_deps
-    fi
+    all_deps
     # fix install name of tbb
     if [[ `uname -s` == 'Darwin' ]]; then
         install_name_tool -id @loader_path/libtbb.dylib ${MASON_HOME}/lib/libtbb.dylib
