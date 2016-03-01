@@ -1,18 +1,15 @@
 
+OSRM_RELEASE := $(shell node -e "console.log(require('../../package.json').osrm_release)")
 
 ifeq ($(OSRM_RELEASE),)
-$(error OSRM_RELEASE variable is not set)
-endif
-
-ifeq ($(TOOL_ROOT),)
-$(error TOOL_ROOT variable is not set)
+$(error OSRM_RELEASE variable was not correct set)
 endif
 
 CAR_PROFILE_URL:=https://raw.githubusercontent.com/Project-OSRM/osrm-backend/$(OSRM_RELEASE)/profiles/car.lua
 PROFILE_LIB_URL:=https://raw.githubusercontent.com/Project-OSRM/osrm-backend/$(OSRM_RELEASE)/profiles/lib/access.lua
 BERLIN_URL:=https://s3.amazonaws.com/mapbox/node-osrm/testing/berlin-latest.osm.pbf
-OSRM_EXTRACT:=$(TOOL_ROOT)/osrm-extract
-OSRM_PREPARE:=$(TOOL_ROOT)/osrm-prepare
+OSRM_EXTRACT:=../../lib/binding/osrm-extract
+OSRM_PREPARE:=../../lib/binding/osrm-prepare
 
 all: berlin-latest.osrm.hsgr
 

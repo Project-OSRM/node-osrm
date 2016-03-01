@@ -29,7 +29,7 @@ matrix:
        env: NODE_VERSION="0.10" TARGET=Release
      - os: linux
        compiler: gcc
-       env: NODE_VERSION="0.10" TARGET=Debug NPM_FLAGS="--debug"
+       env: NODE_VERSION="0.10" TARGET=Debug
      # OS X
      - os: osx
        compiler: clang
@@ -40,12 +40,11 @@ matrix:
      # Coverage
      - os: osx
        compiler: clang
-       env: NODE_VERSION="0.10" COVERAGE=true TARGET=Debug NPM_FLAGS="--debug"
+       env: NODE_VERSION="0.10" COVERAGE=true TARGET=Debug
 
 env:
   global:
    - JOBS: "3"
-   - OSRM_RELEASE: "develop"
    - secure: KitzGZjoDblX/3heajcvssGz0JnJ/k02dr2tu03ksUV+6MogC3RSQudqyKY57+f8VyZrcllN/UOlJ0Q/3iG38Oz8DljC+7RZxtkVmE1SFBoOezKCdhcvWM12G3uqPs7hhrRxuUgIh0C//YXEkulUrqa2H1Aj2xeen4E3FAqEoy0=
    - secure: WLGmxl6VTVWhXGm6X83GYNYzPNsvTD+9usJOKM5YBLAdG7cnOBQBNiCCUKc9OZMMZVUr3ec2/iigakH5Y8Yc+U6AlWKzlORyqWLuk4nFuoedu62x6ocQkTkuOc7mHiYhKd21xTGMYauaZRS6kugv4xkpGES2UjI2T8cjZ+LN2jU=
 
@@ -68,13 +67,12 @@ before_install:
 - source ./scripts/install_node.sh ${NODE_VERSION}
 
 install:
-- source ./bootstrap.sh
 - if [[ ${COVERAGE} == true ]]; then
     PYTHONUSERBASE=$(pwd)/mason_packages/.link pip install --user cpp-coveralls;
     export LDFLAGS="--coverage";
     export CXXFLAGS="--coverage";
   fi;
-- npm install --build-from-source ${NPM_FLAGS} --clang=1;
+- if [[ ${TARGET} == 'Release' ]]; then make; else make debug; fi
 
 before_script:
 - ulimit -c unlimited -S
