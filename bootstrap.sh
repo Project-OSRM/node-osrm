@@ -10,7 +10,7 @@ CURRENT_DIR=$(pwd)
 # default to clang
 CXX=${CXX:-clang++}
 TARGET=${TARGET:-Release}
-export OSRM_RELEASE=${OSRM_RELEASE:-"advanced_guidance_5_0"}
+export OSRM_RELEASE=${OSRM_RELEASE:-"advanced_guidance_5_0_gcc_fixes"}
 OSRM_REPO=${OSRM_REPO:-"https://github.com/Project-OSRM/osrm-backend.git"}
 OSRM_DIR=deps/osrm-backend-${TARGET}
 
