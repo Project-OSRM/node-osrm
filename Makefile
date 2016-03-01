@@ -16,16 +16,24 @@ pkgconfig:
 	npm install node-pre-gyp
 
 ./build: pkgconfig ./node_modules ./mason_packages
-	export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && ./node_modules/.bin/node-pre-gyp configure build --loglevel=error --clang=1
+	@export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && \
+	  echo "*** Using osrm installed at `pkg-config libosrm --variable=prefix` ***" && \
+	  ./node_modules/.bin/node-pre-gyp configure build --loglevel=error --clang=1
 
 debug: pkgconfig ./node_modules ./mason_packages
-	export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && export TARGET=Debug && ./bootstrap.sh && ./node_modules/.bin/node-pre-gyp configure build --debug --clang=1
+	@export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && \
+	  echo "*** Using osrm installed at `pkg-config libosrm --variable=prefix` ***" && \
+	  export TARGET=Debug && ./bootstrap.sh && ./node_modules/.bin/node-pre-gyp configure build --debug --clang=1
 
 coverage: pkgconfig ./node_modules ./mason_packages
-	export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && ./node_modules/.bin/node-pre-gyp configure build --debug --clang=1 --coverage=true
+	@export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && \
+	  echo "*** Using osrm installed at `pkg-config libosrm --variable=prefix` ***" && \
+	  ./node_modules/.bin/node-pre-gyp configure build --debug --clang=1 --coverage=true
 
 verbose: pkgconfig ./node_modules ./mason_packages
-	export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && ./node_modules/.bin/node-pre-gyp configure build --loglevel=verbose --clang=1
+	@export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && \
+	  echo "*** Using osrm installed at `pkg-config libosrm --variable=prefix` ***" && \
+	  ./node_modules/.bin/node-pre-gyp configure build --loglevel=verbose --clang=1
 
 clean:
 	(cd test/data/ && $(MAKE) clean)
@@ -39,9 +47,12 @@ clean:
 grind:
 	valgrind --leak-check=full node node_modules/.bin/_mocha
 
+# Note: this PATH setting is used to allow the localized tools to be used
+# but your locally installed osrm-backend tool, if on PATH should override
 shm: ./test/data/Makefile
-	@PATH="./lib/binding:${PATH}" && $(MAKE) -C ./test/data
-	@PATH="./lib/binding:${PATH}" && osrm-datastore ./test/data/berlin-latest.osrm
+	@PATH="${PATH}:./lib/binding" && echo "*** Using osrm-datastore from `which osrm-datastore` ***"
+	@PATH="${PATH}:./lib/binding" && $(MAKE) -C ./test/data
+	@PATH="${PATH}:./lib/binding" && osrm-datastore ./test/data/berlin-latest.osrm
 
 test: shm
 	npm test
