@@ -24,7 +24,9 @@ car.lua: lib/access.lua
 	wget $(CAR_PROFILE_URL) -O car.lua
 
 clean:
-	rm berlin-latest.*
+	rm -f ./berlin-latest.*
+	rm -f ./car.lua
+	rm -rf ./lib
 
 berlin-latest.osm.pbf:
 	wget $(BERLIN_URL) -O berlin-latest.osm.pbf
