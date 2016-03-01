@@ -23,29 +23,31 @@ matrix:
      # Linux
      - os: linux
        compiler: gcc
-       env: NODE_VERSION="4" TARGET=Release
+       env: NODE="4" TARGET=Release PUBLISHABLE=true
      - os: linux
        compiler: gcc
-       env: NODE_VERSION="0.10" TARGET=Release
+       env: NODE="0.10" TARGET=Release PUBLISHABLE=true
      - os: linux
        compiler: gcc
-       env: NODE_VERSION="0.10" TARGET=Debug NPM_FLAGS="--debug"
+       env: NODE="0.10" TARGET=Debug PUBLISHABLE=true
      # OS X
      - os: osx
        compiler: clang
-       env: NODE_VERSION="4" TARGET=Release
+       env: NODE="4" TARGET=Release PUBLISHABLE=true
      - os: osx
        compiler: clang
-       env: NODE_VERSION="0.10" TARGET=Release
+       env: NODE="0.10" TARGET=Release PUBLISHABLE=true
+     - os: osx
+       compiler: clang
+       env: NODE="0.10" TARGET=Debug PUBLISHABLE=true
      # Coverage
      - os: osx
        compiler: clang
-       env: NODE_VERSION="0.10" COVERAGE=true TARGET=Debug NPM_FLAGS="--debug"
+       env: NODE="0.10" COVERAGE=true TARGET=Debug PUBLISHABLE=false
 
 env:
   global:
    - JOBS: "3"
-   - OSRM_RELEASE: "develop"
    - secure: KitzGZjoDblX/3heajcvssGz0JnJ/k02dr2tu03ksUV+6MogC3RSQudqyKY57+f8VyZrcllN/UOlJ0Q/3iG38Oz8DljC+7RZxtkVmE1SFBoOezKCdhcvWM12G3uqPs7hhrRxuUgIh0C//YXEkulUrqa2H1Aj2xeen4E3FAqEoy0=
    - secure: WLGmxl6VTVWhXGm6X83GYNYzPNsvTD+9usJOKM5YBLAdG7cnOBQBNiCCUKc9OZMMZVUr3ec2/iigakH5Y8Yc+U6AlWKzlORyqWLuk4nFuoedu62x6ocQkTkuOc7mHiYhKd21xTGMYauaZRS6kugv4xkpGES2UjI2T8cjZ+LN2jU=
 
@@ -62,19 +64,18 @@ before_install:
     sudo sysctl -w kern.sysv.shmall=1048576
     sudo sysctl -w kern.sysv.shmseg=128
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python/site-packages;
-    brew update && brew install md5sha1sum;
+    brew install md5sha1sum;
   fi
 # Mac OS X does not have nvm installed
-- source ./scripts/install_node.sh ${NODE_VERSION}
+- source ./scripts/install_node.sh ${NODE}
 
 install:
-- source ./bootstrap.sh
 - if [[ ${COVERAGE} == true ]]; then
     PYTHONUSERBASE=$(pwd)/mason_packages/.link pip install --user cpp-coveralls;
     export LDFLAGS="--coverage";
     export CXXFLAGS="--coverage";
   fi;
-- npm install --build-from-source ${NPM_FLAGS} --clang=1;
+- if [[ ${TARGET} == 'Release' ]]; then make; else make debug; fi
 
 before_script:
 - ulimit -c unlimited -S
@@ -86,6 +87,7 @@ script:
 - if [[ ${RESULT} != 0 ]]; then exit $RESULT; fi
 - if [[ ${COVERAGE} == true ]]; then
     ./mason_packages/.link/bin/cpp-coveralls --exclude node_modules --exclude mason_packages --exclude tests --build-root build --gcov-options '\-lp' --exclude doc --exclude build/Release/obj/gen;
-  else
+  fi;
+- if [[ ${PUBLISHABLE} == true ]]; then
     ./scripts/publish.sh;
   fi;

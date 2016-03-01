@@ -59,12 +59,11 @@ The `node-osrm` module consumes data processed by OSRM core.
 This repository contains a Makefile that does this automatically:
 
 - Downloads an OSM extract
-- Runs `osrm-extract` and `osrm-prepare`
-- Has a OSRM config (ini) file that references the prepared data
+- Runs osrm tools to prepare data
 
 Just run:
 
-    make berlin-latest.osrm.hsgr
+    make test
 
 Once that is done then you can calculate routes in Javascript like:
 
@@ -125,25 +124,38 @@ osrm.route(query, function (err, result) {
 
 You can build from source by using [mason](https://github.com/mapbox/mason).
 Just go to your node-osrm folder and run:
+
 ```
-. ./bootstrap.sh
+make
 ```
+
 This will download and build the current version of osrm-backend and set all needed variables.
-After having run `bootstrap.sh` successfully, run:
-```
-npm install --build-from-source
-```
 
-If you wish to use another version of osrm-backend, change `bootstrap.sh` and replace the `OSRM-RELEASE` with the commit hash of the version you would like to use:
+Then you can test like
+
 ```
-OSRM_RELEASE=${OSRM_RELEASE:-" ENTER_COMMIT_HASH_HERE "}
+make test
 ```
 
-## Using a local OSRM
+To rebuild node-osrm after any source code changes to `src/node_osrm.cpp` simply type again:
 
-If you do not wish to use mason and build from source completely you will need:
+```
+make
+```
 
- - OSRM >= 0.4.2
+If you wish to have a different version of osrm-backend build on the fly, change the `osrm_release` variable in `package.json` and rebuild:
+
+```
+make clean
+make && make test
+```
+
+## Using an existing local osrm-backend
+
+If you do not wish to build node-osrm against an existing osrm-backend that you have on your system you will need:
+
+ - OSRM develop branch cloned, built from source, and installed
+ - The test data initialized: `make -C test/data` inside the `osrm-backend` directory
 
 See [Project-OSRM wiki](https://github.com/Project-OSRM/osrm-backend/wiki/Building%20OSRM) for details.
 
@@ -158,6 +170,29 @@ Now you can build `node-osrm`:
     git clone https://github.com/Project-OSRM/node-osrm.git
     cd node-osrm
     npm install --build-from-source
+
+To run the tests against your local osrm-backend's data you will need to
+set the `OSRM_DATA_PATH` variable:
+
+    export OSRM_DATA_PATH=/path/to/osrm-backend/test/data
+
+Then you can run `npm test`.
+
+To recap, here is a full example of building against an osrm-backend that is cloned beside node-osrm but installed into a custom location:
+
+```
+export PATH=/opt/osrm/bin:${PATH}
+export PKG_CONFIG_PATH=/opt/osrm/lib/pkgconfig
+pkg-config libosrm --variable=prefix
+# if boost headers are in a custom location give a hint about that
+# here we assume the are in `/opt/boost`
+export CXXFLAGS="-I/opt/boost/include"
+npm install --build-from-source
+# build the osrm-backend test data
+make -C ../osrm-backend/test/data
+export OSRM_DATA_PATH=../osrm-backend/test/data
+npm test
+```
 
 # Developing
 

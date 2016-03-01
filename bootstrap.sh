@@ -7,14 +7,28 @@ function dep() {
     ./.mason/mason link $1 $2
 }
 
-CURRENT_DIR=$(pwd)
+# Set 'osrm_release' to a branch, tag, or gitsha in package.json
+export OSRM_RELEASE=$(node -e "console.log(require('./package.json').osrm_release)")
+export CXX=${CXX:-clang++}
+export BUILD_TYPE=${BUILD_TYPE:-Release}
+export TARGET_DIR=${TARGET_DIR:-$(pwd)/lib/binding}
+export OSRM_REPO=${OSRM_REPO:-"https://github.com/Project-OSRM/osrm-backend.git"}
+export OSRM_DIR=$(pwd)/deps/osrm-backend-${BUILD_TYPE}
 
-# default to clang
-CXX=${CXX:-clang++}
-TARGET=${TARGET:-Release}
-OSRM_RELEASE=${OSRM_RELEASE:-"develop"}
-OSRM_REPO=${OSRM_REPO:-"https://github.com/Project-OSRM/osrm-backend.git"}
-OSRM_DIR=deps/osrm-backend-${TARGET}
+echo
+echo "*******************"
+echo -e "OSRM_RELEASE set to:   \033[1m\033[36m ${OSRM_RELEASE}\033[0m"
+echo -e "BUILD_TYPE set to:     \033[1m\033[36m ${BUILD_TYPE}\033[0m"
+echo "*******************"
+echo
+echo
+
+if [[ `which pkg-config` ]]; then
+    echo "Success: Found pkg-config";
+else
+    echo "echo you need pkg-config installed";
+    exit 1;
+fi;
 
 function all_deps() {
     dep cmake 3.2.2 &
@@ -37,8 +51,8 @@ function all_deps() {
     wait
 }
 
-function move_tool() {
-    cp ${MASON_HOME}/bin/$1 "${TARGET_DIR}/"
+function move_tools() {
+    cp -r ${MASON_HOME}/bin/osrm-* "${TARGET_DIR}/"
 }
 
 function copy_tbb() {
@@ -56,9 +70,7 @@ function localize() {
     mkdir -p ${TARGET_DIR}
     copy_tbb
     cp ${MASON_HOME}/bin/lua ${TARGET_DIR}
-    move_tool osrm-extract
-    move_tool osrm-datastore
-    move_tool osrm-prepare
+    move_tools
 }
 
 function build_osrm() {
@@ -73,21 +85,17 @@ function build_osrm() {
         git fetch
     fi
 
-
-    echo "Using OSRM ${OSRM_RELEASE}"
-    echo "Using OSRM ${OSRM_REPO}"
     git checkout ${OSRM_RELEASE}
-    git reset --hard origin/${OSRM_RELEASE}
 
     mkdir -p build
     pushd build
-    cmake ../ -DCMAKE_INSTALL_PREFIX=${MASON_HOME} \
+    ../../../mason_packages/.link/bin/cmake ../ -DCMAKE_INSTALL_PREFIX=${MASON_HOME} \
       -DCMAKE_CXX_COMPILER="$CXX" \
       -DBoost_NO_SYSTEM_PATHS=ON \
       -DTBB_INSTALL_DIR=${MASON_HOME} \
       -DCMAKE_INCLUDE_PATH=${MASON_HOME}/include \
       -DCMAKE_LIBRARY_PATH=${MASON_HOME}/lib \
-      -DCMAKE_BUILD_TYPE=${TARGET} \
+      -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
       -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}"
     make -j${JOBS} && make install
     popd
@@ -101,15 +109,12 @@ function main() {
     fi
     export MASON_DIR=$(pwd)/.mason
     export MASON_HOME=$(pwd)/mason_packages/.link
-    if [[ ! -d ${MASON_HOME} ]]; then
-        all_deps
-    fi
+    all_deps
     # fix install name of tbb
     if [[ `uname -s` == 'Darwin' ]]; then
         install_name_tool -id @loader_path/libtbb.dylib ${MASON_HOME}/lib/libtbb.dylib
         install_name_tool -id @loader_path/libtbb.dylib ${MASON_HOME}/lib/libtbbmalloc.dylib
     fi
-    export PATH=${MASON_HOME}/bin:$PATH
     export PKG_CONFIG_PATH=${MASON_HOME}/lib/pkgconfig
 
     # environment variables to tell the compiler and linker
@@ -122,12 +127,6 @@ function main() {
     export CPLUS_INCLUDE_PATH="${MASON_HOME}/include"
     export LIBRARY_PATH="${MASON_HOME}/lib"
 
-    if [[ ! -d ./node_modules/node-pre-gyp ]]; then
-        npm install node-pre-gyp
-    fi
-
-    export TARGET_DIR=$(./node_modules/.bin/node-pre-gyp reveal module_path --silent)
-
     LINK_FLAGS=""
     if [[ $(uname -s) == 'Linux' ]]; then
         LINK_FLAGS="${LINK_FLAGS} "'-Wl,-z,origin -Wl,-rpath=\$ORIGIN'
@@ -136,10 +135,6 @@ function main() {
     build_osrm
 
     localize
-
-    #if [[ `uname -s` == 'Darwin' ]]; then otool -L ./lib/binding/* || true; fi
-    #if [[ `uname -s` == 'Linux' ]]; then readelf -d ./lib/binding/* || true; fi
-    echo "success: now run 'npm install --build-from-source'"
 }
 
 main
