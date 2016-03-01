@@ -9,3 +9,5 @@ stxxl.log
 *.sublime-*
 mason_packages
 npm-debug.log
+test/data/car.lua
+test/data/lib/access.lua
