@@ -24,7 +24,7 @@ endif
 debug: ./node_modules ./mason_packages
 	@export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && \
 	  echo "*** Using osrm installed at `pkg-config libosrm --variable=prefix` ***" && \
-	  export TARGET=Debug && ./bootstrap.sh && ./node_modules/.bin/node-pre-gyp configure build --debug --clang=1
+	  export BUILD_TYPE=Debug && ./bootstrap.sh && ./node_modules/.bin/node-pre-gyp configure build --debug --clang=1
 
 verbose: ./node_modules ./mason_packages
 	@export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && \
