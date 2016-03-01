@@ -29,12 +29,12 @@ verbose: pkgconfig ./node_modules
 	source ./bootstrap.sh && ./node_modules/.bin/node-pre-gyp configure build --loglevel=verbose --clang=1
 
 clean:
-	@rm -rf ./build
+	(cd test/data/ && $(MAKE) clean)
+	rm -rf ./build
 	rm -rf ./lib/binding/*
 	rm -rf ./node_modules/
 	rm -f ./*tgz
 	rm -rf ./mason_packages
-	rm -rf ./osrm-backend-*
 	rm -rf ./deps
 
 grind:
