@@ -79,10 +79,8 @@ before_script:
 - ulimit -c unlimited -S
 
 script:
-- source ./osrm-settings.env && make -C ./test/data
-- ./lib/binding/osrm-datastore ./test/data/berlin-latest.osrm
 - RESULT=0
-- npm test || RESULT=$?
+- make test || RESULT=$?
 - for i in $(find ./ -maxdepth 1 -name 'core*' -print); do gdb $(which node) $i -ex "thread apply all bt" -ex "set pagination 0" -batch; done;
 - if [[ ${RESULT} != 0 ]]; then exit $RESULT; fi
 - if [[ ${COVERAGE} == true ]]; then
