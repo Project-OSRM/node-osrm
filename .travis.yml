@@ -23,24 +23,27 @@ matrix:
      # Linux
      - os: linux
        compiler: gcc
-       env: NODE_VERSION="4" TARGET=Release
+       env: NODE="4" TARGET=Release PUBLISHABLE=true
      - os: linux
        compiler: gcc
-       env: NODE_VERSION="0.10" TARGET=Release
+       env: NODE="0.10" TARGET=Release PUBLISHABLE=true
      - os: linux
        compiler: gcc
-       env: NODE_VERSION="0.10" TARGET=Debug
+       env: NODE="0.10" TARGET=Debug PUBLISHABLE=true
      # OS X
      - os: osx
        compiler: clang
-       env: NODE_VERSION="4" TARGET=Release
+       env: NODE="4" TARGET=Release PUBLISHABLE=true
      - os: osx
        compiler: clang
-       env: NODE_VERSION="0.10" TARGET=Release
+       env: NODE="0.10" TARGET=Release PUBLISHABLE=true
+     - os: osx
+       compiler: clang
+       env: NODE="0.10" TARGET=Debug PUBLISHABLE=true
      # Coverage
      - os: osx
        compiler: clang
-       env: NODE_VERSION="0.10" COVERAGE=true TARGET=Debug
+       env: NODE="0.10" COVERAGE=true TARGET=Debug PUBLISHABLE=false
 
 env:
   global:
@@ -64,7 +67,7 @@ before_install:
     brew install md5sha1sum;
   fi
 # Mac OS X does not have nvm installed
-- source ./scripts/install_node.sh ${NODE_VERSION}
+- source ./scripts/install_node.sh ${NODE}
 
 install:
 - if [[ ${COVERAGE} == true ]]; then
@@ -84,6 +87,7 @@ script:
 - if [[ ${RESULT} != 0 ]]; then exit $RESULT; fi
 - if [[ ${COVERAGE} == true ]]; then
     ./mason_packages/.link/bin/cpp-coveralls --exclude node_modules --exclude mason_packages --exclude tests --build-root build --gcov-options '\-lp' --exclude doc --exclude build/Release/obj/gen;
-  else
+  fi;
+- if [[ ${PUBLISHABLE} == true ]]; then
     ./scripts/publish.sh;
   fi;
