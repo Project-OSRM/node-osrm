@@ -1,6 +1,6 @@
 var OSRM = require('../');
 var test = require('tape');
-var berlin_path = "test/data/berlin-latest.osrm";
+var berlin_path = require('./osrm-data-path').data_path;
 
 test('constructor: throws if new keyword is not used', function(assert) {
     assert.plan(1);
