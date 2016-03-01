@@ -1,13 +1,10 @@
 # http://www.gnu.org/prep/standards/html_node/Standard-Targets.html#Standard-Targets
 
-all: build
+all: build/Release/osrm.node
 
 ifeq (, $(shell which pkg-config))
  $(error "No pkg-config found: please ensure you have pkg-config installed")
 endif
-
-./mason_packages:
-	./bootstrap.sh
 
 ./node_modules/nan:
 	npm install `node -e "console.log(Object.keys(require('./package.json').dependencies).join(' '))"` \
@@ -16,17 +13,23 @@ endif
 ./node_modules: ./node_modules/nan
 	npm install node-pre-gyp
 
-./build: ./node_modules ./mason_packages
+./deps/osrm-backend-Release:
+	./bootstrap.sh
+
+./deps/osrm-backend-Debug:
+	export BUILD_TYPE=Debug && ./bootstrap.sh
+
+build/Release/osrm.node: ./node_modules ./deps/osrm-backend-Release
 	@export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && \
 	  echo "*** Using osrm installed at `pkg-config libosrm --variable=prefix` ***" && \
 	  ./node_modules/.bin/node-pre-gyp configure build --loglevel=error --clang=1
 
-debug: ./node_modules ./mason_packages
+debug: ./node_modules ./deps/osrm-backend-Debug
 	@export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && \
 	  echo "*** Using osrm installed at `pkg-config libosrm --variable=prefix` ***" && \
-	  export BUILD_TYPE=Debug && ./bootstrap.sh && ./node_modules/.bin/node-pre-gyp configure build --debug --clang=1
+	  ./node_modules/.bin/node-pre-gyp configure build --debug --clang=1
 
-verbose: ./node_modules ./mason_packages
+verbose: ./node_modules ./deps/osrm-backend-Release
 	@export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && \
 	  echo "*** Using osrm installed at `pkg-config libosrm --variable=prefix` ***" && \
 	  ./node_modules/.bin/node-pre-gyp configure build --loglevel=verbose --clang=1
