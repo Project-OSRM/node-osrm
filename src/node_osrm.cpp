@@ -4,7 +4,6 @@
 #include <nan.h>
 
 // OSRM
-#include <osrm/route_parameters.hpp>
 #include <osrm/json_container.hpp>
 #include <osrm/engine_config.hpp>
 #include <osrm/osrm.hpp>
@@ -716,9 +715,9 @@ void Engine::Initialize(v8::Handle<v8::Object> target)
 
     SetPrototypeMethod(function_template, "route", route);
     SetPrototypeMethod(function_template, "nearest", nearest);
-    // SetPrototypeMethod(function_template, "table", table);
+    SetPrototypeMethod(function_template, "table", table);
     SetPrototypeMethod(function_template, "match", match);
-    // SetPrototypeMethod(function_template, "trip", trip);
+    SetPrototypeMethod(function_template, "trip", trip);
 
     constructor.Reset(function_template->GetFunction());
     Nan::Set(target, Nan::New("OSRM").ToLocalChecked(), function_template->GetFunction());
