@@ -19,8 +19,6 @@ echo
 echo "*******************"
 echo -e "OSRM_RELEASE set to:   \033[1m\033[36m ${OSRM_RELEASE}\033[0m"
 echo -e "BUILD_TYPE set to:     \033[1m\033[36m ${BUILD_TYPE}\033[0m"
-echo -e "TOOL_ROOT set to:      \033[1m\033[36m ${TOOL_ROOT}\033[0m"
-echo -e "OSRM_DIR set to:       \033[1m\033[36m ${OSRM_DIR}\033[0m"
 echo "*******************"
 echo
 echo
