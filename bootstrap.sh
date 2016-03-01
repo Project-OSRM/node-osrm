@@ -7,18 +7,18 @@ function dep() {
     ./.mason/mason link $1 $2
 }
 
-# default to clang
+# Set 'osrm_release' to a branch, tag, or gitsha in package.json
+export OSRM_RELEASE=$(node -e "console.log(require('./package.json').osrm_release)")
 export CXX=${CXX:-clang++}
-export TARGET=${TARGET:-Release}
-export OSRM_RELEASE=${OSRM_RELEASE:-"develop"}
+export BUILD_TYPE=${BUILD_TYPE:-Release}
 export TOOL_ROOT=${TOOL_ROOT:-$(pwd)/lib/binding}
 export OSRM_REPO=${OSRM_REPO:-"https://github.com/Project-OSRM/osrm-backend.git"}
-export OSRM_DIR=$(pwd)/deps/osrm-backend-${TARGET}
+export OSRM_DIR=$(pwd)/deps/osrm-backend-${BUILD_TYPE}
 
 echo
 echo "*******************"
 echo -e "OSRM_RELEASE set to:   \033[1m\033[36m ${OSRM_RELEASE}\033[0m"
-echo -e "TARGET set to:         \033[1m\033[36m ${TARGET}\033[0m"
+echo -e "BUILD_TYPE set to:     \033[1m\033[36m ${BUILD_TYPE}\033[0m"
 echo -e "TOOL_ROOT set to:      \033[1m\033[36m ${TOOL_ROOT}\033[0m"
 echo -e "OSRM_DIR set to:       \033[1m\033[36m ${OSRM_DIR}\033[0m"
 echo "*******************"
@@ -99,7 +99,7 @@ function build_osrm() {
       -DTBB_INSTALL_DIR=${MASON_HOME} \
       -DCMAKE_INCLUDE_PATH=${MASON_HOME}/include \
       -DCMAKE_LIBRARY_PATH=${MASON_HOME}/lib \
-      -DCMAKE_BUILD_TYPE=${TARGET} \
+      -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
       -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}"
     make -j${JOBS} && make install
     popd
@@ -160,7 +160,7 @@ function main() {
     localize
 
     setup_runtime_settings
-    if [[ ${TARGET} == 'Debug' ]]; then
+    if [[ ${BUILD_TYPE} == 'Debug' ]]; then
         echo "success: now run 'npm install --build-from-source --debug'"
     else
         echo "success: now run 'npm install --build-from-source'"
