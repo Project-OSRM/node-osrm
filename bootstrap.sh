@@ -107,18 +107,6 @@ function build_osrm() {
     popd
 }
 
-# NOTE: the `osrm-settings.env` is used by test/run (which is run by `make test`)
-function setup_runtime_settings() {
-    echo "export OSRM_RELEASE=${OSRM_RELEASE}" > osrm-settings.env
-    echo "export TOOL_ROOT=${TOOL_ROOT}" >> osrm-settings.env
-    echo "export PKG_CONFIG_PATH=${PKG_CONFIG_PATH}" >> osrm-settings.env
-    echo "export C_INCLUDE_PATH=${C_INCLUDE_PATH}" >> osrm-settings.env
-    echo "export CPLUS_INCLUDE_PATH=${CPLUS_INCLUDE_PATH}" >> osrm-settings.env
-    echo "export LIBRARY_PATH=${LIBRARY_PATH}" >> osrm-settings.env
-    echo "export PATH=${TOOL_ROOT}:"'$PATH' >> osrm-settings.env
-    echo "generated osrm-settings.env"
-}
-
 function main() {
     if [[ ! -d ./.mason ]]; then
         git clone --depth 1 https://github.com/mapbox/mason.git ./.mason
@@ -159,7 +147,6 @@ function main() {
 
     localize
 
-    setup_runtime_settings
     if [[ ${BUILD_TYPE} == 'Debug' ]]; then
         echo "success: now run 'npm install --build-from-source --debug'"
     else
