@@ -45,11 +45,6 @@ struct V8Renderer : mapbox::util::static_visitor<>
 {
     explicit V8Renderer(v8::Local<v8::Value> &_out) : out(_out) {}
 
-    void operator()(const osrm::json::Buffer &buffer) const
-    {
-        out = Nan::CopyBuffer(buffer.value.data(), buffer.value.size()).ToLocalChecked();
-    }
-
     void operator()(const osrm::json::String &string) const
     {
         out = Nan::New(std::cref(string.value)).ToLocalChecked();
