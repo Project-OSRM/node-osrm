@@ -7,11 +7,13 @@
 #include <osrm/json_container.hpp>
 #include <osrm/engine_config.hpp>
 #include <osrm/osrm.hpp>
-#include <osrm/engine/api/route_parameters.hpp>
-#include <osrm/engine/api/table_parameters.hpp>
-#include <osrm/engine/api/nearest_parameters.hpp>
-#include <osrm/engine/api/match_parameters.hpp>
-#include <osrm/engine/api/trip_parameters.hpp>
+#include <osrm/route_parameters.hpp>
+#include <osrm/table_parameters.hpp>
+#include <osrm/nearest_parameters.hpp>
+#include <osrm/match_parameters.hpp>
+#include <osrm/trip_parameters.hpp>
+#include <osrm/tile_parameters.hpp>
+#include <osrm/bearing.hpp>
 
 #include <boost/optional.hpp>
 #include <boost/assert.hpp>
@@ -31,12 +33,12 @@ namespace node_osrm
 
 using osrm_ptr = std::unique_ptr<osrm::OSRM>;
 using engine_config_ptr = std::unique_ptr<osrm::EngineConfig>;
-using base_parameters_ptr = std::unique_ptr<osrm::engine::api::BaseParameters>;
-using route_parameters_ptr = std::unique_ptr<osrm::engine::api::RouteParameters>;
-using trip_parameters_ptr = std::unique_ptr<osrm::engine::api::TripParameters>;
-using match_parameters_ptr = std::unique_ptr<osrm::engine::api::MatchParameters>;
-using nearest_parameters_ptr = std::unique_ptr<osrm::engine::api::NearestParameters>;
-using table_parameters_ptr = std::unique_ptr<osrm::engine::api::TableParameters>;
+using route_parameters_ptr = std::unique_ptr<osrm::RouteParameters>;
+using trip_parameters_ptr = std::unique_ptr<osrm::TripParameters>;
+using tile_parameters_ptr = std::unique_ptr<osrm::TileParameters>;
+using match_parameters_ptr = std::unique_ptr<osrm::MatchParameters>;
+using nearest_parameters_ptr = std::unique_ptr<osrm::NearestParameters>;
+using table_parameters_ptr = std::unique_ptr<osrm::TableParameters>;
 namespace
 {
 template <class T, class... Types> std::unique_ptr<T> make_unique(Types &&... Args)
@@ -151,7 +153,7 @@ parseCoordinateArray(const v8::Local<v8::Array> &coordinates_array)
         if (lon > 180 || lon < -180 || lat > 90 || lat < -90)
         {
             Nan::ThrowError("Lng/Lat coordinates must be within world bounds "
-                "(-180 < lng < 180, -90 < lat < 90)");
+                            "(-180 < lng < 180, -90 < lat < 90)");
             return resulting_coordinates;
         }
 
@@ -165,7 +167,9 @@ parseCoordinateArray(const v8::Local<v8::Array> &coordinates_array)
 
 // Parses all the non-service specific parameters
 template <typename ParamType>
-bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, ParamType &params, bool requires_multiple_coordinates)
+bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args,
+                          ParamType &params,
+                          bool requires_multiple_coordinates)
 {
     Nan::HandleScope scope;
 
@@ -260,14 +264,14 @@ bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, Para
                     short bearing_first = static_cast<short>(bearing_pair->Get(0)->NumberValue());
                     short bearing_second = static_cast<short>(bearing_pair->Get(1)->NumberValue());
 
-                    if (bearing_first < 0 || bearing_first >= 360 ||
-                        bearing_second < 0 || bearing_second >= 360)
+                    if (bearing_first < 0 || bearing_first >= 360 || bearing_second < 0 ||
+                        bearing_second >= 360)
                     {
                         Nan::ThrowError("Bearing values need to be in range 0..360");
                         return false;
                     }
 
-                    params->bearings.push_back(osrm::engine::api::BaseParameters::Bearing {bearing_first, bearing_second});
+                    params->bearings.push_back(osrm::Bearing{bearing_first, bearing_second});
                 }
                 else
                 {
@@ -312,7 +316,8 @@ bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, Para
                     return false;
                 }
 
-                params->hints.push_back(osrm::engine::Hint::FromBase64(*v8::String::Utf8Value(hint)));
+                params->hints.push_back(
+                    osrm::engine::Hint::FromBase64(*v8::String::Utf8Value(hint)));
             }
             else if (hint->IsNull())
             {
@@ -388,11 +393,11 @@ bool parseCommonParameters(const v8::Local<v8::Object> obj, ParamType &params)
 
         if (geometries_str == "polyline")
         {
-            params->geometries = osrm::engine::api::RouteParameters::GeometriesType::Polyline;
+            params->geometries = osrm::RouteParameters::GeometriesType::Polyline;
         }
         else if (geometries_str == "geojson")
         {
-            params->geometries = osrm::engine::api::RouteParameters::GeometriesType::GeoJSON;
+            params->geometries = osrm::RouteParameters::GeometriesType::GeoJSON;
         }
         else
         {
@@ -415,15 +420,15 @@ bool parseCommonParameters(const v8::Local<v8::Object> obj, ParamType &params)
 
         if (overview_str == "simplified")
         {
-            params->overview = osrm::engine::api::RouteParameters::OverviewType::Simplified;
+            params->overview = osrm::RouteParameters::OverviewType::Simplified;
         }
         else if (overview_str == "full")
         {
-            params->overview = osrm::engine::api::RouteParameters::OverviewType::Full;
+            params->overview = osrm::RouteParameters::OverviewType::Full;
         }
         else if (overview_str == "false")
         {
-            params->overview = osrm::engine::api::RouteParameters::OverviewType::False;
+            params->overview = osrm::RouteParameters::OverviewType::False;
         }
         else
         {
@@ -435,11 +440,13 @@ bool parseCommonParameters(const v8::Local<v8::Object> obj, ParamType &params)
     return true;
 }
 
-route_parameters_ptr argumentsToRouteParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, bool requires_multiple_coordinates)
+route_parameters_ptr argumentsToRouteParameter(const Nan::FunctionCallbackInfo<v8::Value> &args,
+                                               bool requires_multiple_coordinates)
 {
-    route_parameters_ptr params = make_unique<osrm::engine::api::RouteParameters>();
+    route_parameters_ptr params = make_unique<osrm::RouteParameters>();
     bool has_base_params = argumentsToParameter(args, params, requires_multiple_coordinates);
-    if (!has_base_params) return route_parameters_ptr();
+    if (!has_base_params)
+        return route_parameters_ptr();
 
     v8::Local<v8::Object> obj = Nan::To<v8::Object>(args[0]).ToLocalChecked();
 
@@ -483,11 +490,64 @@ route_parameters_ptr argumentsToRouteParameter(const Nan::FunctionCallbackInfo<v
     return params;
 }
 
-nearest_parameters_ptr argumentsToNearestParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, bool requires_multiple_coordinates)
+tile_parameters_ptr argumentsToTileParameters(const Nan::FunctionCallbackInfo<v8::Value> &args)
 {
-    nearest_parameters_ptr params = make_unique<osrm::engine::api::NearestParameters>();
+    tile_parameters_ptr params = make_unique<osrm::TileParameters>();
+
+    if (args.Length() < 2)
+    {
+        Nan::ThrowTypeError("Coordinate object and callback required");
+        return tile_parameters_ptr();
+    }
+
+    if (!args[0]->IsArray())
+    {
+        Nan::ThrowTypeError("Parameter must be an array [x, y, z]");
+        return tile_parameters_ptr();
+    }
+
+    v8::Local<v8::Array> array = v8::Local<v8::Array>::Cast(args[0]);
+
+    if (array->Length() != 3)
+    {
+        Nan::ThrowTypeError("Parameter must be an array [x, y, z]");
+        return tile_parameters_ptr();
+    }
+
+    v8::Local<v8::Value> x = array->Get(0);
+    v8::Local<v8::Value> y = array->Get(1);
+    v8::Local<v8::Value> z = array->Get(2);
+
+    if (!x->IsUint32() && !x->IsUndefined())
+    {
+        Nan::ThrowError("Tile x coordinate must be unsigned interger");
+        return tile_parameters_ptr();
+    }
+    if (!y->IsUint32() && !y->IsUndefined())
+    {
+        Nan::ThrowError("Tile y coordinate must be unsigned interger");
+        return tile_parameters_ptr();
+    }
+    if (!z->IsUint32() && !z->IsUndefined())
+    {
+        Nan::ThrowError("Tile z coordinate must be unsigned interger");
+        return tile_parameters_ptr();
+    }
+
+    params->x = x->Uint32Value();
+    params->y = y->Uint32Value();
+    params->z = z->Uint32Value();
+
+    return params;
+}
+
+nearest_parameters_ptr argumentsToNearestParameter(const Nan::FunctionCallbackInfo<v8::Value> &args,
+                                                   bool requires_multiple_coordinates)
+{
+    nearest_parameters_ptr params = make_unique<osrm::NearestParameters>();
     bool has_base_params = argumentsToParameter(args, params, requires_multiple_coordinates);
-    if (!has_base_params) return nearest_parameters_ptr();
+    if (!has_base_params)
+        return nearest_parameters_ptr();
 
     v8::Local<v8::Object> obj = Nan::To<v8::Object>(args[0]).ToLocalChecked();
 
@@ -517,11 +577,13 @@ nearest_parameters_ptr argumentsToNearestParameter(const Nan::FunctionCallbackIn
     return params;
 }
 
-table_parameters_ptr argumentsToTableParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, bool requires_multiple_coordinates)
+table_parameters_ptr argumentsToTableParameter(const Nan::FunctionCallbackInfo<v8::Value> &args,
+                                               bool requires_multiple_coordinates)
 {
-    table_parameters_ptr params = make_unique<osrm::engine::api::TableParameters>();
+    table_parameters_ptr params = make_unique<osrm::TableParameters>();
     bool has_base_params = argumentsToParameter(args, params, requires_multiple_coordinates);
-    if (!has_base_params) return table_parameters_ptr();
+    if (!has_base_params)
+        return table_parameters_ptr();
 
     v8::Local<v8::Object> obj = Nan::To<v8::Object>(args[0]).ToLocalChecked();
 
@@ -544,7 +606,8 @@ table_parameters_ptr argumentsToTableParameter(const Nan::FunctionCallbackInfo<v
                 size_t source_value = static_cast<size_t>(source->NumberValue());
                 if (source_value > params->coordinates.size())
                 {
-                    Nan::ThrowError("Source indices must be less than or equal to the number of coordinates");
+                    Nan::ThrowError(
+                        "Source indices must be less than or equal to the number of coordinates");
                     return table_parameters_ptr();
                 }
 
@@ -577,7 +640,8 @@ table_parameters_ptr argumentsToTableParameter(const Nan::FunctionCallbackInfo<v
                 size_t destination_value = static_cast<size_t>(destination->NumberValue());
                 if (destination_value > params->coordinates.size())
                 {
-                    Nan::ThrowError("Destination indices must be less than or equal to the number of coordinates");
+                    Nan::ThrowError("Destination indices must be less than or equal to the number "
+                                    "of coordinates");
                     return table_parameters_ptr();
                 }
 
@@ -594,11 +658,13 @@ table_parameters_ptr argumentsToTableParameter(const Nan::FunctionCallbackInfo<v
     return params;
 }
 
-trip_parameters_ptr argumentsToTripParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, bool requires_multiple_coordinates)
+trip_parameters_ptr argumentsToTripParameter(const Nan::FunctionCallbackInfo<v8::Value> &args,
+                                             bool requires_multiple_coordinates)
 {
-    trip_parameters_ptr params = make_unique<osrm::engine::api::TripParameters>();
+    trip_parameters_ptr params = make_unique<osrm::TripParameters>();
     bool has_base_params = argumentsToParameter(args, params, requires_multiple_coordinates);
-    if (!has_base_params) return trip_parameters_ptr();
+    if (!has_base_params)
+        return trip_parameters_ptr();
 
     v8::Local<v8::Object> obj = Nan::To<v8::Object>(args[0]).ToLocalChecked();
 
@@ -611,11 +677,13 @@ trip_parameters_ptr argumentsToTripParameter(const Nan::FunctionCallbackInfo<v8:
     return params;
 }
 
-match_parameters_ptr argumentsToMatchParameter(const Nan::FunctionCallbackInfo<v8::Value> &args, bool requires_multiple_coordinates)
+match_parameters_ptr argumentsToMatchParameter(const Nan::FunctionCallbackInfo<v8::Value> &args,
+                                               bool requires_multiple_coordinates)
 {
-    match_parameters_ptr params = make_unique<osrm::engine::api::MatchParameters>();
+    match_parameters_ptr params = make_unique<osrm::MatchParameters>();
     bool has_base_params = argumentsToParameter(args, params, requires_multiple_coordinates);
-    if (!has_base_params) return match_parameters_ptr();
+    if (!has_base_params)
+        return match_parameters_ptr();
 
     v8::Local<v8::Object> obj = Nan::To<v8::Object>(args[0]).ToLocalChecked();
 
@@ -659,11 +727,11 @@ match_parameters_ptr argumentsToMatchParameter(const Nan::FunctionCallbackInfo<v
     return params;
 }
 
-struct RunQueryBaton;
 struct RouteQueryBaton;
 struct NearestQueryBaton;
 struct TableQueryBaton;
 struct TripQueryBaton;
+struct TileQueryBaton;
 struct MatchQueryBaton;
 
 class Engine final : public Nan::ObjectWrap
@@ -679,27 +747,36 @@ class Engine final : public Nan::ObjectWrap
     static void match(const Nan::FunctionCallbackInfo<v8::Value> &args);
     static void trip(const Nan::FunctionCallbackInfo<v8::Value> &args);
 
-    static void ParseResult(const osrm::engine::Status result_status_code, osrm::json::Object result);
+    static void ParseResult(const osrm::engine::Status result_status_code,
+                            osrm::json::Object result);
 
     template <typename BatonType, typename ParamType, typename AsyncType, typename AfterType>
-    static void Run(const Nan::FunctionCallbackInfo<v8::Value> &args, ParamType params, AsyncType async_fn, AfterType after_fn);
+    static void Run(const Nan::FunctionCallbackInfo<v8::Value> &args,
+                    ParamType params,
+                    AsyncType async_fn,
+                    AfterType after_fn);
 
     static void AsyncRunRoute(uv_work_t *);
     static void AsyncRunNearest(uv_work_t *);
     static void AsyncRunTable(uv_work_t *);
     static void AsyncRunMatch(uv_work_t *);
     static void AsyncRunTrip(uv_work_t *);
+    static void AsyncRunTile(uv_work_t *);
 
-    static void AfterRun(RunQueryBaton *closure);
+    template <typename BatonType> static void AfterRun(BatonType *closure);
 
     static void AfterRunRoute(uv_work_t *);
     static void AfterRunNearest(uv_work_t *);
     static void AfterRunTable(uv_work_t *);
     static void AfterRunMatch(uv_work_t *);
     static void AfterRunTrip(uv_work_t *);
+    static void AfterRunTile(uv_work_t *);
 
   private:
-    Engine(osrm::EngineConfig &engine_config) : Nan::ObjectWrap(), this_(make_unique<osrm::OSRM>(engine_config)) {}
+    Engine(osrm::EngineConfig &engine_config)
+        : Nan::ObjectWrap(), this_(make_unique<osrm::OSRM>(engine_config))
+    {
+    }
 
     static Nan::Persistent<v8::Function> constructor;
     osrm_ptr this_;
@@ -752,36 +829,41 @@ void Engine::New(const Nan::FunctionCallbackInfo<v8::Value> &args)
     }
 }
 
-struct RunQueryBaton
+template <typename ResultT> struct RunQueryBaton
 {
     uv_work_t request;
     Engine *machine;
-    osrm::json::Object result;
+    ResultT result;
     Nan::Persistent<v8::Function> cb;
     std::string error;
 };
 
-struct RouteQueryBaton: public RunQueryBaton
+struct RouteQueryBaton : public RunQueryBaton<osrm::json::Object>
 {
     route_parameters_ptr params;
 };
 
-struct TableQueryBaton: public RunQueryBaton
+struct TableQueryBaton : public RunQueryBaton<osrm::json::Object>
 {
     table_parameters_ptr params;
 };
 
-struct NearestQueryBaton: public RunQueryBaton
+struct NearestQueryBaton : public RunQueryBaton<osrm::json::Object>
 {
     nearest_parameters_ptr params;
 };
 
-struct TripQueryBaton: public RunQueryBaton
+struct TripQueryBaton : public RunQueryBaton<osrm::json::Object>
 {
     trip_parameters_ptr params;
 };
 
-struct MatchQueryBaton: public RunQueryBaton
+struct TileQueryBaton : public RunQueryBaton<std::string>
+{
+    tile_parameters_ptr params;
+};
+
+struct MatchQueryBaton : public RunQueryBaton<osrm::json::Object>
 {
     match_parameters_ptr params;
 };
@@ -849,47 +931,20 @@ void Engine::nearest(const Nan::FunctionCallbackInfo<v8::Value> &args)
 void Engine::tile(const Nan::FunctionCallbackInfo<v8::Value> &args)
 {
     Nan::HandleScope scope;
-    if (args.Length() < 2)
-    {
-        Nan::ThrowTypeError("two arguments required");
+    tile_parameters_ptr params = argumentsToTileParameters(args);
+    if (!params)
         return;
-    }
 
-    v8::Local<v8::Object> obj = Nan::To<v8::Object>(args[0]).ToLocalChecked();
+    BOOST_ASSERT(params->IsValid());
 
-    v8::Local<v8::Value> x = obj->Get(Nan::New("x").ToLocalChecked());
-    if (!x->IsNumber() && !x->IsUndefined())
-    {
-        Nan::ThrowError("tile x coordinate must be supplied");
-        return;
-    }
-
-    v8::Local<v8::Value> y = obj->Get(Nan::New("y").ToLocalChecked());
-    if (!y->IsNumber() && !y->IsUndefined())
-    {
-        Nan::ThrowError("tile y coordinate must be supplied");
-        return;
-    }
-
-    v8::Local<v8::Value> z = obj->Get(Nan::New("z").ToLocalChecked());
-    if (!z->IsNumber() && !z->IsUndefined())
-    {
-        Nan::ThrowError("tile z coordinate must be supplied"); 
-        return;
-    }
-
-
-    route_parameters_ptr params = make_unique<osrm::RouteParameters>();
-
-    params->service = "tile";
-    params->z = z->NumberValue();
-    params->x = x->NumberValue();
-    params->y = y->NumberValue();
-    Run(args, std::move(params));
+    Run<TileQueryBaton>(args, std::move(params), AsyncRunTile, AfterRunTile);
 }
 
 template <typename BatonType, typename ParamType, typename AsyncType, typename AfterType>
-void Engine::Run(const Nan::FunctionCallbackInfo<v8::Value> &args, ParamType params, AsyncType asnyc_fn, AfterType after_fn)
+void Engine::Run(const Nan::FunctionCallbackInfo<v8::Value> &args,
+                 ParamType params,
+                 AsyncType asnyc_fn,
+                 AfterType after_fn)
 {
     Nan::HandleScope scope;
     v8::Local<v8::Value> callback = args[args.Length() - 1];
@@ -912,20 +967,17 @@ void Engine::Run(const Nan::FunctionCallbackInfo<v8::Value> &args, ParamType par
     return;
 }
 
-void Engine::ParseResult(const osrm::engine::Status result_status_code, osrm::json::Object result)
+void Engine::ParseResult(const osrm::Status result_status_code, osrm::json::Object result)
 {
     const auto message_iter = result.values.find("status_message");
     const auto end_iter = result.values.end();
-    const auto result_code = static_cast<int>(result_status_code);
 
-    // 4xx : Invalid request
-    if (result_code / 100 == 4)
+    if (result_status_code == osrm::Status::Error)
     {
         if (message_iter != end_iter)
         {
-            throw std::logic_error(result.values["status_message"]
-                                       .get<osrm::json::String>()
-                                       .value.c_str());
+            throw std::logic_error(
+                result.values["status_message"].get<osrm::json::String>().value.c_str());
         }
         else
         {
@@ -943,8 +995,7 @@ void Engine::AsyncRunRoute(uv_work_t *req)
     RouteQueryBaton *closure = static_cast<RouteQueryBaton *>(req->data);
     try
     {
-        const auto result_code =
-            closure->machine->this_->Route(*closure->params, closure->result);
+        const auto result_code = closure->machine->this_->Route(*closure->params, closure->result);
 
         ParseResult(result_code, closure->result);
     }
@@ -975,8 +1026,7 @@ void Engine::AsyncRunTable(uv_work_t *req)
     TableQueryBaton *closure = static_cast<TableQueryBaton *>(req->data);
     try
     {
-        const auto result_code =
-            closure->machine->this_->Table(*closure->params, closure->result);
+        const auto result_code = closure->machine->this_->Table(*closure->params, closure->result);
 
         ParseResult(result_code, closure->result);
     }
@@ -991,10 +1041,26 @@ void Engine::AsyncRunTrip(uv_work_t *req)
     TripQueryBaton *closure = static_cast<TripQueryBaton *>(req->data);
     try
     {
-        const auto result_code =
-            closure->machine->this_->Trip(*closure->params, closure->result);
+        const auto result_code = closure->machine->this_->Trip(*closure->params, closure->result);
 
         ParseResult(result_code, closure->result);
+    }
+    catch (std::exception const &ex)
+    {
+        closure->error = ex.what();
+    }
+}
+
+void Engine::AsyncRunTile(uv_work_t *req)
+{
+    TileQueryBaton *closure = static_cast<TileQueryBaton *>(req->data);
+    try
+    {
+        const auto result_code = closure->machine->this_->Tile(*closure->params, closure->result);
+        if (result_code == osrm::Status::Error)
+        {
+            throw std::logic_error("invalid request");
+        }
     }
     catch (std::exception const &ex)
     {
@@ -1007,8 +1073,7 @@ void Engine::AsyncRunMatch(uv_work_t *req)
     MatchQueryBaton *closure = static_cast<MatchQueryBaton *>(req->data);
     try
     {
-        const auto result_code =
-            closure->machine->this_->Match(*closure->params, closure->result);
+        const auto result_code = closure->machine->this_->Match(*closure->params, closure->result);
 
         ParseResult(result_code, closure->result);
     }
@@ -1018,7 +1083,21 @@ void Engine::AsyncRunMatch(uv_work_t *req)
     }
 }
 
-void Engine::AfterRun(RunQueryBaton *closure)
+template <typename ResultT> v8::Local<v8::Value> render(const ResultT& result);
+
+template <> v8::Local<v8::Value> render(const std::string& result)
+{
+    return Nan::CopyBuffer(result.data(), result.size()).ToLocalChecked();
+}
+
+template <> v8::Local<v8::Value> render(const osrm::json::Object& result)
+{
+    v8::Local<v8::Value> value;
+    renderToV8(value, result);
+    return value;
+}
+
+template <typename BatonType> void Engine::AfterRun(BatonType *closure)
 {
     Nan::TryCatch try_catch;
     if (closure->error.size() > 0)
@@ -1028,8 +1107,7 @@ void Engine::AfterRun(RunQueryBaton *closure)
     }
     else
     {
-        v8::Local<v8::Value> result;
-        renderToV8(result, closure->result);
+        v8::Local<v8::Value> result = render(closure->result);
         v8::Local<v8::Value> argv[2] = {Nan::Null(), result};
         Nan::MakeCallback(Nan::GetCurrentContext()->Global(), Nan::New(closure->cb), 2, argv);
     }
@@ -1067,6 +1145,13 @@ void Engine::AfterRunTrip(uv_work_t *req)
 {
     Nan::HandleScope scope;
     TripQueryBaton *closure = static_cast<TripQueryBaton *>(req->data);
+    AfterRun(closure);
+}
+
+void Engine::AfterRunTile(uv_work_t *req)
+{
+    Nan::HandleScope scope;
+    TileQueryBaton *closure = static_cast<TileQueryBaton *>(req->data);
     AfterRun(closure);
 }
 
