@@ -5,7 +5,7 @@
   "homepage": "http://project-osrm.org",
   "author": "Dane Springmeyer <springmeyer>",
   "version": "4.9.3-advguidance.1",
-  "osrm_release" : "advanced_guidance_5_0",
+  "osrm_release" : "rewrite/new-api",
   "main": "./lib/osrm.js",
   "license": "BSD",
   "bugs": {
