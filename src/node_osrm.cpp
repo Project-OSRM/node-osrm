@@ -969,7 +969,7 @@ void Engine::Run(const Nan::FunctionCallbackInfo<v8::Value> &args,
 
 void Engine::ParseResult(const osrm::Status result_status_code, osrm::json::Object result)
 {
-    const auto message_iter = result.values.find("status_message");
+    const auto message_iter = result.values.find("message");
     const auto end_iter = result.values.end();
 
     if (result_status_code == osrm::Status::Error)
@@ -977,7 +977,7 @@ void Engine::ParseResult(const osrm::Status result_status_code, osrm::json::Obje
         if (message_iter != end_iter)
         {
             throw std::logic_error(
-                result.values["status_message"].get<osrm::json::String>().value.c_str());
+                result.values["message"].get<osrm::json::String>().value.c_str());
         }
         else
         {
@@ -1083,14 +1083,14 @@ void Engine::AsyncRunMatch(uv_work_t *req)
     }
 }
 
-template <typename ResultT> v8::Local<v8::Value> render(const ResultT& result);
+template <typename ResultT> v8::Local<v8::Value> render(const ResultT &result);
 
-template <> v8::Local<v8::Value> render(const std::string& result)
+template <> v8::Local<v8::Value> render(const std::string &result)
 {
     return Nan::CopyBuffer(result.data(), result.size()).ToLocalChecked();
 }
 
-template <> v8::Local<v8::Value> render(const osrm::json::Object& result)
+template <> v8::Local<v8::Value> render(const osrm::json::Object &result)
 {
     v8::Local<v8::Value> value;
     renderToV8(value, result);
