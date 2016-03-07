@@ -3,11 +3,10 @@ var test = require('tape');
 var berlin_path = "test/data/berlin-latest.osrm";
 
 test('tile', function(assert) {
-    assert.plan(3);
+    assert.plan(2);
     var osrm = new OSRM(berlin_path);
-    osrm.tile({z: 15, x: 17603, y: 10747}, function(err, result) {
+    osrm.tile([17603, 10747, 15], function(err, result) {
         assert.ifError(err);
-        assert.ok(result.hasOwnProperty('pbf'));
-        assert.equal(result.pbf.length, 13289);
+        assert.equal(result.length, 13289);
     });
 });
