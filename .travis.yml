@@ -67,9 +67,9 @@ before_install:
     export CC="gcc-5";
     export CPP="cpp-5";
     # GCC binutils wrapper for potential use with LTO (-flto)
-    export AR="gcc-ar-5"
-    export NM="gcc-nm-5"
-    export RANLIB="gcc-ranlib-5"
+    export AR="/usr/bin/gcc-ar-5"
+    export NM="/usr/bin/gcc-nm-5"
+    export RANLIB="/usr/bin/gcc-ranlib-5"
     which $AR
     which $NM
     which $CPP
