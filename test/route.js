@@ -312,7 +312,7 @@ test('route: routes Berlin with valid radius values', function(assert) {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         alternative: false,
         steps: false,
-        radiuses: [10, 10]
+        radiuses: [100, 100]
     };
     osrm.route(options, function(err, route) {
         assert.ifError(err);
