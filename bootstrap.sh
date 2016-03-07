@@ -90,18 +90,26 @@ function build_osrm() {
     rm -rf build
     mkdir -p build
     pushd build
-    CMAKE_ARGS="-DCMAKE_INSTALL_PREFIX=${MASON_HOME} -DCMAKE_CXX_COMPILER='${CXX}' -DBoost_NO_SYSTEM_PATHS=ON -DTBB_INSTALL_DIR=${MASON_HOME} -DCMAKE_INCLUDE_PATH=${MASON_HOME}/include -DCMAKE_LIBRARY_PATH=${MASON_HOME}/lib -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DCMAKE_EXE_LINKER_FLAGS='${LINK_FLAGS}' -DENABLE_CCACHE=OFF"
+    CMAKE_EXTRA_ARGS=""
     if [[ ${AR:-false} != false ]]; then
-        CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_AR=${AR}"
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_AR=${AR}"
     fi
     if [[ ${RANLIB:-false} != false ]]; then
-        CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_RANLIB=${RANLIB}"
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_RANLIB=${RANLIB}"
     fi
     if [[ ${NM:-false} != false ]]; then
-        CMAKE_ARGS="${CMAKE_ARGS} -DCMAKE_NM=${NM}"
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_NM=${NM}"
     fi
-    echo ${CMAKE_ARGS}
-    ../../../mason_packages/.link/bin/cmake ../ ${CMAKE_ARGS}
+    ../../../mason_packages/.link/bin/cmake ../ ../ -DCMAKE_INSTALL_PREFIX=${MASON_HOME} \
+      -DCMAKE_CXX_COMPILER="$CXX" \
+      -DBoost_NO_SYSTEM_PATHS=ON \
+      -DTBB_INSTALL_DIR=${MASON_HOME} \
+      -DCMAKE_INCLUDE_PATH=${MASON_HOME}/include \
+      -DCMAKE_LIBRARY_PATH=${MASON_HOME}/lib \
+      -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
+      -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}" \
+      -DENABLE_CCACHE=OFF \
+      ${CMAKE_EXTRA_ARGS}
 
     make -j${JOBS} VERBOSE=1
     make install VERBOSE=1
