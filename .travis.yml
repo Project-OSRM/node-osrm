@@ -59,6 +59,10 @@ before_install:
 - export COVERAGE=${COVERAGE:-false}
 - |
   if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+    which ar
+    which nm
+    which cpp
+    which ranlib
     export CXX="g++-5";
     export CC="gcc-5";
     export CPP="cpp-5";
@@ -66,6 +70,10 @@ before_install:
     export AR="gcc-ar-5"
     export NM="gcc-nm-5"
     export RANLIB="gcc-ranlib-5"
+    which $AR
+    which $NM
+    which $CPP
+    which $RANLIB
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python2.7/site-packages;
   elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
     sudo sysctl -w kern.sysv.shmmax=4294967296

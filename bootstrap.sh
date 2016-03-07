@@ -98,7 +98,8 @@ function build_osrm() {
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
       -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}" \
       -DENABLE_CCACHE=OFF
-    make -j${JOBS} && make install
+    make -j${JOBS} VERBOSE=1
+    make install VERBOSE=1
     popd
 
     popd
