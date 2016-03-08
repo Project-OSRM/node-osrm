@@ -35,7 +35,7 @@ test('route: provides alternatives, by default and when requested', function(ass
         assert.ok(route.routes);
         assert.equal(route.routes.length, 2);
     });
-    options.alternative = true;
+    options.alternatives = true;
     osrm.route(options, function(err, route) {
         assert.ifError(err);
         assert.ok(route.routes);
@@ -112,7 +112,7 @@ test('route: routes Berlin with options', function(assert) {
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
-        alternative: false,
+        alternatives: false,
         steps: false,
         uturns: [true, false],
         overview: 'false',
@@ -260,7 +260,7 @@ test('route: routes Berlin with hints', function(assert) {
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
-        alternative: false,
+        alternatives: false,
         steps: false
     };
     osrm.route(options, function(err, first) {
@@ -283,7 +283,7 @@ test('route: routes Berlin with null hints', function(assert) {
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
-        alternative: false,
+        alternatives: false,
         steps: false,
         hints: [null, null]
     };
@@ -310,7 +310,7 @@ test('route: routes Berlin with valid radius values', function(assert) {
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
-        alternative: false,
+        alternatives: false,
         steps: false,
         radiuses: [100, 100]
     };
@@ -332,7 +332,7 @@ test('route: throws on bad radiuses', function(assert) {
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
-        alternative: false,
+        alternatives: false,
         steps: false,
         radiuses: [10, 10]
     };

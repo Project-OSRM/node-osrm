@@ -476,9 +476,9 @@ route_parameters_ptr argumentsToRouteParameter(const Nan::FunctionCallbackInfo<v
         }
     }
 
-    if (obj->Has(Nan::New("alternative").ToLocalChecked()))
+    if (obj->Has(Nan::New("alternatives").ToLocalChecked()))
     {
-        params->alternative = obj->Get(Nan::New("alternative").ToLocalChecked())->BooleanValue();
+        params->alternatives = obj->Get(Nan::New("alternatives").ToLocalChecked())->BooleanValue();
     }
 
     bool parsedSuccessfully = parseCommonParameters(obj, params);
