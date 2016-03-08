@@ -65,7 +65,6 @@ env:
    - secure: WLGmxl6VTVWhXGm6X83GYNYzPNsvTD+9usJOKM5YBLAdG7cnOBQBNiCCUKc9OZMMZVUr3ec2/iigakH5Y8Yc+U6AlWKzlORyqWLuk4nFuoedu62x6ocQkTkuOc7mHiYhKd21xTGMYauaZRS6kugv4xkpGES2UjI2T8cjZ+LN2jU=
 
 before_install:
-- /usr/bin/g++-5 -v
 - scripts/validate_tag.sh
 - export COVERAGE=${COVERAGE:-false}
 - |
@@ -94,6 +93,8 @@ before_install:
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python/site-packages;
     brew install md5sha1sum;
   fi
+- echo $CXX
+- which $CXX
 # Mac OS X does not have nvm installed
 - source ./scripts/install_node.sh ${NODE}
 
