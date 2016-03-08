@@ -6,6 +6,7 @@
 // OSRM
 #include <osrm/json_container.hpp>
 #include <osrm/engine_config.hpp>
+#include <osrm/storage_config.hpp>
 #include <osrm/osrm.hpp>
 #include <osrm/route_parameters.hpp>
 #include <osrm/table_parameters.hpp>
@@ -14,6 +15,7 @@
 #include <osrm/trip_parameters.hpp>
 #include <osrm/tile_parameters.hpp>
 #include <osrm/bearing.hpp>
+#include <osrm/coordinate.hpp>
 
 #include <boost/optional.hpp>
 #include <boost/assert.hpp>
@@ -67,8 +69,8 @@ engine_config_ptr argumentsToEngineConfig(const Nan::FunctionCallbackInfo<v8::Va
 
     if (args[0]->IsString())
     {
-        engine_config->server_paths["base"] =
-            *v8::String::Utf8Value(Nan::To<v8::String>(args[0]).ToLocalChecked());
+        engine_config->storage_config = osrm::StorageConfig(
+            *v8::String::Utf8Value(Nan::To<v8::String>(args[0]).ToLocalChecked()));
         engine_config->use_shared_memory = false;
         return engine_config;
     }
@@ -85,8 +87,8 @@ engine_config_ptr argumentsToEngineConfig(const Nan::FunctionCallbackInfo<v8::Va
     auto shared_memory = params->Get(Nan::New("shared_memory").ToLocalChecked());
     if (!path->IsUndefined())
     {
-        engine_config->server_paths["base"] =
-            *v8::String::Utf8Value(Nan::To<v8::String>(path).ToLocalChecked());
+        engine_config->storage_config = osrm::StorageConfig(
+            *v8::String::Utf8Value(Nan::To<v8::String>(path).ToLocalChecked()));
     }
     if (!shared_memory->IsUndefined())
     {
@@ -452,33 +454,25 @@ route_parameters_ptr argumentsToRouteParameter(const Nan::FunctionCallbackInfo<v
 
     if (obj->Has(Nan::New("uturns").ToLocalChecked()))
     {
-        v8::Local<v8::Value> uturns = obj->Get(Nan::New("uturns").ToLocalChecked());
-
-        if (!uturns->IsArray())
+        auto value = obj->Get(Nan::New("uturns").ToLocalChecked());
+        if (!value->IsBoolean() && !value->IsNull())
         {
-            Nan::ThrowError("Uturns must be an array of booleans");
-            return route_parameters_ptr();
+            Nan::ThrowError("'uturns' parama must be boolean or null");
         }
-
-        v8::Local<v8::Array> uturns_array = v8::Local<v8::Array>::Cast(uturns);
-        for (uint32_t i = 0; i < uturns_array->Length(); ++i)
+        if (value->IsBoolean())
         {
-            v8::Local<v8::Value> uturn = uturns_array->Get(i);
-            if (uturn->IsBoolean())
-            {
-                params->uturns.push_back(uturn->BooleanValue());
-            }
-            else
-            {
-                Nan::ThrowError("Uturn must be boolean");
-                return route_parameters_ptr();
-            }
+            params->uturns = value->BooleanValue();
         }
     }
 
-    if (obj->Has(Nan::New("alternative").ToLocalChecked()))
+    if (obj->Has(Nan::New("alternatives").ToLocalChecked()))
     {
-        params->alternative = obj->Get(Nan::New("alternative").ToLocalChecked())->BooleanValue();
+        auto value = obj->Get(Nan::New("alternatives").ToLocalChecked());
+        if (!value->IsBoolean())
+        {
+            Nan::ThrowError("'alternatives' parama must be boolean");
+        }
+        params->alternatives = value->BooleanValue();
     }
 
     bool parsedSuccessfully = parseCommonParameters(obj, params);
@@ -967,23 +961,20 @@ void Engine::Run(const Nan::FunctionCallbackInfo<v8::Value> &args,
     return;
 }
 
-void Engine::ParseResult(const osrm::Status result_status_code, osrm::json::Object result)
+void Engine::ParseResult(const osrm::Status result_status, osrm::json::Object result)
 {
-    const auto message_iter = result.values.find("message");
+    const auto code_iter = result.values.find("code");
     const auto end_iter = result.values.end();
 
-    if (result_status_code == osrm::Status::Error)
+    BOOST_ASSERT(code_iter != end_iter);
+
+    if (result_status == osrm::Status::Error)
     {
-        if (message_iter != end_iter)
-        {
-            throw std::logic_error(
-                result.values["message"].get<osrm::json::String>().value.c_str());
-        }
-        else
-        {
-            throw std::logic_error("invalid request");
-        }
+        throw std::logic_error(code_iter->second.get<osrm::json::String>().value.c_str());
     }
+
+    result.values.erase(code_iter);
+    const auto message_iter = result.values.find("message");
     if (message_iter != end_iter)
     {
         result.values.erase(message_iter);
@@ -995,9 +986,9 @@ void Engine::AsyncRunRoute(uv_work_t *req)
     RouteQueryBaton *closure = static_cast<RouteQueryBaton *>(req->data);
     try
     {
-        const auto result_code = closure->machine->this_->Route(*closure->params, closure->result);
+        const auto status = closure->machine->this_->Route(*closure->params, closure->result);
 
-        ParseResult(result_code, closure->result);
+        ParseResult(status, closure->result);
     }
     catch (std::exception const &ex)
     {
@@ -1010,10 +1001,9 @@ void Engine::AsyncRunNearest(uv_work_t *req)
     NearestQueryBaton *closure = static_cast<NearestQueryBaton *>(req->data);
     try
     {
-        const auto result_code =
-            closure->machine->this_->Nearest(*closure->params, closure->result);
+        const auto status = closure->machine->this_->Nearest(*closure->params, closure->result);
 
-        ParseResult(result_code, closure->result);
+        ParseResult(status, closure->result);
     }
     catch (std::exception const &ex)
     {
@@ -1026,9 +1016,9 @@ void Engine::AsyncRunTable(uv_work_t *req)
     TableQueryBaton *closure = static_cast<TableQueryBaton *>(req->data);
     try
     {
-        const auto result_code = closure->machine->this_->Table(*closure->params, closure->result);
+        const auto status = closure->machine->this_->Table(*closure->params, closure->result);
 
-        ParseResult(result_code, closure->result);
+        ParseResult(status, closure->result);
     }
     catch (std::exception const &ex)
     {
@@ -1041,9 +1031,9 @@ void Engine::AsyncRunTrip(uv_work_t *req)
     TripQueryBaton *closure = static_cast<TripQueryBaton *>(req->data);
     try
     {
-        const auto result_code = closure->machine->this_->Trip(*closure->params, closure->result);
+        const auto status = closure->machine->this_->Trip(*closure->params, closure->result);
 
-        ParseResult(result_code, closure->result);
+        ParseResult(status, closure->result);
     }
     catch (std::exception const &ex)
     {
@@ -1056,10 +1046,10 @@ void Engine::AsyncRunTile(uv_work_t *req)
     TileQueryBaton *closure = static_cast<TileQueryBaton *>(req->data);
     try
     {
-        const auto result_code = closure->machine->this_->Tile(*closure->params, closure->result);
-        if (result_code == osrm::Status::Error)
+        const auto status = closure->machine->this_->Tile(*closure->params, closure->result);
+        if (status == osrm::Status::Error)
         {
-            throw std::logic_error("invalid request");
+            throw std::logic_error("InvalidRequest");
         }
     }
     catch (std::exception const &ex)
@@ -1073,9 +1063,9 @@ void Engine::AsyncRunMatch(uv_work_t *req)
     MatchQueryBaton *closure = static_cast<MatchQueryBaton *>(req->data);
     try
     {
-        const auto result_code = closure->machine->this_->Match(*closure->params, closure->result);
+        const auto status = closure->machine->this_->Match(*closure->params, closure->result);
 
-        ParseResult(result_code, closure->result);
+        ParseResult(status, closure->result);
     }
     catch (std::exception const &ex)
     {
