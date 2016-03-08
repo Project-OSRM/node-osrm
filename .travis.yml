@@ -25,28 +25,33 @@ matrix:
        compiler: gcc
        env: NODE="4" TARGET=Release PUBLISHABLE=true
      - os: linux
+       sudo: required
+       dist: trusty
        compiler: gcc
-       env: NODE="0.10" TARGET=Release PUBLISHABLE=true
-     - os: linux
-       compiler: gcc
-       env: NODE="0.10" TARGET=Debug PUBLISHABLE=true
-     # OS X
-     - os: osx
-       osx_image: xcode7.3
-       compiler: clang
        env: NODE="4" TARGET=Release PUBLISHABLE=true
-     - os: osx
-       osx_image: xcode7.3
-       compiler: clang
-       env: NODE="0.10" TARGET=Release PUBLISHABLE=true
-     - os: osx
-       compiler: clang
-       env: NODE="0.10" TARGET=Debug PUBLISHABLE=true
-     # Coverage
-     - os: osx
-       osx_image: xcode7.3
-       compiler: clang
-       env: NODE="0.10" COVERAGE=true TARGET=Debug PUBLISHABLE=false
+     # - os: linux
+     #   compiler: gcc
+     #   env: NODE="0.10" TARGET=Release PUBLISHABLE=true
+     # - os: linux
+     #   compiler: gcc
+     #   env: NODE="0.10" TARGET=Debug PUBLISHABLE=true
+     # # OS X
+     # - os: osx
+     #   osx_image: xcode7.3
+     #   compiler: clang
+     #   env: NODE="4" TARGET=Release PUBLISHABLE=true
+     # - os: osx
+     #   osx_image: xcode7.3
+     #   compiler: clang
+     #   env: NODE="0.10" TARGET=Release PUBLISHABLE=true
+     # - os: osx
+     #   compiler: clang
+     #   env: NODE="0.10" TARGET=Debug PUBLISHABLE=true
+     # # Coverage
+     # - os: osx
+     #   osx_image: xcode7.3
+     #   compiler: clang
+     #   env: NODE="0.10" COVERAGE=true TARGET=Debug PUBLISHABLE=false
 
 env:
   global:
@@ -55,6 +60,7 @@ env:
    - secure: WLGmxl6VTVWhXGm6X83GYNYzPNsvTD+9usJOKM5YBLAdG7cnOBQBNiCCUKc9OZMMZVUr3ec2/iigakH5Y8Yc+U6AlWKzlORyqWLuk4nFuoedu62x6ocQkTkuOc7mHiYhKd21xTGMYauaZRS6kugv4xkpGES2UjI2T8cjZ+LN2jU=
 
 before_install:
+- /usr/bin/g++-5 -v
 - scripts/validate_tag.sh
 - export COVERAGE=${COVERAGE:-false}
 - |
