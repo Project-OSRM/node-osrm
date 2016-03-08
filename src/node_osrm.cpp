@@ -967,23 +967,20 @@ void Engine::Run(const Nan::FunctionCallbackInfo<v8::Value> &args,
     return;
 }
 
-void Engine::ParseResult(const osrm::Status result_status_code, osrm::json::Object result)
+void Engine::ParseResult(const osrm::Status result_status, osrm::json::Object result)
 {
-    const auto message_iter = result.values.find("message");
+    const auto code_iter = result.values.find("code");
     const auto end_iter = result.values.end();
 
-    if (result_status_code == osrm::Status::Error)
+    BOOST_ASSERT(code_iter != end_iter);
+
+    if (result_status == osrm::Status::Error)
     {
-        if (message_iter != end_iter)
-        {
-            throw std::logic_error(
-                result.values["message"].get<osrm::json::String>().value.c_str());
-        }
-        else
-        {
-            throw std::logic_error("invalid request");
-        }
+        throw std::logic_error(code_iter->second.get<osrm::json::String>().value.c_str());
     }
+
+    result.values.erase(code_iter);
+    const auto message_iter = result.values.find("message");
     if (message_iter != end_iter)
     {
         result.values.erase(message_iter);
@@ -995,9 +992,9 @@ void Engine::AsyncRunRoute(uv_work_t *req)
     RouteQueryBaton *closure = static_cast<RouteQueryBaton *>(req->data);
     try
     {
-        const auto result_code = closure->machine->this_->Route(*closure->params, closure->result);
+        const auto status = closure->machine->this_->Route(*closure->params, closure->result);
 
-        ParseResult(result_code, closure->result);
+        ParseResult(status, closure->result);
     }
     catch (std::exception const &ex)
     {
@@ -1010,10 +1007,9 @@ void Engine::AsyncRunNearest(uv_work_t *req)
     NearestQueryBaton *closure = static_cast<NearestQueryBaton *>(req->data);
     try
     {
-        const auto result_code =
-            closure->machine->this_->Nearest(*closure->params, closure->result);
+        const auto status = closure->machine->this_->Nearest(*closure->params, closure->result);
 
-        ParseResult(result_code, closure->result);
+        ParseResult(status, closure->result);
     }
     catch (std::exception const &ex)
     {
@@ -1026,9 +1022,9 @@ void Engine::AsyncRunTable(uv_work_t *req)
     TableQueryBaton *closure = static_cast<TableQueryBaton *>(req->data);
     try
     {
-        const auto result_code = closure->machine->this_->Table(*closure->params, closure->result);
+        const auto status = closure->machine->this_->Table(*closure->params, closure->result);
 
-        ParseResult(result_code, closure->result);
+        ParseResult(status, closure->result);
     }
     catch (std::exception const &ex)
     {
@@ -1041,9 +1037,9 @@ void Engine::AsyncRunTrip(uv_work_t *req)
     TripQueryBaton *closure = static_cast<TripQueryBaton *>(req->data);
     try
     {
-        const auto result_code = closure->machine->this_->Trip(*closure->params, closure->result);
+        const auto status = closure->machine->this_->Trip(*closure->params, closure->result);
 
-        ParseResult(result_code, closure->result);
+        ParseResult(status, closure->result);
     }
     catch (std::exception const &ex)
     {
@@ -1056,10 +1052,10 @@ void Engine::AsyncRunTile(uv_work_t *req)
     TileQueryBaton *closure = static_cast<TileQueryBaton *>(req->data);
     try
     {
-        const auto result_code = closure->machine->this_->Tile(*closure->params, closure->result);
-        if (result_code == osrm::Status::Error)
+        const auto status = closure->machine->this_->Tile(*closure->params, closure->result);
+        if (status == osrm::Status::Error)
         {
-            throw std::logic_error("invalid request");
+            throw std::logic_error("InvalidRequest");
         }
     }
     catch (std::exception const &ex)
@@ -1073,9 +1069,9 @@ void Engine::AsyncRunMatch(uv_work_t *req)
     MatchQueryBaton *closure = static_cast<MatchQueryBaton *>(req->data);
     try
     {
-        const auto result_code = closure->machine->this_->Match(*closure->params, closure->result);
+        const auto status = closure->machine->this_->Match(*closure->params, closure->result);
 
-        ParseResult(result_code, closure->result);
+        ParseResult(status, closure->result);
     }
     catch (std::exception const &ex)
     {
