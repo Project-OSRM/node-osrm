@@ -34,9 +34,9 @@ berlin-latest.osrm: berlin-latest.osm.pbf car.lua $(OSRM_EXTRACT)
 	@PATH="${PATH}:../../lib/binding" && osrm-extract berlin-latest.osm.pbf -p car.lua
 
 berlin-latest.osrm.hsgr: berlin-latest.osrm car.lua $(OSRM_CONTRACT)
-	@PATH="${PATH}:../../lib/binding" && echo "*** Using osrm-contract from `which osrm-contract` ***"
-	@echo "Running osrm-contract..."
-	@PATH="${PATH}:../../lib/binding" && osrm-contract berlin-latest.osrm
+	@PATH="${PATH}:../../lib/binding" && echo "*** Using osrm-contract from `which osrm-prepare` ***"
+	@echo "Running osrm-prepare..."
+	@PATH="${PATH}:../../lib/binding" && osrm-prepare berlin-latest.osrm -p car.lua
 
 checksum:
 	md5sum lib/access.lua car.lua berlin-latest.osm.pbf > data.md5sum
