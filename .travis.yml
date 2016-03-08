@@ -1,4 +1,4 @@
-language: cpp
+language: c
 
 git:
   depth: 10
@@ -10,9 +10,11 @@ addons:
   apt:
     sources:
      - ubuntu-toolchain-r-test
+     - llvm-toolchain-precise-3.7
     packages:
      - coreutils
      - g++-5
+     - clang-3.7
      - gdb
 
 # TODO: no core files on sudo:false machines until https://github.com/travis-ci/travis-ci/issues/3754 is resolved
@@ -22,13 +24,16 @@ matrix:
   include:
      # Linux
      - os: linux
-       compiler: gcc
-       env: NODE="4" TARGET=Release PUBLISHABLE=true
+       compiler: ": gcc-5.2"
+       env: NODE="4" CXX="g++-5" TARGET=Release PUBLISHABLE=true
+     - os: linux
+       compiler: ": clang-3.7"
+       env: NODE="4" CXX="clang++-3.7" TARGET=Release PUBLISHABLE=true
      - os: linux
        sudo: required
        dist: trusty
-       compiler: gcc
-       env: NODE="4" TARGET=Release PUBLISHABLE=true
+       compiler: " gcc-5.3"
+       env: NODE="4" CXX="g++-5" TARGET=Release PUBLISHABLE=true
      # - os: linux
      #   compiler: gcc
      #   env: NODE="0.10" TARGET=Release PUBLISHABLE=true
@@ -69,17 +74,18 @@ before_install:
     which nm
     which cpp
     which ranlib
-    export CXX="g++-5";
-    export CC="gcc-5";
-    export CPP="cpp-5";
-    # GCC binutils wrapper for potential use with LTO (-flto)
-    export AR="/usr/bin/gcc-ar-5"
-    export NM="/usr/bin/gcc-nm-5"
-    export RANLIB="/usr/bin/gcc-ranlib-5"
-    which $AR
-    which $NM
-    which $CPP
-    which $RANLIB
+    if [[ ${CXX} == "g++-5" ]]; then
+        export CC="gcc-5";
+        export CPP="cpp-5";
+        # GCC binutils wrapper for potential use with LTO (-flto)
+        export AR="/usr/bin/gcc-ar-5"
+        export NM="/usr/bin/gcc-nm-5"
+        export RANLIB="/usr/bin/gcc-ranlib-5"
+        which $AR
+        which $NM
+        which $CPP
+        which $RANLIB
+    fi
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python2.7/site-packages;
   elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
     sudo sysctl -w kern.sysv.shmmax=4294967296
