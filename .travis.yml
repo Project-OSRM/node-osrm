@@ -11,14 +11,11 @@ addons:
     sources:
      - ubuntu-toolchain-r-test
      - llvm-toolchain-precise-3.7
-     - llvm-toolchain-precise-3.8
     packages:
      - coreutils
      - g++-5
      - clang-3.7
      - llvm-3.7
-     - clang-3.8
-     - llvm-3.8
      - gdb
 
 # TODO: no core files on sudo:false machines until https://github.com/travis-ci/travis-ci/issues/3754 is resolved
@@ -33,9 +30,6 @@ matrix:
      - os: linux
        compiler: ": clang-3.7"
        env: NODE="4" CXX="clang++-3.7" LLVM_VERSION="3.7" TARGET=Release PUBLISHABLE=true
-     - os: linux
-       compiler: ": clang-3.8"
-       env: NODE="4" CXX="clang++-3.8" LLVM_VERSION="3.8" TARGET=Release PUBLISHABLE=true
      - os: linux
        sudo: required
        dist: trusty
