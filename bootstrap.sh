@@ -149,7 +149,7 @@ function main() {
     if [[ $(uname -s) == 'Linux' ]]; then
         # put mason installed ld-gold on PATH for working LTO
         ${MASON_DIR}/mason install binutils 2.26
-        UPGRADED_LD_PATH=$(${MASON_DIR}/mason prefix binutils 2.26)/bin:${PATH}
+        UPGRADED_LD_PATH=$(${MASON_DIR}/mason prefix binutils 2.26)/bin
         LINK_FLAGS="-B${UPGRADED_LD_PATH}"
     fi
 
