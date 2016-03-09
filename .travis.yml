@@ -73,18 +73,22 @@ before_install:
     which nm
     which cpp
     which ranlib
+    export CPP="cpp-5";
     if [[ ${CXX} == "g++-5" ]]; then
         export CC="gcc-5";
-        export CPP="cpp-5";
         # GCC binutils wrapper for potential use with LTO (-flto)
         export AR="/usr/bin/gcc-ar-5"
         export NM="/usr/bin/gcc-nm-5"
         export RANLIB="/usr/bin/gcc-ranlib-5"
-        which $AR
-        which $NM
-        which $CPP
-        which $RANLIB
+    else
+        export AR="/usr/bin/llvm-ar-3.7"
+        export NM="/usr/bin/llvm-nm-3.7"
+        export RANLIB="/usr/bin/llvm-ranlib-3.7"
     fi
+    which $AR
+    which $NM
+    which $CPP
+    which $RANLIB
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python2.7/site-packages;
   elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
     sudo sysctl -w kern.sysv.shmmax=4294967296

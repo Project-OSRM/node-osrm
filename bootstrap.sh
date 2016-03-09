@@ -145,6 +145,14 @@ function main() {
     export LIBRARY_PATH="${MASON_HOME}/lib"
 
     LINK_FLAGS=""
+
+    if [[ $(uname -s) == 'Linux' ]]; then
+        # put mason installed ld-gold on PATH for working LTO
+        ${MASON_DIR}/mason install binutils 2.26
+        UPGRADED_LD_PATH=$(${MASON_DIR}/mason prefix binutils 2.26)/bin:${PATH}
+        LINKFLAGS="-B${UPGRADED_LD_PATH}"
+    fi
+
     if [[ $(uname -s) == 'Linux' ]]; then
         LINK_FLAGS="${LINK_FLAGS} "'-Wl,-z,origin -Wl,-rpath=\$ORIGIN'
     fi
