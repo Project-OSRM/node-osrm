@@ -15,6 +15,7 @@ addons:
      - coreutils
      - g++-5
      - clang-3.7
+     - llvm-3.7
      - gdb
 
 # TODO: no core files on sudo:false machines until https://github.com/travis-ci/travis-ci/issues/3754 is resolved
