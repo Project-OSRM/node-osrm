@@ -86,6 +86,13 @@ function build_osrm() {
     fi
 
     git checkout ${OSRM_RELEASE}
+    OSRM_HASH=$(git rev-parse HEAD)
+
+    echo
+    echo "*******************"
+    echo -e "Using osrm-backend   \033[1m\033[36m ${OSRM_HASH}\033[0m"
+    echo "*******************"
+    echo
 
     mkdir -p build
     pushd build
