@@ -110,12 +110,25 @@ function build_osrm() {
     popd
 }
 
-function main() {
+MASON_VERSION="694d08c"
+
+function setup_mason() {
     if [[ ! -d ./.mason ]]; then
-        git clone --depth 1 https://github.com/mapbox/mason.git ./.mason
+        git clone https://github.com/mapbox/mason.git ./.mason
+        (cd ./.mason && git checkout ${MASON_VERSION})
+    else
+        echo "Updating to latest mason"
+        (cd ./.mason && git fetch && git checkout ${MASON_VERSION})
     fi
     export MASON_DIR=$(pwd)/.mason
     export MASON_HOME=$(pwd)/mason_packages/.link
+    export PATH=$(pwd)/.mason:$PATH
+    export CXX=${CXX:-clang++}
+    export CC=${CC:-clang}
+}
+
+function main() {
+    setup_mason
     all_deps
     # fix install name of tbb
     if [[ `uname -s` == 'Darwin' ]]; then
