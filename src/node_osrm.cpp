@@ -883,9 +883,15 @@ void Engine::route(const Nan::FunctionCallbackInfo<v8::Value> &args)
 void Engine::match(const Nan::FunctionCallbackInfo<v8::Value> &args)
 {
     Nan::HandleScope scope;
+    Nan::TryCatch try_catch;
     match_parameters_ptr params = argumentsToMatchParameter(args, true);
-    if (!params)
+    if (try_catch.HasCaught())
+    {
+        v8::Local<v8::Value> argv[1] = {try_catch.Exception()};
+        v8::Local<v8::Value> callback = args[args.Length() - 1];
+        Nan::MakeCallback(Nan::GetCurrentContext()->Global(), Nan::New(Nan::Persistent<v8::Function>(callback.As<v8::Function>())), 1, argv);
         return;
+    }
 
     BOOST_ASSERT(params->IsValid());
 
