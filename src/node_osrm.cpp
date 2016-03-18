@@ -901,9 +901,15 @@ void Engine::match(const Nan::FunctionCallbackInfo<v8::Value> &args)
 void Engine::trip(const Nan::FunctionCallbackInfo<v8::Value> &args)
 {
     Nan::HandleScope scope;
+    Nan::TryCatch try_catch;
     trip_parameters_ptr params = argumentsToTripParameter(args, true);
-    if (!params)
+    if (try_catch.HasCaught())
+    {
+        v8::Local<v8::Value> argv[1] = {try_catch.Exception()};
+        v8::Local<v8::Value> callback = args[args.Length() - 1];
+        Nan::MakeCallback(Nan::GetCurrentContext()->Global(), Nan::New(Nan::Persistent<v8::Function>(callback.As<v8::Function>())), 1, argv);
         return;
+    }
 
     BOOST_ASSERT(params->IsValid());
 
@@ -913,9 +919,15 @@ void Engine::trip(const Nan::FunctionCallbackInfo<v8::Value> &args)
 void Engine::table(const Nan::FunctionCallbackInfo<v8::Value> &args)
 {
     Nan::HandleScope scope;
+    Nan::TryCatch try_catch;
     table_parameters_ptr params = argumentsToTableParameter(args, true);
-    if (!params)
+    if (try_catch.HasCaught())
+    {
+        v8::Local<v8::Value> argv[1] = {try_catch.Exception()};
+        v8::Local<v8::Value> callback = args[args.Length() - 1];
+        Nan::MakeCallback(Nan::GetCurrentContext()->Global(), Nan::New(Nan::Persistent<v8::Function>(callback.As<v8::Function>())), 1, argv);
         return;
+    }
 
     BOOST_ASSERT(params->IsValid());
 
@@ -925,9 +937,15 @@ void Engine::table(const Nan::FunctionCallbackInfo<v8::Value> &args)
 void Engine::nearest(const Nan::FunctionCallbackInfo<v8::Value> &args)
 {
     Nan::HandleScope scope;
+    Nan::TryCatch try_catch;
     nearest_parameters_ptr params = argumentsToNearestParameter(args, false);
-    if (!params)
+    if (try_catch.HasCaught())
+    {
+        v8::Local<v8::Value> argv[1] = {try_catch.Exception()};
+        v8::Local<v8::Value> callback = args[args.Length() - 1];
+        Nan::MakeCallback(Nan::GetCurrentContext()->Global(), Nan::New(Nan::Persistent<v8::Function>(callback.As<v8::Function>())), 1, argv);
         return;
+    }
 
     BOOST_ASSERT(params->IsValid());
 
@@ -937,9 +955,15 @@ void Engine::nearest(const Nan::FunctionCallbackInfo<v8::Value> &args)
 void Engine::tile(const Nan::FunctionCallbackInfo<v8::Value> &args)
 {
     Nan::HandleScope scope;
+    Nan::TryCatch try_catch;
     tile_parameters_ptr params = argumentsToTileParameters(args);
-    if (!params)
+    if (try_catch.HasCaught())
+    {
+        v8::Local<v8::Value> argv[1] = {try_catch.Exception()};
+        v8::Local<v8::Value> callback = args[args.Length() - 1];
+        Nan::MakeCallback(Nan::GetCurrentContext()->Global(), Nan::New(Nan::Persistent<v8::Function>(callback.As<v8::Function>())), 1, argv);
         return;
+    }
 
     BOOST_ASSERT(params->IsValid());
 
