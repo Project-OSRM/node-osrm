@@ -11,12 +11,12 @@ Provides read-only bindings to the [Open Source Routing Machine - OSRM](https://
 # Depends
 
  - Node.js v0.10.x or v0.12.x
- - Modern C++ runtime libraries supporting C++11
+ - Modern C++ runtime libraries supporting C++14
 
-C++11 capable platforms include:
+C++14 capable platforms include:
 
   - Mac OS X >= 10.8
-  - Ubuntu Linux >= 14.04 or other Linux distributions with g++ >= 4.8 toolchain (>= GLIBC_2.17 from libc and >= GLIBCXX_3.4.17 from libstdc++)
+  - Ubuntu Linux >= 14.04 or other Linux distributions with g++ >= 4.9 toolchain (>= GLIBC_2.17 from libc and >= GLIBCXX_3.4.17 from libstdc++)
 
 An installation error like below indicates your system does not have a modern enough g++ toolchain:
 
@@ -29,7 +29,7 @@ If you are running Ubuntu older than 14.04 you can easily upgrade your g++ toolc
 ```
 sudo add-apt-repository ppa:ubuntu-toolchain-r/test
 sudo apt-get update
-sudo apt-get install g++-4.8
+sudo apt-get install g++-5
 ```
 
 

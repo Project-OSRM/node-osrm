@@ -103,7 +103,8 @@ function build_osrm() {
       -DCMAKE_INCLUDE_PATH=${MASON_HOME}/include \
       -DCMAKE_LIBRARY_PATH=${MASON_HOME}/lib \
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-      -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}"
+      -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}" \
+      -DENABLE_CCACHE=OFF
     make -j${JOBS} && make install
     popd
 
