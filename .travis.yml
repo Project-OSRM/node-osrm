@@ -30,26 +30,26 @@ matrix:
      - os: linux
        compiler: ": clang-release-node-v4"
        env: NODE="4" TARGET=Release PUBLISHABLE=true
-     - os: linux
-       compiler: ": clang-release-node-v0.10"
-       env: NODE="0.10" TARGET=Release PUBLISHABLE=true
-     - os: linux
-       compiler: ": clang-debug-node-v0.10"
-       env: NODE="0.10" TARGET=Debug PUBLISHABLE=true
-     # OS X
-     - os: osx
-       compiler: clang
-       env: NODE="4" TARGET=Release PUBLISHABLE=true
-     - os: osx
-       compiler: clang
-       env: NODE="0.10" TARGET=Release PUBLISHABLE=true
-     - os: osx
-       compiler: clang
-       env: NODE="0.10" TARGET=Debug PUBLISHABLE=true
-     # Coverage
-     - os: osx
-       compiler: clang
-       env: NODE="0.10" COVERAGE=true TARGET=Debug PUBLISHABLE=false
+     # - os: linux
+     #   compiler: ": clang-release-node-v0.10"
+     #   env: NODE="0.10" TARGET=Release PUBLISHABLE=true
+     # - os: linux
+     #   compiler: ": clang-debug-node-v0.10"
+     #   env: NODE="0.10" TARGET=Debug PUBLISHABLE=true
+     # # OS X
+     # - os: osx
+     #   compiler: clang
+     #   env: NODE="4" TARGET=Release PUBLISHABLE=true
+     # - os: osx
+     #   compiler: clang
+     #   env: NODE="0.10" TARGET=Release PUBLISHABLE=true
+     # - os: osx
+     #   compiler: clang
+     #   env: NODE="0.10" TARGET=Debug PUBLISHABLE=true
+     # # Coverage
+     # - os: osx
+     #   compiler: clang
+     #   env: NODE="0.10" COVERAGE=true TARGET=Debug PUBLISHABLE=false
 
 env:
   global:
@@ -62,6 +62,7 @@ env:
 
 before_install:
 - scripts/validate_tag.sh
+- ls /usr/lib/llvm-3.7/lib/LLVM* || true
 - export COVERAGE=${COVERAGE:-false}
 - |
   if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
