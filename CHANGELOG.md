@@ -1,5 +1,11 @@
 ## node-osrm changelog
 
+### v5.0.0-newapi.5
+
+- Fix negative durations
+- Inlcude source descriptors in debug vector tiles
+- Fix bug in processing dead-ends in the guidance code
+
 ### 4.9.0
  - Uses OSRM 4.9.0
  - `table` now supports `sources` and `destinations` options for asymmetric queries
