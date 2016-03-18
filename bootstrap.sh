@@ -2,6 +2,20 @@
 
 set -e
 
+if [[ `which pkg-config` ]]; then
+    echo "Success: Found pkg-config";
+else
+    echo "echo you need pkg-config installed";
+    exit 1;
+fi;
+
+if [[ `which node` ]]; then
+    echo "Success: Found node";
+else
+    echo "echo you need node installed";
+    exit 1;
+fi;
+
 function dep() {
     ./.mason/mason install $1 $2
     ./.mason/mason link $1 $2
@@ -19,16 +33,10 @@ echo
 echo "*******************"
 echo -e "OSRM_RELEASE set to:   \033[1m\033[36m ${OSRM_RELEASE}\033[0m"
 echo -e "BUILD_TYPE set to:     \033[1m\033[36m ${BUILD_TYPE}\033[0m"
+echo -e "CXX set to:            \033[1m\033[36m ${CXX}\033[0m"
 echo "*******************"
 echo
 echo
-
-if [[ `which pkg-config` ]]; then
-    echo "Success: Found pkg-config";
-else
-    echo "echo you need pkg-config installed";
-    exit 1;
-fi;
 
 function all_deps() {
     dep cmake 3.2.2 &
@@ -96,6 +104,16 @@ function build_osrm() {
 
     mkdir -p build
     pushd build
+    CMAKE_EXTRA_ARGS=""
+    if [[ ${AR:-false} != false ]]; then
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_AR=${AR}"
+    fi
+    if [[ ${RANLIB:-false} != false ]]; then
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_RANLIB=${RANLIB}"
+    fi
+    if [[ ${NM:-false} != false ]]; then
+        CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_NM=${NM}"
+    fi
     ../../../mason_packages/.link/bin/cmake ../ -DCMAKE_INSTALL_PREFIX=${MASON_HOME} \
       -DCMAKE_CXX_COMPILER="$CXX" \
       -DBoost_NO_SYSTEM_PATHS=ON \
@@ -103,7 +121,8 @@ function build_osrm() {
       -DCMAKE_INCLUDE_PATH=${MASON_HOME}/include \
       -DCMAKE_LIBRARY_PATH=${MASON_HOME}/lib \
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-      -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}"
+      -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}" \
+      ${CMAKE_EXTRA_ARGS}
     make -j${JOBS} && make install
     popd
 
