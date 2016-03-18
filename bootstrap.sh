@@ -104,6 +104,14 @@ function build_osrm() {
 
     mkdir -p build
     pushd build
+    # osx does not yet support caches, so we don't use ccache yet
+    if [[ $(uname -s) == 'Linux' ]]; then
+        # put mason installed ccache on PATH
+        # then osrm-backend will pick it up automatically
+        export CCACHE_VERSION="3.2.4"
+        ${MASON_DIR}/mason install ccache ${CCACHE_VERSION}
+        export PATH=$(${MASON_DIR}/mason prefix ccache ${CCACHE_VERSION})/bin:${PATH}
+    fi
     CMAKE_EXTRA_ARGS=""
     if [[ ${AR:-false} != false ]]; then
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_AR=${AR}"
@@ -114,7 +122,7 @@ function build_osrm() {
     if [[ ${NM:-false} != false ]]; then
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_NM=${NM}"
     fi
-    ../../../mason_packages/.link/bin/cmake ../ -DCMAKE_INSTALL_PREFIX=${MASON_HOME} \
+    ${MASON_HOME}/bin/cmake ../ -DCMAKE_INSTALL_PREFIX=${MASON_HOME} \
       -DCMAKE_CXX_COMPILER="$CXX" \
       -DBoost_NO_SYSTEM_PATHS=ON \
       -DTBB_INSTALL_DIR=${MASON_HOME} \

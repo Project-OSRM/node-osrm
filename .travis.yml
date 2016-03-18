@@ -1,7 +1,11 @@
-language: cpp
+language: generic
 
 git:
   depth: 10
+
+cache:
+  directories:
+  - $HOME/.ccache
 
 notifications:
   email: false
@@ -10,9 +14,10 @@ addons:
   apt:
     sources:
      - ubuntu-toolchain-r-test
+     - llvm-toolchain-precise-3.7
     packages:
      - coreutils
-     - g++-4.8
+     - clang-3.7
      - gdb
 
 # TODO: no core files on sudo:false machines until https://github.com/travis-ci/travis-ci/issues/3754 is resolved
@@ -22,13 +27,13 @@ matrix:
   include:
      # Linux
      - os: linux
-       compiler: gcc
+       compiler: ": clang-release-node-v4"
        env: NODE="4" TARGET=Release PUBLISHABLE=true
      - os: linux
-       compiler: gcc
+       compiler: ": clang-release-node-v0.10"
        env: NODE="0.10" TARGET=Release PUBLISHABLE=true
      - os: linux
-       compiler: gcc
+       compiler: ": clang-debug-node-v0.10"
        env: NODE="0.10" TARGET=Debug PUBLISHABLE=true
      # OS X
      - os: osx
@@ -47,7 +52,9 @@ matrix:
 
 env:
   global:
-   - JOBS: "3"
+   - CCACHE_TEMPDIR=/tmp/.ccache-temp
+   - CCACHE_COMPRESS=1
+   - JOBS: "8"
    - secure: KitzGZjoDblX/3heajcvssGz0JnJ/k02dr2tu03ksUV+6MogC3RSQudqyKY57+f8VyZrcllN/UOlJ0Q/3iG38Oz8DljC+7RZxtkVmE1SFBoOezKCdhcvWM12G3uqPs7hhrRxuUgIh0C//YXEkulUrqa2H1Aj2xeen4E3FAqEoy0=
    - secure: WLGmxl6VTVWhXGm6X83GYNYzPNsvTD+9usJOKM5YBLAdG7cnOBQBNiCCUKc9OZMMZVUr3ec2/iigakH5Y8Yc+U6AlWKzlORyqWLuk4nFuoedu62x6ocQkTkuOc7mHiYhKd21xTGMYauaZRS6kugv4xkpGES2UjI2T8cjZ+LN2jU=
 
@@ -56,8 +63,8 @@ before_install:
 - export COVERAGE=${COVERAGE:-false}
 - |
   if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-    export CXX="g++-4.8";
-    export CC="gcc-4.8";
+    export CXX="clang++-3.7";
+    export CC="clang-3.7";
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python2.7/site-packages;
   elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
     sudo sysctl -w kern.sysv.shmmax=4294967296
@@ -65,6 +72,10 @@ before_install:
     sudo sysctl -w kern.sysv.shmseg=128
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python/site-packages;
     brew install md5sha1sum;
+    # osrm-backend picks up ccache automatically
+    # since osx does not support caching we want to avoid
+    # since since it will just slow down builds
+    brew rm ccache || true;
   fi
 # Mac OS X does not have nvm installed
 - source ./scripts/install_node.sh ${NODE}
@@ -76,6 +87,7 @@ install:
     export CXXFLAGS="--coverage";
   fi;
 - if [[ ${TARGET} == 'Release' ]]; then make; else make debug; fi
+- if [[ $(uname -s) == 'Linux' ]]; then du $HOME/.ccache -h --max-depth=1 | sort -hr; fi;
 
 before_script:
 - ulimit -c unlimited -S
