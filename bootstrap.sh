@@ -131,7 +131,8 @@ function build_osrm() {
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
       -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}" \
       ${CMAKE_EXTRA_ARGS}
-    make -j${JOBS} && make install
+    make -j${JOBS} VERBOSE=1
+    make install VERBOSE=1
     popd
 
     popd
@@ -174,10 +175,15 @@ function main() {
     export CPLUS_INCLUDE_PATH="${MASON_HOME}/include"
     export LIBRARY_PATH="${MASON_HOME}/lib"
 
-    LINK_FLAGS=""
+    LINK_FLAGS="-flto"
     if [[ $(uname -s) == 'Linux' ]]; then
+        # put mason installed ld-gold on PATH for working LTO
+        ${MASON_DIR}/mason install binutils 2.26
+        UPGRADED_LD_PATH=$(${MASON_DIR}/mason prefix binutils 2.26)/bin
+        LINK_FLAGS="${LINK_FLAGS} -B${UPGRADED_LD_PATH}"
         LINK_FLAGS="${LINK_FLAGS} "'-Wl,-z,origin -Wl,-rpath=\$ORIGIN'
     fi
+    export CXXFLAGS="-flto"
 
     build_osrm
 

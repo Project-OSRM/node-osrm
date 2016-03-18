@@ -18,6 +18,7 @@ addons:
     packages:
      - coreutils
      - clang-3.7
+     - llvm-3.7
      - gdb
 
 # TODO: no core files on sudo:false machines until https://github.com/travis-ci/travis-ci/issues/3754 is resolved
@@ -52,6 +53,7 @@ matrix:
 
 env:
   global:
+   - LLVM_VERSION="3.7"
    - CCACHE_TEMPDIR=/tmp/.ccache-temp
    - CCACHE_COMPRESS=1
    - JOBS: "8"
@@ -63,8 +65,11 @@ before_install:
 - export COVERAGE=${COVERAGE:-false}
 - |
   if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-    export CXX="clang++-3.7";
-    export CC="clang-3.7";
+    export CXX="clang++-${LLVM_VERSION}";
+    export CC="clang-${LLVM_VERSION}";
+    export AR="/usr/bin/llvm-ar-${LLVM_VERSION}"
+    export NM="/usr/bin/llvm-nm-${LLVM_VERSION}"
+    export RANLIB="/usr/bin/llvm-ranlib-${LLVM_VERSION}"
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python2.7/site-packages;
   elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
     sudo sysctl -w kern.sysv.shmmax=4294967296
