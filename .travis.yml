@@ -19,6 +19,7 @@ addons:
      - coreutils
      - clang-3.7
      - llvm-3.7
+     - llvm-3.7-dev
      - gdb
 
 # TODO: no core files on sudo:false machines until https://github.com/travis-ci/travis-ci/issues/3754 is resolved
