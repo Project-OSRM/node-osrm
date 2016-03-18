@@ -48,7 +48,7 @@ build/Release/osrm.node: ./node_modules ./deps/osrm-backend-Release
 	  export LDFLAGS="-flto -B/home/travis/build/Project-OSRM/node-osrm/mason_packages/linux-x86_64/binutils/2.26/bin"  && \
 	  export CXXFLAGS="-flto" && \
 	  echo "*** Using osrm installed at `pkg-config libosrm --variable=prefix` ***" && \
-	  ./node_modules/.bin/node-pre-gyp configure build --loglevel=error --clang=1
+	  ./node_modules/.bin/node-pre-gyp configure build --loglevel=verbose --clang=1
 
 # put the local debug-built osrm-backend on PKG_CONFIG_PATH and build as normal
 debug: ./node_modules ./deps/osrm-backend-Debug
