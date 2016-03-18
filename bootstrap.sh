@@ -182,6 +182,7 @@ function main() {
         UPGRADED_LD_PATH=$(${MASON_DIR}/mason prefix binutils 2.26)/bin
         LINK_FLAGS="${LINK_FLAGS} -B${UPGRADED_LD_PATH}"
         LINK_FLAGS="${LINK_FLAGS} "'-Wl,-z,origin -Wl,-rpath=\$ORIGIN'
+        export LDFLAGS="-flto -Wl,-B${UPGRADED_LD_PATH}"
     fi
     export CXXFLAGS="-flto"
 
