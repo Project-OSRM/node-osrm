@@ -130,7 +130,7 @@ function build_osrm() {
       -DCMAKE_LIBRARY_PATH=${MASON_HOME}/lib \
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
       -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}" \
-      ${CMAKE_EXTRA_ARGS}
+      ${CMAKE_EXTRA_ARGS} || cat CMakeFiles/CMakeOutput.log CMakeFiles/CMakeError.log
     make -j${JOBS} VERBOSE=1
     make install VERBOSE=1
     popd
