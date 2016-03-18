@@ -45,6 +45,8 @@ endif
 # We use "--loglevel=error" to quiet the verbosity to make it easier to see compiler errors quickly
 build/Release/osrm.node: ./node_modules ./deps/osrm-backend-Release
 	@export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && \
+	  export LDFLAGS="-flto -B/home/travis/build/Project-OSRM/node-osrm/mason_packages/linux-x86_64/binutils/2.26/bin"  && \
+	  export CXXFLAGS="-flto" && \
 	  echo "*** Using osrm installed at `pkg-config libosrm --variable=prefix` ***" && \
 	  ./node_modules/.bin/node-pre-gyp configure build --loglevel=error --clang=1
 
