@@ -15,14 +15,12 @@ For more details see: https://docs.travis-ci.com/user/pull-requests
 # Get the commit message via git log
 # This should always be the exact text the developer provided
 COMMIT_LOG=$(git log --format=%B --no-merges -n 1 | tr -d '\n')
-echo "git log result: $COMMIT_LOG"
 
 # Get the commit message via git show
 # If the gitsha represents a merge then this will
 # look something like "Merge e3b1981 into 615d2a3"
 # Otherwise it will be the same as the "git log" output
 COMMIT_SHOW=$(git show -s --format=%B | tr -d '\n')
-echo "git show result: $COMMIT_SHOW"
 
 if [[ "${COMMIT_LOG}" != "${COMMIT_SHOW}" ]]; then
    echo true
