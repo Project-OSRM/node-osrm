@@ -175,16 +175,14 @@ function main() {
     export CPLUS_INCLUDE_PATH="${MASON_HOME}/include"
     export LIBRARY_PATH="${MASON_HOME}/lib"
 
-    LINK_FLAGS="-flto"
+    LINK_FLAGS=""
     if [[ $(uname -s) == 'Linux' ]]; then
         # put mason installed ld-gold on PATH for working LTO
         ${MASON_DIR}/mason install binutils 2.26
         UPGRADED_LD_PATH=$(${MASON_DIR}/mason prefix binutils 2.26)/bin
         LINK_FLAGS="${LINK_FLAGS} -B${UPGRADED_LD_PATH}"
         LINK_FLAGS="${LINK_FLAGS} "'-Wl,-z,origin -Wl,-rpath=\$ORIGIN'
-        export LDFLAGS="-flto -B${UPGRADED_LD_PATH}"
     fi
-    export CXXFLAGS="-flto"
 
     build_osrm
 
