@@ -69,9 +69,9 @@ before_install:
   if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
     export CXX="clang++-${LLVM_VERSION}";
     export CC="clang-${LLVM_VERSION}";
-    export AR="/usr/bin/llvm-ar-${LLVM_VERSION}"
-    export NM="/usr/bin/llvm-nm-${LLVM_VERSION}"
-    export RANLIB="/usr/bin/llvm-ranlib-${LLVM_VERSION}"
+    export AR="/home/travis/build/Project-OSRM/node-osrm/mason_packages/linux-x86_64/binutils/2.26/bin/ar"
+    export NM="/home/travis/build/Project-OSRM/node-osrm/mason_packages/linux-x86_64/binutils/2.26/bin/nm"
+    export RANLIB=/bin/true
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python2.7/site-packages;
   elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
     sudo sysctl -w kern.sysv.shmmax=4294967296
