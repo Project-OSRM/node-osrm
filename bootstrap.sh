@@ -131,6 +131,7 @@ function build_osrm() {
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
       -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}" \
       ${CMAKE_EXTRA_ARGS} || cat CMakeFiles/CMakeOutput.log CMakeFiles/CMakeError.log
+    cat CMakeFiles/CMakeOutput.log CMakeFiles/CMakeError.log || true
     make -j${JOBS} VERBOSE=1
     make install VERBOSE=1
     popd
@@ -182,6 +183,7 @@ function main() {
         UPGRADED_LD_PATH=$(${MASON_DIR}/mason prefix binutils 2.26)/bin
         LINK_FLAGS="${LINK_FLAGS} -B${UPGRADED_LD_PATH}"
         LINK_FLAGS="${LINK_FLAGS} "'-Wl,-z,origin -Wl,-rpath=\$ORIGIN'
+        export LDFLAGS="-B${UPGRADED_LD_PATH}"
     fi
 
     build_osrm
