@@ -1,5 +1,10 @@
 ## node-osrm changelog
 
+### v5.0.0-newapi.6
+
+- [Static turn instructions](https://github.com/Project-OSRM/osrm-backend/pull/2080)
+- [Support multiple traffic update files, and include filename in debug tile metadata](https://github.com/Project-OSRM/osrm-backend/pull/2098)
+
 ### v5.0.0-newapi.5
 
 - Fix negative durations
