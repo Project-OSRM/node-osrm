@@ -28,7 +28,7 @@ test('route: throws with too few or invalid args', function(assert) {
 test('route: provides alternatives, by default and when requested', function(assert) {
     assert.plan(6);
     var osrm = new OSRM(berlin_path);
-    var options = {coordinates: [[13.376713,52.528337], [13.383579,52.555272]]};
+    var options = {coordinates: [[13.302383,52.490516], [13.418427,52.522070]]};
 
     osrm.route(options, function(err, route) {
         assert.ifError(err);
