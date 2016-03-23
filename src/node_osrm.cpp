@@ -453,12 +453,25 @@ route_parameters_ptr argumentsToRouteParameter(const Nan::FunctionCallbackInfo<v
 
     if (obj->Has(Nan::New("uturns").ToLocalChecked()))
     {
-        params->uturns = obj->Get(Nan::New("uturns").ToLocalChecked())->BooleanValue();
+        auto value = obj->Get(Nan::New("uturns").ToLocalChecked());
+        if (!value->IsBoolean() && !value->IsNull())
+        {
+            Nan::ThrowError("'uturns' parama must be boolean or null");
+        }
+        if (value->IsBoolean())
+        {
+            params->uturns = value->BooleanValue();
+        }
     }
 
     if (obj->Has(Nan::New("alternatives").ToLocalChecked()))
     {
-        params->alternatives = obj->Get(Nan::New("alternatives").ToLocalChecked())->BooleanValue();
+        auto value = obj->Get(Nan::New("alternatives").ToLocalChecked());
+        if (!value->IsBoolean())
+        {
+            Nan::ThrowError("'alternatives' parama must be boolean");
+        }
+        params->alternatives = value->BooleanValue();
     }
 
     bool parsedSuccessfully = parseCommonParameters(obj, params);

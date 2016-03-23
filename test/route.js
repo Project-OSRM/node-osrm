@@ -114,7 +114,7 @@ test('route: routes Berlin with options', function(assert) {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         alternatives: false,
         steps: false,
-        uturns: [true, false],
+        uturns: true,
         overview: 'false',
         geometries: 'polyline'
     };
@@ -138,33 +138,23 @@ test('route: routes Berlin with options', function(assert) {
 });
 
 test('route: invalid route options', function(assert) {
-    assert.plan(10);
+    assert.plan(8);
     var osrm = new OSRM(berlin_path);
     assert.throws(function() { osrm.route({
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
-        uturns: true
+        uturns: []
     }, function(err, route) {}); },
-        /Uturns must be an array of booleans/);
+        /must be boolean/);
     assert.throws(function() { osrm.route({
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
-        uturns: [1, 3]
+        alternatives: []
     }, function(err, route) {}); },
-        /Uturn must be boolean/);
-    assert.throws(function() { osrm.route({
-        coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
-        uturns: true
-    }, function(err, route) {}); },
-        /Uturns must be an array of booleans/);
+        /must be boolean/);
     assert.throws(function() { osrm.route({
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         geometries: true
     }, function(err, route) {}); },
         /Geometries must be a string: \[polyline, geojson\]/);
-    assert.throws(function() { osrm.route({
-        coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
-        uturns: true
-    }, function(err, route) {}); },
-        /Uturns must be an array of booleans/);
     assert.throws(function() { osrm.route({
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         overview: false

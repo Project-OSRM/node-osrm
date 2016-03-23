@@ -23,7 +23,7 @@ test('constructor: does not accept more than one parameter', function(assert) {
 test('constructor: throws if necessary files do not exist', function(assert) {
     assert.plan(1);
     assert.throws(function() { new OSRM("missing.osrm"); },
-        /hsgr not found/);
+        /Invalid file paths/);
 });
 
 test('constructor: takes a shared memory argument', function(assert) {
