@@ -6,6 +6,7 @@
 // OSRM
 #include <osrm/json_container.hpp>
 #include <osrm/engine_config.hpp>
+#include <osrm/storage_config.hpp>
 #include <osrm/osrm.hpp>
 #include <osrm/route_parameters.hpp>
 #include <osrm/table_parameters.hpp>
@@ -67,8 +68,8 @@ engine_config_ptr argumentsToEngineConfig(const Nan::FunctionCallbackInfo<v8::Va
 
     if (args[0]->IsString())
     {
-        engine_config->server_paths["base"] =
-            *v8::String::Utf8Value(Nan::To<v8::String>(args[0]).ToLocalChecked());
+        engine_config->storage_config = osrm::StorageConfig(
+            *v8::String::Utf8Value(Nan::To<v8::String>(args[0]).ToLocalChecked()));
         engine_config->use_shared_memory = false;
         return engine_config;
     }
@@ -85,8 +86,8 @@ engine_config_ptr argumentsToEngineConfig(const Nan::FunctionCallbackInfo<v8::Va
     auto shared_memory = params->Get(Nan::New("shared_memory").ToLocalChecked());
     if (!path->IsUndefined())
     {
-        engine_config->server_paths["base"] =
-            *v8::String::Utf8Value(Nan::To<v8::String>(path).ToLocalChecked());
+        engine_config->storage_config = osrm::StorageConfig(
+            *v8::String::Utf8Value(Nan::To<v8::String>(path).ToLocalChecked()));
     }
     if (!shared_memory->IsUndefined())
     {
@@ -452,28 +453,7 @@ route_parameters_ptr argumentsToRouteParameter(const Nan::FunctionCallbackInfo<v
 
     if (obj->Has(Nan::New("uturns").ToLocalChecked()))
     {
-        v8::Local<v8::Value> uturns = obj->Get(Nan::New("uturns").ToLocalChecked());
-
-        if (!uturns->IsArray())
-        {
-            Nan::ThrowError("Uturns must be an array of booleans");
-            return route_parameters_ptr();
-        }
-
-        v8::Local<v8::Array> uturns_array = v8::Local<v8::Array>::Cast(uturns);
-        for (uint32_t i = 0; i < uturns_array->Length(); ++i)
-        {
-            v8::Local<v8::Value> uturn = uturns_array->Get(i);
-            if (uturn->IsBoolean())
-            {
-                params->uturns.push_back(uturn->BooleanValue());
-            }
-            else
-            {
-                Nan::ThrowError("Uturn must be boolean");
-                return route_parameters_ptr();
-            }
-        }
+        params->uturns = obj->Get(Nan::New("uturns").ToLocalChecked())->BooleanValue();
     }
 
     if (obj->Has(Nan::New("alternatives").ToLocalChecked()))
