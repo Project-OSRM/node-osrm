@@ -1,5 +1,14 @@
 ## node-osrm changelog
 
+### v5.0.0-newapi.7
+
+- Updates to osrm-backend v5.0.0-newapi.7:
+  * new file .properties needed by the server
+  * .datasource_names and .datasource_index are not optional anymore
+  * .timestamp is not optional anymore
+  * uturns parameter is not per-via but global
+  * fixes incorrect turn coordinates
+
 ### v5.0.0-newapi.6
 
 - [Static turn instructions](https://github.com/Project-OSRM/osrm-backend/pull/2080)
