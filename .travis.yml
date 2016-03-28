@@ -92,10 +92,15 @@ before_install:
 install:
 - if [[ ${COVERAGE} == true ]]; then
     PYTHONUSERBASE=$(pwd)/mason_packages/.link pip install --user cpp-coveralls;
-    export LDFLAGS="--coverage";
-    export CXXFLAGS="--coverage";
   fi;
-- if [[ ${TARGET} == 'Release' ]]; then make; else make debug; fi
+- CMD="make"
+- |
+  if [[ ${TARGET} == 'Debug' ]]; then
+    CMD="${CMD} debug";
+  elif [[ ${COVERAGE} == true ]]; then
+    CMD="${CMD} coverage";
+  fi
+- ${CMD}
 - if [[ $(uname -s) == 'Linux' ]]; then du $HOME/.ccache -h --max-depth=1 | sort -hr; fi;
 
 before_script:
