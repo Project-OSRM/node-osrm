@@ -46,20 +46,20 @@ endif
 build/Release/osrm.node: ./node_modules ./deps/osrm-backend-Release
 	@export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && \
 	  echo "*** Using osrm installed at `pkg-config libosrm --variable=prefix` ***" && \
-	  ./node_modules/.bin/node-pre-gyp configure build --loglevel=error --clang=1
+	  ./node_modules/.bin/node-pre-gyp configure build --loglevel=error --clang=1 $(NPM_FLAGS)
 
 # put the local debug-built osrm-backend on PKG_CONFIG_PATH and build as normal
 debug: ./node_modules ./deps/osrm-backend-Debug
 	@export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && \
 	  echo "*** Using osrm installed at `pkg-config libosrm --variable=prefix` ***" && \
-	  ./node_modules/.bin/node-pre-gyp configure build --debug --clang=1
+	  ./node_modules/.bin/node-pre-gyp configure build --debug --clang=1 $(NPM_FLAGS)
 
 # same as typing "make" (which hits the "build/Release/osrm.node" target) except that
 # "--loglevel=verbose" shows the actual compiler arguments
 verbose: ./node_modules ./deps/osrm-backend-Release
 	@export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && \
 	  echo "*** Using osrm installed at `pkg-config libosrm --variable=prefix` ***" && \
-	  ./node_modules/.bin/node-pre-gyp configure build --loglevel=verbose --clang=1
+	  ./node_modules/.bin/node-pre-gyp configure build --loglevel=verbose --clang=1 $(NPM_FLAGS)
 
 clean:
 	(cd test/data/ && $(MAKE) clean)

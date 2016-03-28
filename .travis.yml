@@ -61,6 +61,7 @@ env:
 before_install:
 - scripts/validate_tag.sh
 - export COVERAGE=${COVERAGE:-false}
+- if [[ ${TARGET} == 'Debug' ]]; then export NPM_FLAGS="--debug"; else export NPM_FLAGS="" fi;
 - |
   if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
     export CXX="g++-4.8";
