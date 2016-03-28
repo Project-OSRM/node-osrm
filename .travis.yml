@@ -37,16 +37,24 @@ matrix:
        env: NODE="0.10" TARGET=Debug PUBLISHABLE=true
      # OS X
      - os: osx
+       # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
+       osx_image: xcode7.3 # upgrades clang from 6 -> 7
        compiler: clang
        env: NODE="4" TARGET=Release PUBLISHABLE=true
      - os: osx
+       # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
+       osx_image: xcode7.3 # upgrades clang from 6 -> 7
        compiler: clang
        env: NODE="0.10" TARGET=Release PUBLISHABLE=true
      - os: osx
+       # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
+       osx_image: xcode7.3 # upgrades clang from 6 -> 7
        compiler: clang
        env: NODE="0.10" TARGET=Debug PUBLISHABLE=true
      # Coverage
      - os: osx
+       # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
+       osx_image: xcode7.3 # upgrades clang from 6 -> 7
        compiler: clang
        env: NODE="0.10" COVERAGE=true TARGET=Debug PUBLISHABLE=false
 
@@ -61,6 +69,7 @@ env:
 before_install:
 - scripts/validate_tag.sh
 - export COVERAGE=${COVERAGE:-false}
+- if [[ ${TARGET} == 'Debug' ]]; then export NPM_FLAGS="--debug"; else export NPM_FLAGS=""; fi;
 - |
   if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
     export CXX="g++-4.8";
