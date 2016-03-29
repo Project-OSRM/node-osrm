@@ -16,53 +16,56 @@ cache:
 notifications:
   email: false
 
-addons:
-  apt:
-    sources:
-     - ubuntu-toolchain-r-test
-     - llvm-toolchain-precise-3.7
-    packages:
-     - coreutils
-     - g++-4.8
-     - gdb
-
 # TODO: no core files on sudo:false machines until https://github.com/travis-ci/travis-ci/issues/3754 is resolved
 sudo: false
 
 matrix:
   include:
-     # Linux
-     - os: linux
-       compiler: ": gcc-release-node-v4"
-       env: NODE="4" TARGET=Release PUBLISHABLE=true
-     - os: linux
-       compiler: ": gcc-release-node-v0.10"
-       env: NODE="0.10" TARGET=Release PUBLISHABLE=true
-     - os: linux
-       compiler: ": gcc-debug-node-v0.10"
-       env: NODE="0.10" TARGET=Debug PUBLISHABLE=true
-     # OS X
-     - os: osx
-       # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
-       osx_image: xcode7.3 # upgrades clang from 6 -> 7
-       compiler: clang
-       env: NODE="4" TARGET=Release PUBLISHABLE=true
-     - os: osx
-       # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
-       osx_image: xcode7.3 # upgrades clang from 6 -> 7
-       compiler: clang
-       env: NODE="0.10" TARGET=Release PUBLISHABLE=true
-     - os: osx
-       # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
-       osx_image: xcode7.3 # upgrades clang from 6 -> 7
-       compiler: clang
-       env: NODE="0.10" TARGET=Debug PUBLISHABLE=true
-     # Coverage
-     - os: osx
-       # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
-       osx_image: xcode7.3 # upgrades clang from 6 -> 7
-       compiler: clang
-       env: NODE="0.10" COVERAGE=true TARGET=Debug PUBLISHABLE=false
+    # Linux
+    - os: linux
+      compiler: ": clang-debug-node-v0.10-coverage"
+      env: NODE="0.10" COVERAGE=true CC="clang-3.5" CXX="clang++-3.5" JOBS=6 PUBLISHABLE=false
+      addons:
+        apt:
+          sources: [ 'ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.5' ]
+          packages: [ 'clang-3.5', 'llvm-3.5-dev' ]
+    - os: linux
+      compiler: ": gcc-release-node-v4"
+      env: NODE="4" TARGET=Release CC="gcc-4.8" CXX="g++-4.8" PUBLISHABLE=true
+      addons:
+        apt:
+          sources: [ 'ubuntu-toolchain-r-test' ]
+          packages: [ 'g++-4.8' ]
+    - os: linux
+      compiler: ": gcc-release-node-v0.10"
+      env: NODE="0.10" TARGET=Release CC="gcc-4.8" CXX="g++-4.8" PUBLISHABLE=true
+      addons:
+        apt:
+          sources: [ 'ubuntu-toolchain-r-test' ]
+          packages: [ 'g++-4.8' ]
+    - os: linux
+      compiler: ": gcc-debug-node-v0.10"
+      env: NODE="0.10" TARGET=Release CC="gcc-4.8" CXX="g++-4.8" PUBLISHABLE=true
+      addons:
+        apt:
+          sources: [ 'ubuntu-toolchain-r-test' ]
+          packages: [ 'g++-4.8' ]
+    # OS X
+    - os: osx
+      # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
+      osx_image: xcode7.3 # upgrades clang from 6 -> 7
+      compiler: clang
+      env: NODE="4" TARGET=Release PUBLISHABLE=true
+    - os: osx
+      # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
+      osx_image: xcode7.3 # upgrades clang from 6 -> 7
+      compiler: clang
+      env: NODE="0.10" TARGET=Release PUBLISHABLE=true
+    - os: osx
+      # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
+      osx_image: xcode7.3 # upgrades clang from 6 -> 7
+      compiler: clang
+      env: NODE="0.10" TARGET=Debug PUBLISHABLE=true
 
 env:
   global:
@@ -78,8 +81,6 @@ before_install:
 - if [[ ${TARGET} == 'Debug' ]]; then export NPM_FLAGS="--debug"; else export NPM_FLAGS=""; fi;
 - |
   if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-    export CXX="g++-4.8";
-    export CC="gcc-4.8";
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python2.7/site-packages;
   elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
     sudo sysctl -w kern.sysv.shmmax=4294967296
@@ -118,7 +119,7 @@ script:
 - for i in $(find ./ -maxdepth 1 -name 'core*' -print); do gdb $(which node) $i -ex "thread apply all bt" -ex "set pagination 0" -batch; done;
 - if [[ ${RESULT} != 0 ]]; then exit $RESULT; fi
 - if [[ ${COVERAGE} == true ]]; then
-    ./mason_packages/.link/bin/cpp-coveralls --exclude node_modules --exclude mason_packages --exclude tests --build-root build --gcov-options '\-lp' --exclude doc --exclude build/Release/obj/gen;
+    ./mason_packages/.link/bin/cpp-coveralls --gcov /usr/bin/llvm-cov-3.5 --exclude __nvm --exclude node_modules --exclude mason_packages --exclude tests --build-root build --gcov-options '\-lp' --exclude doc --exclude build/Release/obj/gen;
   fi;
 - if [[ ${PUBLISHABLE} == true ]]; then
     ./scripts/publish.sh;

@@ -54,7 +54,7 @@ debug: ./node_modules ./deps/osrm-backend-Debug
 	  echo "*** Using osrm installed at `pkg-config libosrm --variable=prefix` ***" && \
 	  ./node_modules/.bin/node-pre-gyp configure build --debug --clang=1 $(NPM_FLAGS)
 
-coverage:
+coverage: ./node_modules ./deps/osrm-backend-Debug
 	@export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && \
 	  export LDFLAGS="--coverage" && export CXXFLAGS="--coverage" && \
 	  echo "*** Using osrm installed at `pkg-config libosrm --variable=prefix` ***" && \
