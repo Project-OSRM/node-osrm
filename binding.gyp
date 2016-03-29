@@ -21,6 +21,11 @@
       'defines': ['LIBOSRM_GIT_REVISION="<!@(pkg-config libosrm --modversion)"'],
       'conditions': [
         [ 'OS=="linux"', {
+          # remove the older style c++11 flag
+          # inherited by node >= 4.x
+          'cflags_cc!' : [
+              '-std=gnu++0x'
+          ],
           'cflags_cc' : [
               '-std=c++11'
           ],
