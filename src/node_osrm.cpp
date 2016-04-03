@@ -15,6 +15,7 @@
 #include <osrm/trip_parameters.hpp>
 #include <osrm/tile_parameters.hpp>
 #include <osrm/bearing.hpp>
+#include <osrm/coordinate.hpp>
 
 #include <boost/optional.hpp>
 #include <boost/assert.hpp>
