@@ -15,6 +15,10 @@ cache:
 
 notifications:
   email: false
+  slack:
+    secure: Gnrl9VgCtWnBpN1UgLmE5TLnYR91X/bQQ3OavskN9vMXrDO5l8Aqx78u7pcE42hBYjLh5NaKyhQkbyPa4o5A+HvG1rj/OJyVvDAZwzktKn+O3VbqvT5Pqq/1ohHxVNZz4M2Ho5ROGhd+u1UhrAkANPM4/Xvd0gFiPTuCngeoZnE=
+    on_success: change
+    on_failure: change
 
 # TODO: no core files on sudo:false machines until https://github.com/travis-ci/travis-ci/issues/3754 is resolved
 sudo: false
