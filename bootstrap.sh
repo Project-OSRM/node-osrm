@@ -130,8 +130,9 @@ function build_osrm() {
       -DCMAKE_LIBRARY_PATH=${MASON_HOME}/lib \
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
       -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}" \
+      -DBoost_USE_STATIC_LIBS=ON \
       ${CMAKE_EXTRA_ARGS}
-    make -j${JOBS} && make install
+    make -j${JOBS} VERBOSE=1 && make install
     popd
 
     popd
