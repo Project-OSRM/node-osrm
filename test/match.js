@@ -35,19 +35,6 @@ test('match: match in Berlin without timestamps', function(assert) {
     });
 });
 
-test('match: match in Berlin with geometry compression', function(assert) {
-    assert.plan(3);
-    var osrm = new OSRM(berlin_path);
-    var options = {
-        coordinates: [[13.393252,52.542648],[13.39478,52.543079],[13.397389,52.542107]]
-    };
-    osrm.match(options, function(err, response) {
-        assert.ifError(err);
-        assert.equal(response.matchings.length, 1);
-        assert.equal('string', typeof response.matchings[0].geometry);
-    });
-});
-
 test('match: match in Berlin without geometry compression', function(assert) {
     assert.plan(4);
     var osrm = new OSRM(berlin_path);
@@ -63,21 +50,35 @@ test('match: match in Berlin without geometry compression', function(assert) {
     });
 });
 
+test('match: match in Berlin with geometry compression', function(assert) {
+    assert.plan(3);
+    var osrm = new OSRM(berlin_path);
+    var options = {
+        coordinates: [[13.393252,52.542648],[13.39478,52.543079],[13.397389,52.542107]]
+    };
+    osrm.match(options, function(err, response) {
+        assert.ifError(err);
+        assert.equal(response.matchings.length, 1);
+        assert.equal('string', typeof response.matchings[0].geometry);
+    });
+});
+
 test('match: match in Berlin with all options', function(assert) {
-    assert.plan(4);
+    assert.plan(5);
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[13.393252,52.542648],[13.39478,52.543079],[13.397389,52.542107]],
         timestamps: [1424684612, 1424684616, 1424684620],
         radiuses: [4.07, 4.07, 4.07],
-        steps: false,
+        steps: true,
         overview: 'false',
         geometries: 'geojson'
     };
     osrm.match(options, function(err, response) {
         assert.ifError(err);
         assert.equal(response.matchings.length, 1);
-        assert.equal(response.matchings[0].confidence > 0, true);
+        assert.ok(response.matchings[0].confidence > 0);
+        assert.ok(response.matchings[0].legs[0].steps.length > 0);
         assert.equal(undefined, response.matchings[0].geometry);
     });
 });
