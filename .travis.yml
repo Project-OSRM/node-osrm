@@ -49,7 +49,7 @@ matrix:
           packages: [ 'g++-4.8' ]
     - os: linux
       compiler: ": gcc-debug-node-v0.10"
-      env: NODE="0.10" TARGET=Release CC="gcc-4.8" CXX="g++-4.8" PUBLISHABLE=true
+      env: NODE="0.10" TARGET=Debug CC="gcc-4.8" CXX="g++-4.8" PUBLISHABLE=true
       addons:
         apt:
           sources: [ 'ubuntu-toolchain-r-test' ]
