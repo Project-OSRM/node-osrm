@@ -112,16 +112,15 @@ test('route: routes Berlin with options', function(assert) {
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
-        alternatives: false,
-        steps: false,
         uturns: true,
         overview: 'false',
-        geometries: 'polyline'
+        geometries: 'polyline',
+        steps: true
     };
     osrm.route(options, function(err, first) {
         assert.ifError(err);
         assert.ok(first.routes);
-        assert.ok(first.routes[0].legs.every(function(l) { return Array.isArray(l.steps) && !l.steps.length; }));
+        assert.ok(first.routes[0].legs.every(function(l) { return Array.isArray(l.steps) && l.steps.length > 0; }));
         assert.equal(first.routes.length, 1);
         assert.notOk(first.routes[0].geometry);
 
@@ -249,9 +248,7 @@ test('route: routes Berlin with hints', function(assert) {
     assert.plan(5);
     var osrm = new OSRM(berlin_path);
     var options = {
-        coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
-        alternatives: false,
-        steps: false
+        coordinates: [[13.43864,52.51993],[13.415852,52.513191]]
     };
     osrm.route(options, function(err, first) {
         assert.ifError(err);
@@ -273,8 +270,6 @@ test('route: routes Berlin with null hints', function(assert) {
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
-        alternatives: false,
-        steps: false,
         hints: [null, null]
     };
     osrm.route(options, function(err, route) {
@@ -300,8 +295,6 @@ test('route: routes Berlin with valid radius values', function(assert) {
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
-        alternatives: false,
-        steps: false,
         radiuses: [100, 100]
     };
     osrm.route(options, function(err, route) {
@@ -322,8 +315,6 @@ test('route: throws on bad radiuses', function(assert) {
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
-        alternatives: false,
-        steps: false,
         radiuses: [10, 10]
     };
     assert.throws(function() { osrm.route({
