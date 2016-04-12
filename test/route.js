@@ -25,7 +25,7 @@ test('route: throws with too few or invalid args', function(assert) {
         /last argument must be a callback function/);
 });
 
-test('route: provides alternatives, by default and when requested', function(assert) {
+test('route: provides no alternatives by default, but when requested', function(assert) {
     assert.plan(6);
     var osrm = new OSRM(berlin_path);
     var options = {coordinates: [[13.302383,52.490516], [13.418427,52.522070]]};
@@ -33,7 +33,7 @@ test('route: provides alternatives, by default and when requested', function(ass
     osrm.route(options, function(err, route) {
         assert.ifError(err);
         assert.ok(route.routes);
-        assert.equal(route.routes.length, 2);
+        assert.equal(route.routes.length, 1);
     });
     options.alternatives = true;
     osrm.route(options, function(err, route) {
