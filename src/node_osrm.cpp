@@ -452,16 +452,16 @@ route_parameters_ptr argumentsToRouteParameter(const Nan::FunctionCallbackInfo<v
 
     v8::Local<v8::Object> obj = Nan::To<v8::Object>(args[0]).ToLocalChecked();
 
-    if (obj->Has(Nan::New("uturns").ToLocalChecked()))
+    if (obj->Has(Nan::New("continue_straight").ToLocalChecked()))
     {
-        auto value = obj->Get(Nan::New("uturns").ToLocalChecked());
+        auto value = obj->Get(Nan::New("continue_straight").ToLocalChecked());
         if (!value->IsBoolean() && !value->IsNull())
         {
-            Nan::ThrowError("'uturns' parama must be boolean or null");
+            Nan::ThrowError("'continue_straight' parama must be boolean or null");
         }
         if (value->IsBoolean())
         {
-            params->uturns = value->BooleanValue();
+            params->continue_straight = value->BooleanValue();
         }
     }
 

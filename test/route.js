@@ -112,7 +112,7 @@ test('route: routes Berlin with options', function(assert) {
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
-        uturns: true,
+        continue_straight: false,
         overview: 'false',
         geometries: 'polyline',
         steps: true
@@ -141,7 +141,7 @@ test('route: invalid route options', function(assert) {
     var osrm = new OSRM(berlin_path);
     assert.throws(function() { osrm.route({
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
-        uturns: []
+        continue_straight: []
     }, function(err, route) {}); },
         /must be boolean/);
     assert.throws(function() { osrm.route({
