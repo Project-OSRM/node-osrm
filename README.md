@@ -73,11 +73,6 @@ Once that is done then you can calculate routes in Javascript like:
 var OSRM = require('osrm')
 var osrm = new OSRM("berlin-latest.osrm");
 
-osrm.locate([52.4224,13.333086], function (err, result) {
-  console.log(result);
-  // Output: {"status":0,"mapped_coordinate":[52.422442,13.332101]}
-});
-
 osrm.nearest([52.4224, 13.333086], function (err, result) {
   console.log(result);
   // Output: {"status":0,"mapped_coordinate":[52.422590,13.333838],"name":"Mariannenstraße"}
