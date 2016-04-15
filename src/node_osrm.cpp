@@ -742,7 +742,7 @@ class Engine final : public Nan::ObjectWrap
     static void trip(const Nan::FunctionCallbackInfo<v8::Value> &args);
 
     static void ParseResult(const osrm::engine::Status result_status_code,
-                            osrm::json::Object result);
+                            osrm::json::Object& result);
 
     template <typename BatonType, typename ParamType, typename AsyncType, typename AfterType>
     static void Run(const Nan::FunctionCallbackInfo<v8::Value> &args,
@@ -961,7 +961,7 @@ void Engine::Run(const Nan::FunctionCallbackInfo<v8::Value> &args,
     return;
 }
 
-void Engine::ParseResult(const osrm::Status result_status, osrm::json::Object result)
+void Engine::ParseResult(const osrm::Status result_status, osrm::json::Object& result)
 {
     const auto code_iter = result.values.find("code");
     const auto end_iter = result.values.end();
