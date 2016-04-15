@@ -18,8 +18,9 @@ else
         echo "Publishing"
         ./node_modules/.bin/node-pre-gyp publish ${NPM_FLAGS}
     elif [[ ${COMMIT_MESSAGE} =~ "[republish binary]" ]]; then
-        echo "Re-Publishing"
-        ./node_modules/.bin/node-pre-gyp unpublish publish ${NPM_FLAGS}
+        echo "*** Error: Republishing is disallowed for this repository"
+        exit 1
+        #./node_modules/.bin/node-pre-gyp unpublish publish ${NPM_FLAGS}
     else
         echo "Skipping publishing"
     fi;
