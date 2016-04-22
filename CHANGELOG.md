@@ -1,7 +1,27 @@
 ## node-osrm changelog
 
-### 4.9.1
- - Uses OSRM 4.9.1
+### v5.0.0-rc.1
+- Update to osrm-backend v5.0.0-rc.1
+
+### v5.0.0-newapi.7
+
+- Updates to osrm-backend v5.0.0-newapi.7:
+  * new file .properties needed by the server
+  * .datasource_names and .datasource_index are not optional anymore
+  * .timestamp is not optional anymore
+  * uturns parameter is not per-via but global
+  * fixes incorrect turn coordinates
+
+### v5.0.0-newapi.6
+
+- [Static turn instructions](https://github.com/Project-OSRM/osrm-backend/pull/2080)
+- [Support multiple traffic update files, and include filename in debug tile metadata](https://github.com/Project-OSRM/osrm-backend/pull/2098)
+
+### v5.0.0-newapi.5
+
+- Fix negative durations
+- Inlcude source descriptors in debug vector tiles
+- Fix bug in processing dead-ends in the guidance code
 
 ### 4.9.0
  - Uses OSRM 4.9.0

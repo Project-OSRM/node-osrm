@@ -21,8 +21,14 @@
       'defines': ['LIBOSRM_GIT_REVISION="<!@(pkg-config libosrm --modversion)"'],
       'conditions': [
         [ 'OS=="linux"', {
+          # remove the older style c++11 flag
+          # inherited by node >= 4.x
+          'cflags_cc!' : [
+              '-std=gnu++0x'
+          ],
           'cflags_cc' : [
-              '-std=c++11'
+              '-std=c++11',
+              '<!@(pkg-config libosrm --cflags)'
           ],
           'libraries':[
               '-Wl,-rpath=<!@(pkg-config libosrm --variable=libdir)',
@@ -53,7 +59,7 @@
       ],
       'cflags_cc!': ['-fno-rtti', '-fno-exceptions'],
       'xcode_settings': {
-        'OTHER_CPLUSPLUSFLAGS':['-Wno-unneeded-internal-declaration', '-Wno-unknown-pragmas'],
+        'OTHER_CPLUSPLUSFLAGS':['-Wno-unneeded-internal-declaration', '-Wno-unknown-pragmas', '<!@(pkg-config libosrm --cflags)'],
         'GCC_ENABLE_CPP_RTTI': 'YES',
         'GCC_ENABLE_CPP_EXCEPTIONS': 'YES'
       }

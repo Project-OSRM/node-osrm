@@ -1,10 +1,27 @@
+#!/bin/bash
 
-./node_modules/.bin/node-pre-gyp package ${NPM_FLAGS}
+echo "dumping binary meta..."
+./node_modules/.bin/node-pre-gyp reveal ${NPM_FLAGS}
 
-COMMIT_MESSAGE=$(git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n')
+echo "determining publishing status..."
 
-if [[ ${COMMIT_MESSAGE} =~ "[publish binary]" ]]; then
-    ./node_modules/.bin/node-pre-gyp publish ${NPM_FLAGS}
-elif [[ ${COMMIT_MESSAGE} =~ "[republish binary]" ]]; then
-    ./node_modules/.bin/node-pre-gyp unpublish publish ${NPM_FLAGS}
-fi;
+if [[ $(./scripts/is_pr_merge.sh) ]]; then
+    echo "Skipping publishing because this is a PR merge commit"
+else
+    echo "This is a push commit, continuing to package..."
+    ./node_modules/.bin/node-pre-gyp package ${NPM_FLAGS}
+
+    COMMIT_MESSAGE=$(git log --format=%B --no-merges | head -n 1 | tr -d '\n')
+    echo "Commit message: ${COMMIT_MESSAGE}"
+
+    if [[ ${COMMIT_MESSAGE} =~ "[publish binary]" ]]; then
+        echo "Publishing"
+        ./node_modules/.bin/node-pre-gyp publish ${NPM_FLAGS}
+    elif [[ ${COMMIT_MESSAGE} =~ "[republish binary]" ]]; then
+        echo "*** Error: Republishing is disallowed for this repository"
+        exit 1
+        #./node_modules/.bin/node-pre-gyp unpublish publish ${NPM_FLAGS}
+    else
+        echo "Skipping publishing"
+    fi;
+fi

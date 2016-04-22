@@ -38,63 +38,61 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <functional>
 
-namespace osrm
-{
-namespace json
+namespace node_osrm
 {
 
-struct v8_renderer : mapbox::util::static_visitor<>
+struct V8Renderer : mapbox::util::static_visitor<>
 {
-    explicit v8_renderer(v8::Local<v8::Value> &_out) : out(_out) {}
+    explicit V8Renderer(v8::Local<v8::Value> &_out) : out(_out) {}
 
-    void operator()(const String &string) const
+    void operator()(const osrm::json::String &string) const
     {
         out = Nan::New(std::cref(string.value)).ToLocalChecked();
     }
 
-    void operator()(const Number &number) const { out = Nan::New(number.value); }
+    void operator()(const osrm::json::Number &number) const { out = Nan::New(number.value); }
 
-    void operator()(const Object &object) const
+    void operator()(const osrm::json::Object &object) const
     {
         v8::Local<v8::Object> obj = Nan::New<v8::Object>();
         for (const auto &keyValue : object.values)
         {
             v8::Local<v8::Value> child;
-            mapbox::util::apply_visitor(v8_renderer(child), keyValue.second);
+            mapbox::util::apply_visitor(V8Renderer(child), keyValue.second);
             obj->Set(Nan::New(keyValue.first).ToLocalChecked(), child);
         }
         out = obj;
     }
 
-    void operator()(const Array &array) const
+    void operator()(const osrm::json::Array &array) const
     {
         v8::Local<v8::Array> a = Nan::New<v8::Array>(array.values.size());
         for (auto i = 0u; i < array.values.size(); ++i)
         {
             v8::Local<v8::Value> child;
-            mapbox::util::apply_visitor(v8_renderer(child), array.values[i]);
+            mapbox::util::apply_visitor(V8Renderer(child), array.values[i]);
             a->Set(i, child);
         }
         out = a;
     }
 
-    void operator()(const True &) const { out = Nan::New(true); }
+    void operator()(const osrm::json::True &) const { out = Nan::New(true); }
 
-    void operator()(const False &) const { out = Nan::New(false); }
+    void operator()(const osrm::json::False &) const { out = Nan::New(false); }
 
-    void operator()(const Null &) const { out = Nan::Null(); }
+    void operator()(const osrm::json::Null &) const { out = Nan::Null(); }
 
   private:
     v8::Local<v8::Value> &out;
 };
 
-inline void render(v8::Local<v8::Value> &out, const Object &object)
+inline void renderToV8(v8::Local<v8::Value> &out, const osrm::json::Object &object)
 {
     // FIXME this should be a cast?
-    Value value = object;
-    mapbox::util::apply_visitor(v8_renderer(out), value);
+    osrm::json::Value value = object;
+    mapbox::util::apply_visitor(V8Renderer(out), value);
 }
 
-} // namespace json
-} // namespace osrm
+}
+
 #endif // JSON_V8_RENDERER_HPP
