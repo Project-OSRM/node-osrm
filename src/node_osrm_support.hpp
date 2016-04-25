@@ -562,6 +562,12 @@ argumentsToTileParameters(const Nan::FunctionCallbackInfo<v8::Value> &args, bool
     params->y = y->Uint32Value();
     params->z = z->Uint32Value();
 
+    if (!params->IsValid())
+    {
+        Nan::ThrowError("Invalid tile coordinates");
+        return tile_parameters_ptr();
+    }
+
     return params;
 }
 
