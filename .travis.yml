@@ -27,8 +27,8 @@ matrix:
   include:
     # Linux
     - os: linux
-      compiler: ": clang-debug-node-v0.10-coverage"
-      env: NODE="0.10" COVERAGE=true CC="clang-3.5" CXX="clang++-3.5" JOBS=6 PUBLISHABLE=false
+      compiler: ": clang-debug-node-v4-coverage"
+      env: NODE="4" COVERAGE=true CC="clang-3.5" CXX="clang++-3.5" JOBS=6 PUBLISHABLE=false
       addons:
         apt:
           sources: [ 'ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.5' ]
@@ -41,15 +41,8 @@ matrix:
           sources: [ 'ubuntu-toolchain-r-test' ]
           packages: [ 'g++-4.8' ]
     - os: linux
-      compiler: ": gcc-release-node-v0.10"
-      env: NODE="0.10" TARGET=Release CC="gcc-4.8" CXX="g++-4.8" PUBLISHABLE=true
-      addons:
-        apt:
-          sources: [ 'ubuntu-toolchain-r-test' ]
-          packages: [ 'g++-4.8' ]
-    - os: linux
-      compiler: ": gcc-debug-node-v0.10"
-      env: NODE="0.10" TARGET=Debug CC="gcc-4.8" CXX="g++-4.8" PUBLISHABLE=true
+      compiler: ": gcc-debug-node-v4"
+      env: NODE="4" TARGET=Debug CC="gcc-4.8" CXX="g++-4.8" PUBLISHABLE=true
       addons:
         apt:
           sources: [ 'ubuntu-toolchain-r-test' ]
@@ -61,15 +54,9 @@ matrix:
       compiler: clang
       env: NODE="4" TARGET=Release PUBLISHABLE=true
     - os: osx
-      # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
       osx_image: xcode7.3 # upgrades clang from 6 -> 7
       compiler: clang
-      env: NODE="0.10" TARGET=Release PUBLISHABLE=true
-    - os: osx
-      # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
-      osx_image: xcode7.3 # upgrades clang from 6 -> 7
-      compiler: clang
-      env: NODE="0.10" TARGET=Debug PUBLISHABLE=true
+      env: NODE="4" TARGET=Debug PUBLISHABLE=true
 
 env:
   global:
