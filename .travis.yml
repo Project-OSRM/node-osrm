@@ -111,3 +111,7 @@ script:
 - if [[ ${PUBLISHABLE} == true ]]; then
     ./scripts/publish.sh;
   fi;
+
+on_failure:
+  - cat "/home/travis/build/Project-OSRM/node-osrm/deps/osrm-backend-Release/build/CMakeFiles/CMakeOutput.log"
+  - cat "/home/travis/build/Project-OSRM/node-osrm/deps/osrm-backend-Release/build/CMakeFiles/CMakeError.log"
