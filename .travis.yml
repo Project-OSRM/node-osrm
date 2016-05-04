@@ -1,4 +1,4 @@
-language: generic
+language: cpp
 
 git:
   depth: 10
@@ -10,8 +10,8 @@ branches:
     - /^v[0-9]/
 
 cache:
-  directories:
-  - $HOME/.ccache
+  apt: true
+  ccache: true
 
 notifications:
   email: false
@@ -28,7 +28,7 @@ matrix:
     # Linux
     - os: linux
       compiler: ": clang-debug-node-v4-coverage"
-      env: NODE="4" COVERAGE=true CC="clang-3.5" CXX="clang++-3.5" JOBS=6 PUBLISHABLE=false
+      env: NODE="4" COVERAGE=true CC="clang-3.5" CXX="clang++-3.5" PUBLISHABLE=false
       addons:
         apt:
           sources: [ 'ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.5' ]
@@ -62,7 +62,7 @@ env:
   global:
    - CCACHE_TEMPDIR=/tmp/.ccache-temp
    - CCACHE_COMPRESS=1
-   - JOBS: "1"
+   - JOBS=2
    - secure: KitzGZjoDblX/3heajcvssGz0JnJ/k02dr2tu03ksUV+6MogC3RSQudqyKY57+f8VyZrcllN/UOlJ0Q/3iG38Oz8DljC+7RZxtkVmE1SFBoOezKCdhcvWM12G3uqPs7hhrRxuUgIh0C//YXEkulUrqa2H1Aj2xeen4E3FAqEoy0=
    - secure: WLGmxl6VTVWhXGm6X83GYNYzPNsvTD+9usJOKM5YBLAdG7cnOBQBNiCCUKc9OZMMZVUr3ec2/iigakH5Y8Yc+U6AlWKzlORyqWLuk4nFuoedu62x6ocQkTkuOc7mHiYhKd21xTGMYauaZRS6kugv4xkpGES2UjI2T8cjZ+LN2jU=
 
@@ -79,10 +79,6 @@ before_install:
     sudo sysctl -w kern.sysv.shmseg=128
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python/site-packages;
     brew install md5sha1sum;
-    # osrm-backend picks up ccache automatically
-    # since osx does not support caching we want to avoid
-    # since since it will just slow down builds
-    brew rm ccache || true;
   fi
 # Mac OS X does not have nvm installed
 - source ./scripts/install_node.sh ${NODE}
