@@ -6,16 +6,21 @@ $(error OSRM_RELEASE variable was not correct set)
 endif
 
 CAR_PROFILE_URL:=https://raw.githubusercontent.com/Project-OSRM/osrm-backend/$(OSRM_RELEASE)/profiles/car.lua
-PROFILE_LIB_URL:=https://raw.githubusercontent.com/Project-OSRM/osrm-backend/$(OSRM_RELEASE)/profiles/lib/access.lua
+PROFILE_LIB_ACCESS_URL:=https://raw.githubusercontent.com/Project-OSRM/osrm-backend/$(OSRM_RELEASE)/profiles/lib/access.lua
+PROFILE_LIB_DESTINATION_URL:=https://raw.githubusercontent.com/Project-OSRM/osrm-backend/$(OSRM_RELEASE)/profiles/lib/destination.lua
 BERLIN_URL:=https://s3.amazonaws.com/mapbox/node-osrm/testing/berlin-latest.osm.pbf
 
 all: berlin-latest.osrm.hsgr
 
+lib/destination.lua:
+	mkdir -p lib
+	wget $(PROFILE_LIB_DESTINATION_URL) -O lib/destination.lua
+
 lib/access.lua:
 	mkdir -p lib
-	wget $(PROFILE_LIB_URL) -O lib/access.lua
+	wget $(PROFILE_LIB_ACCESS_URL) -O lib/access.lua
 
-car.lua: lib/access.lua
+car.lua: lib/access.lua lib/destination.lua
 	wget $(CAR_PROFILE_URL) -O car.lua
 
 clean:
@@ -39,6 +44,6 @@ berlin-latest.osrm.hsgr: berlin-latest.osrm car.lua $(OSRM_CONTRACT)
 	@PATH="${PATH}:../../lib/binding" && osrm-contract berlin-latest.osrm
 
 checksum:
-	md5sum lib/access.lua car.lua berlin-latest.osm.pbf > data.md5sum
+	md5sum lib/access.lua lib/destination.lua car.lua berlin-latest.osm.pbf > data.md5sum
 
 .PHONY: clean checksum
