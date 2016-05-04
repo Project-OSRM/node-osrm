@@ -95,7 +95,7 @@ install:
     CMD="${CMD} coverage";
   fi
 - ${CMD}
-- if [[ $(uname -s) == 'Linux' ]]; then du $HOME/.ccache -h --max-depth=1 | sort -hr; fi;
+- ccache -s
 
 before_script:
 - ulimit -c unlimited -S
