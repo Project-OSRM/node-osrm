@@ -1,4 +1,5 @@
-language: cpp
+# We actually depend on this being the generic image
+language: generic
 
 git:
   depth: 10
