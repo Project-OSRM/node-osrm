@@ -130,6 +130,7 @@ function build_osrm() {
       -DBoost_USE_STATIC_LIBS=ON \
       ${CMAKE_EXTRA_ARGS}
     make -j${JOBS} VERBOSE=1 && make install
+    ccache -s
     popd
 
     popd
