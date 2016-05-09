@@ -1,5 +1,10 @@
 ## node-osrm changelog
 
+### v5.1.0
+ - Updated to OSRM v5.1.0
+ - Data format broke with regard to v5.0.0
+ - For detailed changelog see osrm-backend changelog
+
 ### v5.0.0-rc.2
 - Update to osrm-backend v5.0.0-rc.2
 
