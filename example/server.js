@@ -1,8 +1,12 @@
+
+process.env.UV_THREADPOOL_SIZE = Math.ceil(require('os').cpus().length * 1.5);
+
 var express = require('express');
 var OSRM = require('../');
+var path = require('path');
 
 var app = express();
-var osrm = new OSRM("berlin-latest.osrm");
+var osrm = new OSRM(path.join(__dirname,"../test/data/berlin-latest.osrm"));
 
 // Accepts a query like:
 // http://localhost:8888?start=52.519930,13.438640&end=52.513191,13.415852
