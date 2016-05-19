@@ -2,6 +2,9 @@
 
 set -e
 
+# we pin the mason version to avoid changes in mason breaking builds
+MASON_VERSION="545ef8c"
+
 if [[ `which pkg-config` ]]; then
     echo "Success: Found pkg-config";
 else
@@ -41,7 +44,7 @@ echo
 function all_deps() {
     dep cmake 3.2.2 &
     dep lua 5.3.0 &
-    dep luabind dev &
+    dep luabind e414c57bcb687bb3091b7c55bbff6947f052e46b &
     dep boost 1.57.0 &
     dep boost_libsystem 1.57.0 &
     dep boost_libthread 1.57.0 &
@@ -53,7 +56,7 @@ function all_deps() {
     dep boost_libdate_time 1.57.0 &
     dep expat 2.1.0 &
     dep stxxl 1.4.1 &
-    dep bzip 1.0.6 &
+    dep bzip2 1.0.6 &
     dep zlib system &
     dep tbb 43_20150316 &
     wait
@@ -135,8 +138,6 @@ function build_osrm() {
 
     popd
 }
-
-MASON_VERSION="694d08c"
 
 function setup_mason() {
     if [[ ! -d ./.mason ]]; then
