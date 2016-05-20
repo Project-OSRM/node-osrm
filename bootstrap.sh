@@ -3,7 +3,7 @@
 set -e
 
 # we pin the mason version to avoid changes in mason breaking builds
-MASON_VERSION="545ef8c"
+MASON_VERSION="3e0cc5a"
 
 if [[ `which pkg-config` ]]; then
     echo "Success: Found pkg-config";
@@ -45,15 +45,15 @@ function all_deps() {
     dep cmake 3.2.2 &
     dep lua 5.3.0 &
     dep luabind e414c57bcb687bb3091b7c55bbff6947f052e46b &
-    dep boost 1.57.0 &
-    dep boost_libsystem 1.57.0 &
-    dep boost_libthread 1.57.0 &
-    dep boost_libfilesystem 1.57.0 &
-    dep boost_libprogram_options 1.57.0 &
-    dep boost_libregex 1.57.0 &
-    dep boost_libiostreams 1.57.0 &
-    dep boost_libtest 1.57.0 &
-    dep boost_libdate_time 1.57.0 &
+    dep boost 1.61.0 &
+    dep boost_libsystem 1.61.0 &
+    dep boost_libthread 1.61.0 &
+    dep boost_libfilesystem 1.61.0 &
+    dep boost_libprogram_options 1.61.0 &
+    dep boost_libregex 1.61.0 &
+    dep boost_libiostreams 1.61.0 &
+    dep boost_libtest 1.61.0 &
+    dep boost_libdate_time 1.61.0 &
     dep expat 2.1.0 &
     dep stxxl 1.4.1 &
     dep bzip2 1.0.6 &
