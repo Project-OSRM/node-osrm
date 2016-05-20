@@ -1,5 +1,8 @@
 ## node-osrm changelog
 
+### v5.1.1
+ - Fix issue #189: Node didn't utilize all threads for OSRM
+
 ### v5.1.0
  - Updated to OSRM v5.1.0
  - Data format broke with regard to v5.0.0
