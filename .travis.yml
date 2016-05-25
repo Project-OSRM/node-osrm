@@ -88,14 +88,16 @@ install:
 - if [[ ${COVERAGE} == true ]]; then
     PYTHONUSERBASE=$(pwd)/mason_packages/.link pip install --user cpp-coveralls;
   fi;
-- CMD="make"
 - |
   if [[ ${TARGET} == 'Debug' ]]; then
-    CMD="${CMD} debug";
+    export BUILD_TYPE=Debug && source ./bootstrap.sh
   elif [[ ${COVERAGE} == true ]]; then
-    CMD="${CMD} coverage";
+    export BUILD_TYPE=Debug && source ./bootstrap.sh
+    export LDFLAGS="--coverage" && export CXXFLAGS="--coverage"
+  else
+    source ./bootstrap.sh
   fi
-- ${CMD}
+- npm install --build-from-source ${NPM_FLAGS} --clang=1
 
 before_script:
 - ulimit -c unlimited -S

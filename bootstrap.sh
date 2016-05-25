@@ -177,6 +177,8 @@ function main() {
     LINK_FLAGS=""
     if [[ $(uname -s) == 'Linux' ]]; then
         LINK_FLAGS="${LINK_FLAGS} "'-Wl,-z,origin -Wl,-rpath=\$ORIGIN'
+        # ensure rpath is picked up by node-osrm build
+        export LDFLAGS='-Wl,-z,origin -Wl,-rpath=\$$ORIGIN '${LDFLAGS}
     fi
 
     build_osrm
