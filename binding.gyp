@@ -2,7 +2,6 @@
   'includes': [ 'common.gypi' ],
   'variables': {
       'std%':'ansi',
-      'runtime_link%':'static',
       "module_name":"<!(node -e \"console.log(require('./package.json').binary.module_name)\")",
       "module_path":"<!(node -e \"console.log(require('./package.json').binary.module_path)\")",
   },
@@ -15,8 +14,7 @@
           './src/'
       ],
       'libraries': [
-        '<!@(pkg-config libosrm --libs)',
-        '-ltbb'
+        '<!@(pkg-config libosrm --libs --static)'
       ],
       'defines': ['LIBOSRM_GIT_REVISION="<!@(pkg-config libosrm --modversion)"'],
       'conditions': [
@@ -36,11 +34,6 @@
               '-lboost_regex'
           ]}
         ],
-        ['runtime_link == "static"', {
-            'libraries': [
-                '<!@(pkg-config libosrm --libs --static)'
-             ]
-        }],
         ['OS=="mac"', {
           'xcode_settings': {
             'CLANG_CXX_LIBRARY': 'libc++',
