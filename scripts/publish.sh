@@ -3,6 +3,20 @@
 echo "dumping binary meta..."
 ./node_modules/.bin/node-pre-gyp reveal ${NPM_FLAGS}
 
+# enforce that binary has proper ORIGIN flags so that
+# it can portably find libtbb.so in the same directory
+if [[ $(uname -s) == 'Linux' ]]; then
+    readelf -d ./lib/binding/osrm.node > readelf-output.txt
+    if grep -q 'Flags: ORIGIN' readelf-output.txt; then
+        echo "Found ORIGIN flag in readelf output"
+        cat readelf-output.txt
+    else
+        echo "*** Error: Could not found ORIGIN flag in readelf output"
+        cat readelf-output.txt
+        exit 1
+    fi
+fi
+
 echo "determining publishing status..."
 
 if [[ $(./scripts/is_pr_merge.sh) ]]; then
