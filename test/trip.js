@@ -147,7 +147,7 @@ test('trip: trip through Berlin with options', function(assert) {
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
-        steps: false,
+        steps: true,
         overview: 'false'
     };
     osrm.trip(options, function(err, trip) {
@@ -155,7 +155,8 @@ test('trip: trip through Berlin with options', function(assert) {
         assert.equal(trip.trips.length, 1);
         for (t = 0; t < trip.trips.length; t++) {
             assert.ok(trip.trips[t]);
-            assert.notOk(trip.trips[t].legs.some(function(l) { return l.steps.length; }))
+            assert.ok(trip.trips[t].legs.every(function(l) { return l.steps.length; }))
+            assert.ok(trip.trips[t].legs.every(function(l) { return l.annotation; }))
             assert.notOk(trip.trips[t].geometry);
         }
     });
