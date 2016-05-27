@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace node_osrm
 {
 
-struct V8Renderer : mapbox::util::static_visitor<>
+struct V8Renderer
 {
     explicit V8Renderer(v8::Local<v8::Value> &_out) : out(_out) {}
 
