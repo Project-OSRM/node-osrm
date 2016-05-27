@@ -44,7 +44,7 @@ test('route: provides no alternatives by default, but when requested', function(
 });
 
 test('route: throws with bad params', function(assert) {
-    assert.plan(9);
+    assert.plan(11);
     var osrm = new OSRM(berlin_path);
     assert.throws(function () { osrm.route({coordinates: []}, function(err) {}) });
     assert.throws(function() { osrm.route({}, function(err, route) {}) },
@@ -109,7 +109,7 @@ test('route: routes Berlin without geometry compression', function(assert) {
 });
 
 test('route: routes Berlin with options', function(assert) {
-    assert.plan(8);
+    assert.plan(11);
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
@@ -126,8 +126,8 @@ test('route: routes Berlin with options', function(assert) {
         assert.equal(first.routes.length, 1);
         assert.notOk(first.routes[0].geometry);
         assert.ok(first.routes[0].legs[0]);
-        assert.ok(first.routes[0].legs.every(l => {l.steps.length > 0 }));
-        assert.ok(first.routes[0].legs.every(l => {l.annotation}));
+        assert.ok(first.routes[0].legs.every(l => { return l.steps.length > 0; }), 'every leg has steps');
+        assert.ok(first.routes[0].legs.every(l => { return l.annotation;}), 'every leg has annotations');
 
         options.overview = 'full';
         osrm.route(options, function(err, full) {
