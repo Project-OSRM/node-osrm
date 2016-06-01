@@ -409,7 +409,7 @@ NAN_METHOD(Engine::trip) //
  * @name Route
  * @memberof Responses
  *
- * [see documentation here](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#route)
+ * @param {documentation} [in `osrm-backend`](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#route)
  *
  */
 
@@ -419,7 +419,7 @@ NAN_METHOD(Engine::trip) //
  * @name RouteLeg
  * @memberof Responses
  *
- * [see documentation here](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#routeleg)
+ * @param {documentation} [in `osrm-backend`](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#routeleg)
  *
  */
 
@@ -429,7 +429,7 @@ NAN_METHOD(Engine::trip) //
  * @name RouteStep
  * @memberof Responses
  *
- * [see documentation here](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#routestep)
+ * @param {documentation} [in `osrm-backend`](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#routestep)
  *
  */
 
@@ -438,7 +438,7 @@ NAN_METHOD(Engine::trip) //
  * @name StepManeuver
  * @memberof Responses
  *
- * [see documentation here](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#stepmaneuver)
+ * @param {documentation} [in `osrm-backend`](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#stepmanuever)
  *
  */
 
@@ -448,7 +448,8 @@ NAN_METHOD(Engine::trip) //
  * @name Waypoint
  * @memberof Responses
  *
- * [see documentation here](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#waypoint)
+ * @param {documentation} [in `osrm-backend`](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#waypoint)
+ *
  */
 
 } // namespace node_osrm

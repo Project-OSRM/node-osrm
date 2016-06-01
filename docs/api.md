@@ -245,20 +245,40 @@ sub-trip the point was matched to, and 2) `waypoint_index`: index of the point i
 
 Responses
 
-# Route
+## Route
 
 Represents a route through (potentially multiple) waypoints.
 
-# RouteLeg
+**Parameters**
+
+-   `documentation`  `osrm-backend`](<https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#route>)
+
+## RouteLeg
 
 Represents a route between two waypoints.
 
-# RouteStep
+**Parameters**
+
+-   `documentation`  `osrm-backend`](<https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#routeleg>)
+
+## RouteStep
 
 A step consists of a maneuver such as a turn or merge, followed by a distance of travel along a single way to the subsequent step.
 
-# StepManeuver
+**Parameters**
 
-# Waypoint
+-   `documentation`  `osrm-backend`](<https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#routestep>)
+
+## StepManeuver
+
+**Parameters**
+
+-   `documentation`  `osrm-backend`](<https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#stepmanuever>)
+
+## Waypoint
 
 Object used to describe waypoint on a route.
+
+**Parameters**
+
+-   `documentation`  `osrm-backend`](<https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#waypoint>)
