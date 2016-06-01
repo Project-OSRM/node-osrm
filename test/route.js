@@ -44,7 +44,7 @@ test('route: provides no alternatives by default, but when requested', function(
 });
 
 test('route: throws with bad params', function(assert) {
-    assert.plan(9);
+    assert.plan(11);
     var osrm = new OSRM(berlin_path);
     assert.throws(function () { osrm.route({coordinates: []}, function(err) {}) });
     assert.throws(function() { osrm.route({}, function(err, route) {}) },
@@ -61,10 +61,11 @@ test('route: throws with bad params', function(assert) {
         /Coordinates must be an array of \(lon\/lat\) pairs/);
     assert.throws(function() { osrm.route({coordinates: [[13.43864,52.51993],[13.415852,52.513191]], hints: null}, function(err, route) {}) },
         /Hints must be an array of strings\/null/);
+    assert.throws(function() { osrm.route({coordinates: [[13.43864,52.51993],[13.415852,52.513191]], steps: null}, function(err, route) {}) });
+    assert.throws(function() { osrm.route({coordinates: [[13.43864,52.51993],[13.415852,52.513191]], annotations: null}, function(err, route) {}) });
     var options = {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         alternateRoute: false,
-        printInstructions: false,
         hints: [13.438640, 52.519930]
     };
     assert.throws(function() { osrm.route(options, function(err, route) {}) },
@@ -108,14 +109,15 @@ test('route: routes Berlin without geometry compression', function(assert) {
 });
 
 test('route: routes Berlin with options', function(assert) {
-    assert.plan(8);
+    assert.plan(11);
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         continue_straight: false,
         overview: 'false',
         geometries: 'polyline',
-        steps: true
+        steps: true,
+        annotations: true
     };
     osrm.route(options, function(err, first) {
         assert.ifError(err);
@@ -123,6 +125,9 @@ test('route: routes Berlin with options', function(assert) {
         assert.ok(first.routes[0].legs.every(function(l) { return Array.isArray(l.steps) && l.steps.length > 0; }));
         assert.equal(first.routes.length, 1);
         assert.notOk(first.routes[0].geometry);
+        assert.ok(first.routes[0].legs[0]);
+        assert.ok(first.routes[0].legs.every(l => { return l.steps.length > 0; }), 'every leg has steps');
+        assert.ok(first.routes[0].legs.every(l => { return l.annotation;}), 'every leg has annotations');
 
         options.overview = 'full';
         osrm.route(options, function(err, full) {

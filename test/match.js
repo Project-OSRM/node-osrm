@@ -64,21 +64,23 @@ test('match: match in Berlin with geometry compression', function(assert) {
 });
 
 test('match: match in Berlin with all options', function(assert) {
-    assert.plan(5);
+    assert.plan(6);
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[13.393252,52.542648],[13.39478,52.543079],[13.397389,52.542107]],
         timestamps: [1424684612, 1424684616, 1424684620],
         radiuses: [4.07, 4.07, 4.07],
         steps: true,
+        annotations: true,
         overview: 'false',
         geometries: 'geojson'
     };
     osrm.match(options, function(err, response) {
         assert.ifError(err);
         assert.equal(response.matchings.length, 1);
-        assert.ok(response.matchings[0].confidence > 0);
-        assert.ok(response.matchings[0].legs[0].steps.length > 0);
+        assert.ok(response.matchings[0].confidence > 0, 'has confidence');
+        assert.ok(response.matchings[0].legs.every((l) => {return l.steps.length > 0; }), 'every leg has steps');
+        assert.ok(response.matchings[0].legs.every((l) => {return l.annotation; }), 'every leg has annotations');
         assert.equal(undefined, response.matchings[0].geometry);
     });
 });

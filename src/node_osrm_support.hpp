@@ -402,11 +402,34 @@ inline bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &arg
 }
 
 template <typename ParamType>
-inline bool parseCommonParameters(const v8::Local<v8::Object> obj, ParamType &params)
+inline bool parseCommonParameters(const v8::Local<v8::Object> &obj, ParamType &params)
 {
     if (obj->Has(Nan::New("steps").ToLocalChecked()))
     {
-        params->steps = obj->Get(Nan::New("steps").ToLocalChecked())->BooleanValue();
+        auto steps = obj->Get(Nan::New("steps").ToLocalChecked());
+        if (steps->IsBoolean())
+        {
+            params->steps = steps->BooleanValue();
+        }
+        else
+        {
+            Nan::ThrowError("'steps' param must be a boolean");
+            return false;
+        }
+    }
+
+    if (obj->Has(Nan::New("annotations").ToLocalChecked()))
+    {
+        auto annotations = obj->Get(Nan::New("annotations").ToLocalChecked());
+        if (annotations->IsBoolean())
+        {
+            params->annotations = annotations->BooleanValue();
+        }
+        else
+        {
+            Nan::ThrowError("'annotations' param must be a boolean");
+            return false;
+        }
     }
 
     if (obj->Has(Nan::New("geometries").ToLocalChecked()))
