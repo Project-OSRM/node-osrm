@@ -251,7 +251,7 @@ Represents a route through (potentially multiple) waypoints.
 
 **Parameters**
 
--   `documentation`  `osrm-backend`](<https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#route>)
+-   `exteral` **documentation** in [`osrm-backend`](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#route)
 
 ## RouteLeg
 
@@ -259,7 +259,7 @@ Represents a route between two waypoints.
 
 **Parameters**
 
--   `documentation`  `osrm-backend`](<https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#routeleg>)
+-   `exteral` **documentation** in [`osrm-backend`](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#routeleg)
 
 ## RouteStep
 
@@ -267,13 +267,13 @@ A step consists of a maneuver such as a turn or merge, followed by a distance of
 
 **Parameters**
 
--   `documentation`  `osrm-backend`](<https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#routestep>)
+-   `exteral` **documentation** in [`osrm-backend`](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#routestep)
 
 ## StepManeuver
 
 **Parameters**
 
--   `documentation`  `osrm-backend`](<https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#stepmanuever>)
+-   `exteral` **documentation** in [`osrm-backend`](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#stepmanuever)
 
 ## Waypoint
 
@@ -281,4 +281,4 @@ Object used to describe waypoint on a route.
 
 **Parameters**
 
--   `documentation`  `osrm-backend`](<https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#waypoint>)
+-   `exteral` **documentation** in [`osrm-backend`](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#waypoint)

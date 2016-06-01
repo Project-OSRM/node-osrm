@@ -409,7 +409,7 @@ NAN_METHOD(Engine::trip) //
  * @name Route
  * @memberof Responses
  *
- * @param {documentation} [in `osrm-backend`](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#route)
+ * @param {documentation} exteral in [`osrm-backend`](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#route)
  *
  */
 
@@ -419,7 +419,7 @@ NAN_METHOD(Engine::trip) //
  * @name RouteLeg
  * @memberof Responses
  *
- * @param {documentation} [in `osrm-backend`](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#routeleg)
+ * @param {documentation} exteral in [`osrm-backend`](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#routeleg)
  *
  */
 
@@ -429,7 +429,7 @@ NAN_METHOD(Engine::trip) //
  * @name RouteStep
  * @memberof Responses
  *
- * @param {documentation} [in `osrm-backend`](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#routestep)
+ * @param {documentation} exteral in [`osrm-backend`](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#routestep)
  *
  */
 
@@ -438,7 +438,7 @@ NAN_METHOD(Engine::trip) //
  * @name StepManeuver
  * @memberof Responses
  *
- * @param {documentation} [in `osrm-backend`](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#stepmanuever)
+ * @param {documentation} exteral in [`osrm-backend`](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#stepmanuever)
  *
  */
 
@@ -448,7 +448,7 @@ NAN_METHOD(Engine::trip) //
  * @name Waypoint
  * @memberof Responses
  *
- * @param {documentation} [in `osrm-backend`](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#waypoint)
+ * @param {documentation} exteral in [`osrm-backend`](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#waypoint)
  *
  */
 
