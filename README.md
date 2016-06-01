@@ -7,6 +7,10 @@ Provides read-only bindings to the [Open Source Routing Machine - OSRM](https://
 |:-------------|:------------|
 | Linux/OS X   | [![Build Status](https://travis-ci.org/Project-OSRM/node-osrm.svg?branch=master)](https://travis-ci.org/Project-OSRM/node-osrm) [![Coverage Status](https://coveralls.io/repos/Project-OSRM/node-osrm/badge.svg?branch=master)](https://coveralls.io/r/Project-OSRM/node-osrm?branch=master) |
 
+# Documentation
+
+See [docs/api.md](docs/api.md) for extensive API documentation. You can find a simple example in `example/server.js`.
+
 # Depends
 
  - Node.js v0.10.x or v4.x
@@ -36,7 +40,7 @@ sudo apt-get install g++-4.8
 By default, binaries are provided for:
 
  - 64 bit OS X and 64 bit Linux
- - Node v0.10.x
+ - Node v4.x
 
 On those platforms no external dependencies are needed.
 
@@ -45,10 +49,6 @@ Just do:
     npm install osrm
 
 However other platforms will fall back to a source compile: see [Source Build](#source-build) for details.
-
-# Usage
-
-See the `example/server.js` and `test/osrm.test.js` for examples of using OSRM through this Node.js API.
 
 # Setup
 
