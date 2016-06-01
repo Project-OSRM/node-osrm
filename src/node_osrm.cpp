@@ -438,7 +438,7 @@ NAN_METHOD(Engine::trip) //
  * @name StepManeuver
  * @memberof Responses
  *
- * @param {documentation} exteral in [`osrm-backend`](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#stepmanuever)
+ * @param {documentation} exteral in [`osrm-backend`](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#stepmaneuver)
  *
  */
 
