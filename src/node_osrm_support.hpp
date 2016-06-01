@@ -294,8 +294,8 @@ inline bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &arg
                     short bearing_first = static_cast<short>(bearing_pair->Get(0)->NumberValue());
                     short bearing_second = static_cast<short>(bearing_pair->Get(1)->NumberValue());
 
-                    if (bearing_first < 0 || bearing_first >= 360 || bearing_second < 0 ||
-                        bearing_second >= 360)
+                    if (bearing_first < 0 || bearing_first > 360 || bearing_second < 0 ||
+                        bearing_second > 360)
                     {
                         Nan::ThrowError("Bearing values need to be in range 0..360");
                         return false;

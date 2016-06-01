@@ -207,7 +207,7 @@ test('route: valid bearing values', function(assert) {
         assert.ifError(err);
         assert.ok(route.routes[0]);
     });
-    options.bearings = [null, [250, 180]];
+    options.bearings = [null, [360, 180]];
     osrm.route(options, function(err, route) {
         assert.ifError(err);
         assert.ok(route.routes[0]);
