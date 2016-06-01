@@ -189,6 +189,7 @@ inline void async(const Nan::FunctionCallbackInfo<v8::Value> &info,
  * @param {Object} options Object literal containing parameters for the route query.
  * @param {Boolean} [options.alternatives=false] Search for alternative routes and return as well. *Please note that even if an alternative route is requested, a result cannot be guaranteed.*
  * @param {Boolean} [options.steps=false] Return route steps for each route leg.
+ * @param {Boolean} [options.annotations=false] Return annotations for each route leg.
  * @param {String} [options.geometries=polyline] Returned route geometry format (influences overview and per step). Can also be `geojson`.
  * @param {String} [options.overview=simplified] Add overview geometry either `full`, `simplified` according to highest zoom level it could be display on, or not at all (`false`).
  * @param {Boolean} [options.continue_straight] Forces the route to keep going straight at waypoints and don't do a uturn even if it would be faster. Default value depends on the profile. `null`/`true`/`false`
@@ -318,6 +319,7 @@ NAN_METHOD(Engine::tile)
  * @memberof OSRM
  * @param {Object} options - Object literal containing parameters for the match query.
  * @param {Boolean} [options.steps=false] Return route steps for each route.
+ * @param {Boolean} [options.annotations=false] Return annotations for each route leg.
  * @param {String} [options.geometries=polyline] Returned route geometry format (influences overview
  * and per step). Can also be `geojson`.
  * @param {String} [options.overview=simplified] Add overview geometry either `full`, `simplified`
@@ -365,6 +367,7 @@ NAN_METHOD(Engine::match) //
  * @memberof OSRM
  * @param {Object} options - Object literal containing parameters for the trip query.
  * @param {Boolean} [options.steps=false] Return route steps for each route.
+ * @param {Boolean} [options.annotations=false] Return annotations for each route leg.
  * @param {String} [options.geometries=polyline] Returned route geometry format (influences overview
  * and per step). Can also be `geojson`.
  * @param {String} [options.overview=simplified] Add overview geometry either `full`, `simplified`
@@ -406,31 +409,8 @@ NAN_METHOD(Engine::trip) //
  * @name Route
  * @memberof Responses
  *
- * @property {number} distance - The distance traveled by the route, in `float` meters.
- * @property {number} duration - The estimated travel time, in `float` number of seconds.
- * @property {number} geometry - The whole geometry of the route value depending on overview parameter,
- * format depending on the geometries parameter. See [`RouteStep`'s](#routestep) geometry field for a parameter documentation.
- * @property {Object} legs - The legs between the given waypoints, an array of [`RouteLeg`](#routeleg) objects.
+ * [see documentation here](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#route)
  *
- * @example
- * // Three input coordinates, geometry=geojson, steps=false
- * {
- *   distance: 90.,
- *   duration: 300.,
- *   geometry: {type: LineString, coordinates: [[120., 10.], [120.1, 10.], [120.2, 10.], [120.3, 10.]]},
- *   legs: [
- *     {
- *       distance: 30.,
- *       duration: 100,
- *       steps: []
- *     },
- *     {
- *       distance: 60.,
- *       duration: 200,
- *       steps: []
- *     }
- *   ]
- * }
  */
 
 /**
@@ -439,20 +419,8 @@ NAN_METHOD(Engine::trip) //
  * @name RouteLeg
  * @memberof Responses
  *
- * @property {number} distance - The distance traveled by the route, in `float` meters.
- * @property {number} duration - The estimated travel time, in `float` number of seconds.
- * @property {string} summary - Summary of the route taken as string. Depends on the `steps` parameter.
- * Provides the names of the two major roads used. Can be empty if route is too short.
- * @property {Array} steps - array of [`RouteStep`](#routestep) objects describing the turn-by-turn
- * instructions. Depends on the `steps` parameter.
+ * [see documentation here](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#routeleg)
  *
- * @example
- * // with steps=false
- * {
- *   distance: 30.,
- *   duration: 100,
- *   steps: []
- * }
  */
 
 /**
@@ -461,73 +429,16 @@ NAN_METHOD(Engine::trip) //
  * @name RouteStep
  * @memberof Responses
  *
- * @property {number} distance - The distance traveled by the route, in `float` meters.
- * @property {number} duration - The estimated travel time, in `float` number of seconds.
- * @property {number} geometry - The unsimplified geometry of the route segment, depending
- * on the `geometries` parameter.
- * @property {string} name - The name of the way along which travel proceeds.
- * @property {string} mode - A string signifying the mode of transportation.
- * @property {Object} maneuver - A [`StepManeuver`](#stepmaneuver) object representing the maneuver.
- *
- * @example
+ * [see documentation here](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#routestep)
  *
  */
 
 /**
- * Information about a specific maneuver, including bearings and type.
- *
- * #### Maneuver `type` descriptions
- *
- * | `type`            | Description                                                  |
- * |-------------------|--------------------------------------------------------------|
- * | turn              | a basic turn into direction of the `modifier`                |
- * | new name          | no turn is taken, but the road name changes                  |
- * | depart            | indicates the departure of the leg                           |
- * | arrive            | indicates the destination of the leg                         |
- * | merge             | merge onto a street (e.g. getting on the highway from a ramp |
- * | ramp              | take a ramp to exit a highway                                |
- * | fork              | take the left/right side at a fork depending on `modifier`   |
- * | end of road       | road ends in a T intersection turn in direction of `modifier`|
- * | continue          | Turn in direction of `modifier` to stay on the same road     |
- * | roundabout        | traverse roundabout, has additional field `exit` with NR if the roundabout is left. |
- * | rotary            | a larger version of a roundabout, can offer `rotary_name` in addition to the `exit` parameter.  |
- * | notification      | not an actual turn but a change in the driving conditions. For example the travel mode. |
- *
- * Please note that even though there are `new name` and `notification` instructions, the `mode` and `name` can change
- * between all instructions. They only offer a fallback in case nothing else is to report.
- *
- * #### `modifier` descriptions
- *
- * | `modifier`        | Description                               |
- * |-------------------|-------------------------------------------|
- * | uturn             | indicates  reversal of direction          |
- * | sharp right       | a sharp right turn                        |
- * | right             | a normal turn to the right                |
- * | slight right      | a slight turn to the right                |
- * | straight          | no relevant change in direction           |
- * | slight left       | a slight turn to the left                 |
- * | left              | a normal turn to the left                 |
- * | sharp left        | a sharp turn to the left                  |
  *
  * @name StepManeuver
  * @memberof Responses
  *
- * @property {Array} location - A `[longitude, latitude]` pair describing the location of the turn.
- * @property {number} bearing_before - The clockwise angle from true north to the direction of travel
- * immediately before the maneuver.
- * @property {number} bearing_after - The clockwise angle from true north to the direction of travel
- * immediately after the maneuver.
- * @property {string} type - A string indicating the [type of maneuver](#maneuver-type-descriptions).
- * @property {string} modifier - An optional string indicating the direction change of the maneuver. See the
- * [modifier types](#modifier-type-descriptions). The meaning depends on the `type` field.
- * `turn`: `modifier` indicates the change in direction accomplished through the turn.
- * `depart`/`arrive`: `modifier` indicates the position of departure point and arrival point in relation
- * to the current direction of travel.
- * @property {number} exit - An optional integer indicating number of the exit to take.
- * The field exists for the following `type` field:
- * `roundabout`: number of the roundabout exit to take. If exit is undefined the destination is on the roundabout.
- * `turn` or `end of road`: Indicates the number of intersections passed until the turn.
- * Example instruction: "at the fourth intersection, turn left".
+ * [see documentation here](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#stepmaneuver)
  *
  */
 
@@ -537,11 +448,7 @@ NAN_METHOD(Engine::trip) //
  * @name Waypoint
  * @memberof Responses
  *
- * @property {string} name - Name of the street the coordinate snapped to.
- * @property {Array} location - Array that contains the `[longitude, latitude]` pair of the snapped coordinate.
- * @property {number} hint - Unique internal identifier of the segment (ephemeral, not constant over data updates)
- * This can be used on subsequent request to significantly speed up the query and to connect multiple services.
- * E.g. you can use the `hint` value obtained by the `nearest` query as `hint` values for `route` inputs.
+ * [see documentation here](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#waypoint)
  */
 
 } // namespace node_osrm

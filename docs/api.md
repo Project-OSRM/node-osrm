@@ -40,6 +40,7 @@ Returns the fastest route between two or more coordinates while visiting the way
 -   `options` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Object literal containing parameters for the route query.
     -   `options.alternatives` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Search for alternative routes and return as well. _Please note that even if an alternative route is requested, a result cannot be guaranteed._ (optional, default `false`)
     -   `options.steps` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return route steps for each route leg. (optional, default `false`)
+    -   `options.annotations` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return annotations for each route leg. (optional, default `false`)
     -   `options.geometries` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Returned route geometry format (influences overview and per step). Can also be `geojson`. (optional, default `polyline`)
     -   `options.overview` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Add overview geometry either `full`, `simplified` according to highest zoom level it could be display on, or not at all (`false`). (optional, default `simplified`)
     -   `options.continue_straight` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Forces the route to keep going straight at waypoints and don't do a uturn even if it would be faster. Default value depends on the profile. `null`/`true`/`false`
@@ -165,6 +166,7 @@ if they can not be matched successfully.
 
 -   `options` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Object literal containing parameters for the match query.
     -   `options.steps` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return route steps for each route. (optional, default `false`)
+    -   `options.annotations` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return annotations for each route leg. (optional, default `false`)
     -   `options.geometries` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Returned route geometry format (influences overview
         and per step). Can also be `geojson`. (optional, default `polyline`)
     -   `options.overview` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Add overview geometry either `full`, `simplified`
@@ -210,6 +212,7 @@ disconnected islands) multiple trips for each connected component are returned.
 
 -   `options` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Object literal containing parameters for the trip query.
     -   `options.steps` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return route steps for each route. (optional, default `false`)
+    -   `options.annotations` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return annotations for each route leg. (optional, default `false`)
     -   `options.geometries` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Returned route geometry format (influences overview
         and per step). Can also be `geojson`. (optional, default `polyline`)
     -   `options.overview` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Add overview geometry either `full`, `simplified` (optional, default `simplified`)
@@ -242,143 +245,20 @@ sub-trip the point was matched to, and 2) `waypoint_index`: index of the point i
 
 Responses
 
-## Route
+# Route
 
 Represents a route through (potentially multiple) waypoints.
 
-**Properties**
-
--   `distance` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** The distance traveled by the route, in `float` meters.
--   `duration` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** The estimated travel time, in `float` number of seconds.
--   `geometry` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** The whole geometry of the route value depending on overview parameter,
-    format depending on the geometries parameter. See [`RouteStep`'s](#routestep) geometry field for a parameter documentation.
--   `legs` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** The legs between the given waypoints, an array of [`RouteLeg`](#routeleg) objects.
-
-**Examples**
-
-```javascript
-// Three input coordinates, geometry=geojson, steps=false
-{
-  distance: 90.,
-  duration: 300.,
-  geometry: {type: LineString, coordinates: [[120., 10.], [120.1, 10.], [120.2, 10.], [120.3, 10.]]},
-  legs: [
-    {
-      distance: 30.,
-      duration: 100,
-      steps: []
-    },
-    {
-      distance: 60.,
-      duration: 200,
-      steps: []
-    }
-  ]
-}
-```
-
-## RouteLeg
+# RouteLeg
 
 Represents a route between two waypoints.
 
-**Properties**
-
--   `distance` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** The distance traveled by the route, in `float` meters.
--   `duration` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** The estimated travel time, in `float` number of seconds.
--   `summary` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Summary of the route taken as string. Depends on the `steps` parameter.
-    Provides the names of the two major roads used. Can be empty if route is too short.
--   `steps` **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)** array of [`RouteStep`](#routestep) objects describing the turn-by-turn
-    instructions. Depends on the `steps` parameter.
-
-**Examples**
-
-```javascript
-// with steps=false
-{
-  distance: 30.,
-  duration: 100,
-  steps: []
-}
-```
-
-## RouteStep
+# RouteStep
 
 A step consists of a maneuver such as a turn or merge, followed by a distance of travel along a single way to the subsequent step.
 
-**Properties**
+# StepManeuver
 
--   `distance` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** The distance traveled by the route, in `float` meters.
--   `duration` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** The estimated travel time, in `float` number of seconds.
--   `geometry` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** The unsimplified geometry of the route segment, depending
-    on the `geometries` parameter.
--   `name` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The name of the way along which travel proceeds.
--   `mode` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** A string signifying the mode of transportation.
--   `maneuver` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** A [`StepManeuver`](#stepmaneuver) object representing the maneuver.
-
-## StepManeuver
-
-Information about a specific maneuver, including bearings and type.
-
-#### Maneuver `type` descriptions
-
-| `type`       | Description                                                                                    |
-| ------------ | ---------------------------------------------------------------------------------------------- |
-| turn         | a basic turn into direction of the `modifier`                                                  |
-| new name     | no turn is taken, but the road name changes                                                    |
-| depart       | indicates the departure of the leg                                                             |
-| arrive       | indicates the destination of the leg                                                           |
-| merge        | merge onto a street (e.g. getting on the highway from a ramp                                   |
-| ramp         | take a ramp to exit a highway                                                                  |
-| fork         | take the left/right side at a fork depending on `modifier`                                     |
-| end of road  | road ends in a T intersection turn in direction of `modifier`                                  |
-| continue     | Turn in direction of `modifier` to stay on the same road                                       |
-| roundabout   | traverse roundabout, has additional field `exit` with NR if the roundabout is left.            |
-| rotary       | a larger version of a roundabout, can offer `rotary_name` in addition to the `exit` parameter. |
-| notification | not an actual turn but a change in the driving conditions. For example the travel mode.        |
-
-Please note that even though there are `new name` and `notification` instructions, the `mode` and `name` can change
-between all instructions. They only offer a fallback in case nothing else is to report.
-
-#### `modifier` descriptions
-
-| `modifier`   | Description                      |
-| ------------ | -------------------------------- |
-| uturn        | indicates  reversal of direction |
-| sharp right  | a sharp right turn               |
-| right        | a normal turn to the right       |
-| slight right | a slight turn to the right       |
-| straight     | no relevant change in direction  |
-| slight left  | a slight turn to the left        |
-| left         | a normal turn to the left        |
-| sharp left   | a sharp turn to the left         |
-
-**Properties**
-
--   `location` **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)** A `[longitude, latitude]` pair describing the location of the turn.
--   `bearing_before` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** The clockwise angle from true north to the direction of travel
-    immediately before the maneuver.
--   `bearing_after` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** The clockwise angle from true north to the direction of travel
-    immediately after the maneuver.
--   `type` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** A string indicating the [type of maneuver](#maneuver-type-descriptions).
--   `modifier` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** An optional string indicating the direction change of the maneuver. See the
-    [modifier types](#modifier-type-descriptions). The meaning depends on the `type` field.
-    `turn`: `modifier` indicates the change in direction accomplished through the turn.
-    `depart`/`arrive`: `modifier` indicates the position of departure point and arrival point in relation
-    to the current direction of travel.
--   `exit` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** An optional integer indicating number of the exit to take.
-    The field exists for the following `type` field:
-    `roundabout`: number of the roundabout exit to take. If exit is undefined the destination is on the roundabout.
-    `turn` or `end of road`: Indicates the number of intersections passed until the turn.
-    Example instruction: "at the fourth intersection, turn left".
-
-## Waypoint
+# Waypoint
 
 Object used to describe waypoint on a route.
-
-**Properties**
-
--   `name` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Name of the street the coordinate snapped to.
--   `location` **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)** Array that contains the `[longitude, latitude]` pair of the snapped coordinate.
--   `hint` **[number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)** Unique internal identifier of the segment (ephemeral, not constant over data updates)
-    This can be used on subsequent request to significantly speed up the query and to connect multiple services.
-    E.g. you can use the `hint` value obtained by the `nearest` query as `hint` values for `route` inputs.
