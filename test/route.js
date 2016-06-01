@@ -221,7 +221,7 @@ test('route: invalid bearing values', function(assert) {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         bearings: [[400, 180], [-250, 180]],
     }, function(err, route) {}) },
-        /Bearing values need to be in range 0..360/);
+        /Bearing values need to be in range 0..360, 0..180/);
     assert.throws(function() { osrm.route({
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         bearings: [[200], [250, 180]],
@@ -231,7 +231,7 @@ test('route: invalid bearing values', function(assert) {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         bearings: [[400, 109], [100, 720]],
     }, function(err, route) {}) },
-        /Bearing values need to be in range 0..360/);
+        /Bearing values need to be in range 0..360, 0..180/);
     assert.throws(function() { osrm.route({
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         bearings: 400,

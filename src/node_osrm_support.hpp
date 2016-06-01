@@ -291,17 +291,16 @@ inline bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &arg
                         return false;
                     }
 
-                    short bearing_first = static_cast<short>(bearing_pair->Get(0)->NumberValue());
-                    short bearing_second = static_cast<short>(bearing_pair->Get(1)->NumberValue());
+                    const auto bearing = static_cast<short>(bearing_pair->Get(0)->NumberValue());
+                    const auto range = static_cast<short>(bearing_pair->Get(1)->NumberValue());
 
-                    if (bearing_first < 0 || bearing_first > 360 || bearing_second < 0 ||
-                        bearing_second > 360)
+                    if (bearing < 0 || bearing > 360 || range < 0 || range > 180)
                     {
-                        Nan::ThrowError("Bearing values need to be in range 0..360");
+                        Nan::ThrowError("Bearing values need to be in range 0..360, 0..180");
                         return false;
                     }
 
-                    params->bearings.push_back(osrm::Bearing{bearing_first, bearing_second});
+                    params->bearings.push_back(osrm::Bearing{bearing, range});
                 }
                 else
                 {
