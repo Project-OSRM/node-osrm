@@ -187,8 +187,8 @@ parseCoordinateArray(const v8::Local<v8::Array> &coordinates_array)
             return resulting_coordinates;
         }
 
-        temp_coordinates.emplace_back(osrm::util::FloatLongitude(std::move(lon)),
-                                      osrm::util::FloatLatitude(std::move(lat)));
+        temp_coordinates.emplace_back(osrm::util::FloatLongitude{std::move(lon)},
+                                      osrm::util::FloatLatitude{std::move(lat)});
     }
 
     resulting_coordinates = boost::make_optional(std::move(temp_coordinates));
