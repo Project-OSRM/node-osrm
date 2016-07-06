@@ -61,6 +61,7 @@ This repository contains a Makefile that does this automatically:
 
 Just run:
 
+    make
     make test
 
 Once that is done then you can calculate routes in Javascript like:
