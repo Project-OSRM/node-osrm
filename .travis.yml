@@ -21,7 +21,6 @@ notifications:
     on_success: change
     on_failure: change
 
-# TODO: no core files on sudo:false machines until https://github.com/travis-ci/travis-ci/issues/3754 is resolved
 sudo: false
 
 matrix:
@@ -44,14 +43,14 @@ matrix:
       addons:
         apt:
           sources: [ 'ubuntu-toolchain-r-test' ]
-          packages: [ 'g++-4.8' ]
+          packages: [ 'g++-4.8', 'apport', 'gdb' ]
     - os: linux
       compiler: ": gcc-debug-node-v4"
       env: NODE="4" TARGET=Debug CC="gcc-4.8" CXX="g++-4.8" PUBLISHABLE=true
       addons:
         apt:
           sources: [ 'ubuntu-toolchain-r-test' ]
-          packages: [ 'g++-4.8' ]
+          packages: [ 'g++-4.8', 'apport', 'gdb' ]
     # OS X
     - os: osx
       # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
