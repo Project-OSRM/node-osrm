@@ -11,7 +11,6 @@ dependencies:
     - '~/.ccache'
     - '~/.apt-cache'
     - 'test/data'
-    - 'mason_packages'
   pre:
     - |
       if [[ "$(uname -s)" == "Linux" ]]; then
