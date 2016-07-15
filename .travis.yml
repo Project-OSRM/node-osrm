@@ -11,8 +11,9 @@ branches:
     - /^v[0-9]/
 
 cache:
-  apt: true
-  ccache: true
+  directories:
+  - $HOME/.ccache
+  - test/data
 
 notifications:
   email: false
@@ -79,6 +80,7 @@ before_install:
   if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python2.7/site-packages;
   elif [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+    rvm get head || true
     sudo sysctl -w kern.sysv.shmmax=4294967296
     sudo sysctl -w kern.sysv.shmall=1048576
     sudo sysctl -w kern.sysv.shmseg=128
