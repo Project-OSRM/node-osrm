@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -e
+set -eu
+set -o pipefail
 
 # we pin the mason version to avoid changes in mason breaking builds
 MASON_VERSION="3e0cc5a"
@@ -27,16 +28,20 @@ function dep() {
 # Set 'osrm_release' to a branch, tag, or gitsha in package.json
 export OSRM_RELEASE=$(node -e "console.log(require('./package.json').osrm_release)")
 export CXX=${CXX:-clang++}
+export CC=${CC:-clang}
 export BUILD_TYPE=${BUILD_TYPE:-Release}
 export TARGET_DIR=${TARGET_DIR:-$(pwd)/lib/binding}
 export OSRM_REPO=${OSRM_REPO:-"https://github.com/Project-OSRM/osrm-backend.git"}
 export OSRM_DIR=$(pwd)/deps/osrm-backend-${BUILD_TYPE}
+export JOBS=${JOBS:-1}
 
 echo
 echo "*******************"
 echo -e "OSRM_RELEASE set to:   \033[1m\033[36m ${OSRM_RELEASE}\033[0m"
 echo -e "BUILD_TYPE set to:     \033[1m\033[36m ${BUILD_TYPE}\033[0m"
 echo -e "CXX set to:            \033[1m\033[36m ${CXX}\033[0m"
+echo -e "CC set to:             \033[1m\033[36m ${CC}\033[0m"
+echo -e "JOBS set to:           \033[1m\033[36m ${JOBS}\033[0m"
 echo "*******************"
 echo
 echo
@@ -178,7 +183,7 @@ function main() {
     if [[ $(uname -s) == 'Linux' ]]; then
         LINK_FLAGS="${LINK_FLAGS} "'-Wl,-z,origin -Wl,-rpath=\$ORIGIN'
         # ensure rpath is picked up by node-osrm build
-        export LDFLAGS='-Wl,-z,origin -Wl,-rpath=\$$ORIGIN '${LDFLAGS}
+        export LDFLAGS='-Wl,-z,origin -Wl,-rpath=\$$ORIGIN '${LDFLAGS:-}
     fi
 
     build_osrm

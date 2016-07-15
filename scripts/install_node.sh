@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+set -eu
+set -o pipefail
+
 if [[ ${1:-false} == 'false' ]]; then
     echo "Error: pass node version as first argument"
     exit 1
@@ -13,9 +16,13 @@ nvm unload || true
 # here we set up the node version on the fly based on the matrix value.
 # This is done manually so that the build works the same on OS X
 rm -rf ./__nvm/ && git clone --depth 1 https://github.com/creationix/nvm.git ./__nvm
+# note: we must temporarily disable throwing on unbound
+# variables because nvm has them
+set +ue
 source ./__nvm/nvm.sh
 nvm install ${NODE_VERSION}
 nvm use ${NODE_VERSION}
+set -ue
 node --version
 npm --version
 which node
