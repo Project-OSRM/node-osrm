@@ -11,8 +11,9 @@ branches:
     - /^v[0-9]/
 
 cache:
-  apt: true
-  ccache: true
+  directories:
+  - $HOME/.ccache
+  - test/data
 
 notifications:
   email: false
