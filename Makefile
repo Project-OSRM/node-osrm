@@ -37,7 +37,7 @@ endif
 # but removes known compiler flags that break with clang
 ./node_modules:
 	npm install `node -e "console.log(Object.keys(require('./package.json').dependencies).join(' '))"` \
-	`node -e "console.log(Object.keys(require('./package.json').devDependencies).join(' '))"` --clang=1
+	`node -e "console.log(Object.keys(require('./package.json').devDependencies).join(' '))"` --clang=1 --gypjs
 
 # put the local osrm-backend on PKG_CONFIG_PATH, show the developer that
 # the local version is being used by default, and build using node-pre-gyp
@@ -46,26 +46,26 @@ endif
 build/Release/osrm.node: ./node_modules ./deps/osrm-backend-Release
 	@export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && \
 	  echo "*** Using osrm installed at `pkg-config libosrm --variable=prefix` ***" && \
-	  ./node_modules/.bin/node-pre-gyp configure build --loglevel=error --clang=1 $(NPM_FLAGS)
+	  ./node_modules/.bin/node-pre-gyp configure build --loglevel=error --clang=1 --gypjs $(NPM_FLAGS)
 
 # put the local debug-built osrm-backend on PKG_CONFIG_PATH and build as normal
 debug: ./node_modules ./deps/osrm-backend-Debug
 	@export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && \
 	  echo "*** Using osrm installed at `pkg-config libosrm --variable=prefix` ***" && \
-	  ./node_modules/.bin/node-pre-gyp configure build --debug --clang=1 $(NPM_FLAGS)
+	  ./node_modules/.bin/node-pre-gyp configure build --debug --clang=1 --gypjs $(NPM_FLAGS)
 
 coverage: ./node_modules ./deps/osrm-backend-Debug
 	@export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && \
 	  export LDFLAGS="--coverage" && export CXXFLAGS="--coverage" && \
 	  echo "*** Using osrm installed at `pkg-config libosrm --variable=prefix` ***" && \
-	  ./node_modules/.bin/node-pre-gyp configure build --debug --clang=1 $(NPM_FLAGS)
+	  ./node_modules/.bin/node-pre-gyp configure build --debug --clang=1 --gypjs $(NPM_FLAGS)
 
 # same as typing "make" (which hits the "build/Release/osrm.node" target) except that
 # "--loglevel=verbose" shows the actual compiler arguments
 verbose: ./node_modules ./deps/osrm-backend-Release
 	@export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && \
 	  echo "*** Using osrm installed at `pkg-config libosrm --variable=prefix` ***" && \
-	  ./node_modules/.bin/node-pre-gyp configure build --loglevel=verbose --clang=1 $(NPM_FLAGS)
+	  ./node_modules/.bin/node-pre-gyp configure build --loglevel=verbose --clang=1 --gypjs $(NPM_FLAGS)
 
 clean:
 	(cd test/data/ && $(MAKE) clean)
