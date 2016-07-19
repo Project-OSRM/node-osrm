@@ -67,6 +67,7 @@ before_install:
   if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
     rvm get head || true
   fi
+- source scripts/setup_mason.sh
 - scripts/validate_tag.sh
 
 install:

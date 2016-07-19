@@ -18,11 +18,13 @@ nvm unload || true
 rm -rf ./__nvm/ && git clone --depth 1 https://github.com/creationix/nvm.git ./__nvm
 # note: we must temporarily disable throwing on unbound
 # variables because nvm has them
-set +ue
+set +eu
 source ./__nvm/nvm.sh
 nvm install ${NODE_VERSION}
 nvm use ${NODE_VERSION}
-set -ue
+set -eu
 node --version
 npm --version
 which node
+set +eu
+set +o pipefail

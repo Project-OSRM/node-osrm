@@ -3,9 +3,6 @@
 set -eu
 set -o pipefail
 
-# we pin the mason version to avoid changes in mason breaking builds
-MASON_VERSION="3e0cc5a"
-
 if [[ `which pkg-config` ]]; then
     echo "Success: Found pkg-config";
 else
@@ -21,8 +18,8 @@ else
 fi;
 
 function dep() {
-    ./.mason/mason install $1 $2
-    ./.mason/mason link $1 $2
+    mason install $1 $2
+    mason link $1 $2
 }
 
 # Set 'osrm_release' to a branch, tag, or gitsha in package.json
@@ -115,8 +112,8 @@ function build_osrm() {
     # put mason installed ccache on PATH
     # then osrm-backend will pick it up automatically
     export CCACHE_VERSION="3.2.4"
-    ${MASON_DIR}/mason install ccache ${CCACHE_VERSION}
-    export PATH=$(${MASON_DIR}/mason prefix ccache ${CCACHE_VERSION})/bin:${PATH}
+    mason install ccache ${CCACHE_VERSION}
+    export PATH=$(mason prefix ccache ${CCACHE_VERSION})/bin:${PATH}
     CMAKE_EXTRA_ARGS=""
     if [[ ${AR:-false} != false ]]; then
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_AR=${AR}"
@@ -144,23 +141,8 @@ function build_osrm() {
     popd
 }
 
-function setup_mason() {
-    if [[ ! -d ./.mason ]]; then
-        git clone https://github.com/mapbox/mason.git ./.mason
-        (cd ./.mason && git checkout ${MASON_VERSION})
-    else
-        echo "Updating to latest mason"
-        (cd ./.mason && git fetch && git checkout ${MASON_VERSION})
-    fi
-    export MASON_DIR=$(pwd)/.mason
-    export MASON_HOME=$(pwd)/mason_packages/.link
-    export PATH=$(pwd)/.mason:$PATH
-    export CXX=${CXX:-clang++}
-    export CC=${CC:-clang}
-}
-
 function main() {
-    setup_mason
+    source scripts/setup_mason.sh
     all_deps
     # fix install name of tbb
     if [[ `uname -s` == 'Darwin' ]]; then
@@ -192,4 +174,6 @@ function main() {
 }
 
 main
-set +e
+
+set +eu
+set +o pipefail
