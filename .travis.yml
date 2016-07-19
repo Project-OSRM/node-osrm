@@ -27,17 +27,6 @@ sudo: false
 matrix:
   include:
     # Linux
-
-  # LLVM APT servers switched off, commenting Clang builds out as they will always fail now
-  # http://lists.llvm.org/pipermail/llvm-foundation/2016-June/000025.html
-  #  - os: linux
-  #    compiler: ": clang-debug-node-v4-coverage"
-  #    env: NODE="4" COVERAGE=true CC="clang-3.5" CXX="clang++-3.5" PUBLISHABLE=false
-  #    addons:
-  #      apt:
-  #        sources: [ 'ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.5' ]
-  #        packages: [ 'clang-3.5', 'llvm-3.5-dev' ]
-
     - os: linux
       compiler: ": gcc-release-node-v4"
       env: NODE="4" TARGET=Release CC="gcc-4.8" CXX="g++-4.8" PUBLISHABLE=true
