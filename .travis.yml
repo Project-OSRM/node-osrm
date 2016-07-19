@@ -71,6 +71,12 @@ env:
    - secure: WLGmxl6VTVWhXGm6X83GYNYzPNsvTD+9usJOKM5YBLAdG7cnOBQBNiCCUKc9OZMMZVUr3ec2/iigakH5Y8Yc+U6AlWKzlORyqWLuk4nFuoedu62x6ocQkTkuOc7mHiYhKd21xTGMYauaZRS6kugv4xkpGES2UjI2T8cjZ+LN2jU=
 
 before_install:
+# workaround travis rvm bug
+# http://superuser.com/questions/1044130/why-am-i-having-how-can-i-fix-this-error-shell-session-update-command-not-f
+- |
+  if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+    rvm get head || true
+  fi
 - scripts/validate_tag.sh
 
 install:
