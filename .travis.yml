@@ -28,27 +28,29 @@ matrix:
   include:
     # Linux
     - os: linux
-      compiler: ": gcc-release-node-v4"
-      env: NODE="4" TARGET=Release CC="gcc-4.8" CXX="g++-4.8" PUBLISHABLE=true
+      compiler: ": clang38-release-node-v4"
+      env: NODE="4" TARGET=Release CC="clang-3.8" CXX="clang++-3.8" PUBLISHABLE=true
+      # note: libstdc++-5-dev is required by clang-3.8 for its headers (clang-3.8 is installed by mason below)
       addons:
         apt:
           sources: [ 'ubuntu-toolchain-r-test' ]
-          packages: [ 'g++-4.8', 'apport', 'gdb' ]
+          packages: [ 'libstdc++-5-dev', 'apport', 'gdb' ]
     - os: linux
-      compiler: ": gcc-debug-node-v4"
-      env: NODE="4" TARGET=Debug CC="gcc-4.8" CXX="g++-4.8" PUBLISHABLE=true
+      compiler: ": clang38-debug-node-v4"
+      env: NODE="4" TARGET=Debug CC="clang-3.8" CXX="clang++-3.8" PUBLISHABLE=true
+      # note: libstdc++-5-dev is required by clang-3.8 for its headers (clang-3.8 is installed by mason below)
       addons:
         apt:
           sources: [ 'ubuntu-toolchain-r-test' ]
-          packages: [ 'g++-4.8', 'apport', 'gdb' ]
+          packages: [ 'libstdc++-5-dev', 'apport', 'gdb' ]
     # OS X
     - os: osx
       # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
-      osx_image: xcode7.3 # upgrades clang from 6 -> 7
+      osx_image: xcode8 # upgrades clang from 6 -> 7
       compiler: clang
       env: NODE="4" TARGET=Release PUBLISHABLE=true
     - os: osx
-      osx_image: xcode7.3 # upgrades clang from 6 -> 7
+      osx_image: xcode8 # upgrades clang from 6 -> 7
       compiler: clang
       env: NODE="4" TARGET=Debug PUBLISHABLE=true
 
@@ -69,6 +71,12 @@ before_install:
   fi
 - source scripts/setup_mason.sh
 - scripts/validate_tag.sh
+- |
+  if [[ $(uname -s) == 'Linux' ]]; then
+    mason install clang 3.8.0
+    export PATH=$(mason prefix clang 3.8.0)/bin:${PATH}
+    which clang++
+  fi
 
 install:
 - |
