@@ -73,9 +73,11 @@ before_install:
 install:
 - |
   if [[ "$(uname -s)" == "Linux" ]]; then
-    JOBS=2 ./scripts/build.sh
+    export JOBS=2
+    source ./scripts/build.sh
   else
-    JOBS=4 ./scripts/build.sh
+    export JOBS=4
+    source ./scripts/build.sh
   fi
 
 script:

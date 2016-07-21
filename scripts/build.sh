@@ -80,3 +80,7 @@ else
     # todo: coredump support on OS X
     make test
 fi
+
+
+set +eu
+set +o pipefail
