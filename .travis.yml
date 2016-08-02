@@ -52,6 +52,14 @@ matrix:
       osx_image: xcode8 # upgrades clang from 6 -> 7
       compiler: clang
       env: NODE="4" TARGET=Debug PUBLISHABLE=true
+    # Linux coverage build
+    - os: linux
+      compiler: ": clang38-debug-coverage-node-v4"
+      env: NODE="4" TARGET=Debug CC="clang-3.8" CXX="clang++-3.8" COVERAGE=true PUBLISHABLE=false
+      addons:
+        apt:
+          sources: [ 'ubuntu-toolchain-r-test' ]
+          packages: [ 'libstdc++-5-dev', 'apport', 'gdb' ]
 
 env:
   global:
@@ -88,9 +96,13 @@ install:
   fi
 
 script:
-- if [[ ${COVERAGE} == true ]]; then
-    ./mason_packages/.link/bin/cpp-coveralls --gcov /usr/bin/llvm-cov-3.5 --exclude __nvm --exclude node_modules --exclude mason_packages --exclude tests --build-root build --gcov-options '\-lp' --exclude doc --exclude build/Release/obj/gen;
-  fi;
 - if [[ ${PUBLISHABLE} == true ]]; then
     ./scripts/publish.sh;
   fi;
+- |
+  if [ -n "${COVERAGE}" ]; then
+    which llvm-cov
+    curl -S -f https://codecov.io/bash -o codecov
+    chmod +x codecov
+    ./codecov -x "llvm-cov gcov" -Z
+  fi

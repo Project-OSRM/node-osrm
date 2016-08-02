@@ -5,7 +5,7 @@ Provides read-only bindings to the [Open Source Routing Machine - OSRM](https://
 
 | build config | status |
 |:-------------|:------------|
-| Linux/OS X   | [![Build Status](https://travis-ci.org/Project-OSRM/node-osrm.svg?branch=master)](https://travis-ci.org/Project-OSRM/node-osrm) [![Coverage Status](https://coveralls.io/repos/Project-OSRM/node-osrm/badge.svg?branch=master)](https://coveralls.io/r/Project-OSRM/node-osrm?branch=master) |
+| Linux/OS X   | [![Build Status](https://travis-ci.org/Project-OSRM/node-osrm.svg?branch=master)](https://travis-ci.org/Project-OSRM/node-osrm) [![codecov](https://codecov.io/gh/Project-OSRM/node-osrm/branch/master/graph/badge.svg)](https://codecov.io/gh/Project-OSRM/node-osrm) |
 
 # Documentation
 
