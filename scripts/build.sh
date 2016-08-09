@@ -50,12 +50,15 @@ fi
 source ./scripts/install_node.sh ${NODE}
 
 if [[ ${TARGET} == 'Debug' ]]; then
-    if [[ ${COVERAGE} == true ]]; then
-        export LDFLAGS="${LDFLAGS:-} --coverage" && export CXXFLAGS="${CXXFLAGS:-} --coverage"
-    fi
     export BUILD_TYPE=Debug && source ./bootstrap.sh
 else
     source ./bootstrap.sh
+fi
+
+# only set coverage flags for node-osrm to avoid
+# very slow performance for osrm command line tools
+if [[ ${COVERAGE} == true ]]; then
+    export LDFLAGS="${LDFLAGS:-} --coverage" && export CXXFLAGS="${CXXFLAGS:-} --coverage"
 fi
 
 npm install --build-from-source ${NPM_FLAGS} --clang=1
