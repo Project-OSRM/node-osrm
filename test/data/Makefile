@@ -25,7 +25,7 @@ lib/access.lua:
 	mkdir -p lib
 	wget $(PROFILE_LIB_ACCESS_URL) -O lib/access.lua
 
-car.lua: lib/access.lua lib/destination.lua
+car.lua: lib/access.lua lib/destination.lua lib/guidance.lua
 	wget $(CAR_PROFILE_URL) -O car.lua
 
 clean:
