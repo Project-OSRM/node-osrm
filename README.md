@@ -13,27 +13,47 @@ See [docs/api.md](docs/api.md) for extensive API documentation. You can find a s
 
 # Depends
 
- - Node.js v0.10.x or v4.x
- - Modern C++ runtime libraries supporting C++11
+ - Node.js v4.x
+ - Modern C++ runtime libraries supporting C++14
 
-C++11 capable platforms include:
+C++14 capable platforms include:
 
-  - Mac OS X >= 10.8
-  - Ubuntu Linux >= 14.04 or other Linux distributions with g++ >= 4.8 toolchain (>= GLIBC_2.17 from libc and >= GLIBCXX_3.4.17 from libstdc++)
+  - Mac OS X >= 10.10
+  - Ubuntu Linux >= 16.04 or other Linux distributions with g++ >= 5 toolchain (>= GLIBCXX_3.4.20 from libstdc++)
 
-An installation error like below indicates your system does not have a modern enough g++ toolchain:
+An installation error like below indicates your system does not have a modern enough libstdc++/gcc-base toolchain:
 
 ```
-Error: /usr/lib/x86_64-linux-gnu/libstdc++.so.6: version `GLIBCXX_3.4.17' not found (required by /node_modules/osrm/lib/binding/osrm.node)
+Error: /usr/lib/x86_64-linux-gnu/libstdc++.so.6: version GLIBCXX_3.4.20 not found (required by /node_modules/osrm/lib/binding/osrm.node)
 ```
 
-If you are running Ubuntu older than 14.04 you can easily upgrade your g++ toolchain like:
+If you are running Ubuntu older than 16.04 you can easily upgrade your libstdc++ version like:
 
 ```
 sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-sudo apt-get update
-sudo apt-get install g++-4.8
+sudo apt-get update -y
+sudo apt-get install -y libstdc++-5-dev
 ```
+
+#### On Travis:
+
+```yml
+addons:
+  apt:
+    sources: [ 'ubuntu-toolchain-r-test' ]
+    packages: [ 'libstdc++-5-dev' ]
+```
+
+#### On Circleci:
+
+```yml
+dependencies:
+     pre:
+         - sudo -E apt-add-repository -y "ppa:ubuntu-toolchain-r/test"
+         - sudo -E apt-get upgrade -y
+         - sudo -E apt-get -yq --no-install-suggests --no-install-recommends --force-yes install libstdc++-5-dev
+```
+
 
 # Installing
 
