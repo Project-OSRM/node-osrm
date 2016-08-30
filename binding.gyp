@@ -25,7 +25,7 @@
               '-std=gnu++0x'
           ],
           'cflags_cc' : [
-              '-std=c++14',
+              '-std=c++1y', # to support gcc 4.8: https://github.com/Project-OSRM/osrm-backend/pull/2805
               '<!@(pkg-config libosrm --cflags)'
           ],
           'libraries':[
