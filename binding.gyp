@@ -25,7 +25,7 @@
               '-std=gnu++0x'
           ],
           'cflags_cc' : [
-              '-std=c++11',
+              '-std=c++1y', # to support gcc 4.8: https://github.com/Project-OSRM/osrm-backend/pull/2805
               '<!@(pkg-config libosrm --cflags)'
           ],
           'libraries':[
@@ -37,7 +37,7 @@
         ['OS=="mac"', {
           'xcode_settings': {
             'CLANG_CXX_LIBRARY': 'libc++',
-            'CLANG_CXX_LANGUAGE_STANDARD':'c++11',
+            'CLANG_CXX_LANGUAGE_STANDARD':'c++14',
             'GCC_VERSION': 'com.apple.compilers.llvm.clang.1_0',
             'MACOSX_DEPLOYMENT_TARGET':'10.8',
             'OTHER_LDFLAGS':[
