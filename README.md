@@ -121,7 +121,7 @@ make && make test
 
 ## Using an existing local osrm-backend
 
-If you do not wish to build node-osrm against an existing osrm-backend that you have on your system you will need:
+If you do wish to build node-osrm against an existing osrm-backend that you have on your system you will need:
 
  - OSRM develop branch cloned, built from source, and installed
  - The test data initialized: `make -C test/data` inside the `osrm-backend` directory
