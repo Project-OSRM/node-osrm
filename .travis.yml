@@ -100,8 +100,7 @@ script:
     ./scripts/publish.sh;
   fi;
 - |
-  if [ -n "${COVERAGE}" ]; then
-    which llvm-cov
+  if [ "${COVERAGE:-false}" == true ]; then
     curl -S -f https://codecov.io/bash -o codecov
     chmod +x codecov
     ./codecov -x "llvm-cov gcov" -Z
