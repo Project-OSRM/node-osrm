@@ -31,11 +31,8 @@
   },
   "dependencies": {
     "nan": "^2.1.0",
-    "node-pre-gyp": "~0.6.7"
+    "node-pre-gyp": "~0.6.30"
   },
-  "bundledDependencies": [
-    "node-pre-gyp"
-  ],
   "devDependencies": {
     "aws-sdk": "~2.0.31",
     "documentation": "^4.0.0-beta2",
@@ -45,7 +42,7 @@
     "node": ">=4"
   },
   "scripts": {
-    "prepublish": "npm ls",
+    "preinstall": "npm install node-pre-gyp",
     "install": "node-pre-gyp install --fallback-to-build",
     "test": "node test/index.js",
     "docs": "npm install documentation@^4.0.0-beta2 && documentation build src/node_osrm.cpp --polyglot -f md -o docs/api.md"
