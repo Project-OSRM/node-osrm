@@ -1,5 +1,11 @@
 #!/bin/bash
 
+set -eu
+set -o pipefail
+
+# should be set for debug builds
+export NPM_FLAGS=${NPM_FLAGS:-}
+
 echo "dumping binary meta..."
 ./node_modules/.bin/node-pre-gyp reveal ${NPM_FLAGS}
 
@@ -25,7 +31,7 @@ else
     echo "This is a push commit, continuing to package..."
     ./node_modules/.bin/node-pre-gyp package ${NPM_FLAGS}
 
-    COMMIT_MESSAGE=$(git log --format=%B --no-merges | head -n 1 | tr -d '\n')
+    export COMMIT_MESSAGE=$(git log --format=%B --no-merges | head -n 1 | tr -d '\n')
     echo "Commit message: ${COMMIT_MESSAGE}"
 
     if [[ ${COMMIT_MESSAGE} =~ "[publish binary]" ]]; then
