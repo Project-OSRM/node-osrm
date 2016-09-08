@@ -48,6 +48,6 @@
     "prepublish": "npm ls",
     "install": "node-pre-gyp install --fallback-to-build",
     "test": "node test/index.js",
-    "docs": "documentation build src/node_osrm.cpp --polyglot -f md -o docs/api.md"
+    "docs": "npm install documentation@^4.0.0-beta2 && documentation build src/node_osrm.cpp --polyglot -f md -o docs/api.md"
   }
 }
