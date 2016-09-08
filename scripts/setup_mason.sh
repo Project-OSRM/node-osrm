@@ -20,8 +20,4 @@ function setup_mason() {
     export CC=${CC:-clang}
 }
 
-
 setup_mason
-
-set +eu
-set +o pipefail

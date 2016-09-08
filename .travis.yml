@@ -23,85 +23,54 @@ notifications:
 
 sudo: false
 
-matrix:
-  include:
-    # Linux
-    - os: linux
-      compiler: ": clang38-release-node-v4"
-      env: NODE="4" TARGET=Release CC="clang-3.8" CXX="clang++-3.8" PUBLISHABLE=true
-      # note: libstdc++-5-dev is required by clang-3.8 for its headers (clang-3.8 is installed by mason below)
-      addons:
-        apt:
-          sources: [ 'ubuntu-toolchain-r-test' ]
-          packages: [ 'libstdc++-5-dev', 'apport', 'gdb' ]
-    - os: linux
-      compiler: ": clang38-debug-node-v4"
-      env: NODE="4" TARGET=Debug CC="clang-3.8" CXX="clang++-3.8" PUBLISHABLE=true
-      # note: libstdc++-5-dev is required by clang-3.8 for its headers (clang-3.8 is installed by mason below)
-      addons:
-        apt:
-          sources: [ 'ubuntu-toolchain-r-test' ]
-          packages: [ 'libstdc++-5-dev', 'apport', 'gdb' ]
-    # OS X
-    - os: osx
-      # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
-      osx_image: xcode8 # upgrades clang from 6 -> 7
-      compiler: clang
-      env: NODE="4" TARGET=Release PUBLISHABLE=true
-    - os: osx
-      osx_image: xcode8 # upgrades clang from 6 -> 7
-      compiler: clang
-      env: NODE="4" TARGET=Debug PUBLISHABLE=true
-    # Linux coverage build
-    - os: linux
-      compiler: ": clang38-debug-coverage-node-v4"
-      env: NODE="4" TARGET=Debug CC="clang-3.8" CXX="clang++-3.8" COVERAGE=true PUBLISHABLE=false
-      addons:
-        apt:
-          sources: [ 'ubuntu-toolchain-r-test' ]
-          packages: [ 'libstdc++-5-dev', 'apport', 'gdb' ]
-
 env:
   global:
    - CCACHE_TEMPDIR=/tmp/.ccache-temp
    - CCACHE_COMPRESS=1
    - CASHER_TIME_OUT=1000
+   - CC="clang"
+   - CXX="clang++"
    - secure: KitzGZjoDblX/3heajcvssGz0JnJ/k02dr2tu03ksUV+6MogC3RSQudqyKY57+f8VyZrcllN/UOlJ0Q/3iG38Oz8DljC+7RZxtkVmE1SFBoOezKCdhcvWM12G3uqPs7hhrRxuUgIh0C//YXEkulUrqa2H1Aj2xeen4E3FAqEoy0=
    - secure: WLGmxl6VTVWhXGm6X83GYNYzPNsvTD+9usJOKM5YBLAdG7cnOBQBNiCCUKc9OZMMZVUr3ec2/iigakH5Y8Yc+U6AlWKzlORyqWLuk4nFuoedu62x6ocQkTkuOc7mHiYhKd21xTGMYauaZRS6kugv4xkpGES2UjI2T8cjZ+LN2jU=
 
-before_install:
-# workaround travis rvm bug
-# http://superuser.com/questions/1044130/why-am-i-having-how-can-i-fix-this-error-shell-session-update-command-not-f
-- |
-  if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
-    rvm get head || true
-  fi
-- source scripts/setup_mason.sh
-- scripts/validate_tag.sh
-- |
-  if [[ $(uname -s) == 'Linux' ]]; then
-    mason install clang 3.8.0
-    export PATH=$(mason prefix clang 3.8.0)/bin:${PATH}
-    which clang++
-  fi
+addons_default: &apt_packages
+  apt:
+    sources: [ 'ubuntu-toolchain-r-test' ]
+    # note: libstdc++-5-dev is required by clang-3.8 for its headers (clang-3.8 is installed by mason on linux)
+    packages: [ 'libstdc++-5-dev', 'apport', 'gdb' ]
 
-install:
-- |
-  if [[ "$(uname -s)" == "Linux" ]]; then
-    export JOBS=2
-    source ./scripts/build.sh
-  else
-    export JOBS=4
-    source ./scripts/build.sh
-  fi
+script_default: &build_and_publish
+    - ./scripts/build.sh
+    - ./scripts/publish.sh
 
-script:
-- if [[ ${PUBLISHABLE} == true ]]; then
-    ./scripts/publish.sh;
-  fi;
-- |
-  if [ "${COVERAGE:-false}" == true ]; then
-    curl -S -f https://codecov.io/bash -o codecov
-    chmod +x codecov
-    ./codecov -x "llvm-cov gcov" -Z
-  fi
+matrix:
+  include:
+    # Linux
+    - os: linux
+      env: NODE="4" TARGET=Release
+      addons: *apt_packages
+      script: *build_and_publish
+    - os: linux
+      env: NODE="4" TARGET=Debug NPM_FLAGS="--debug"
+      addons: *apt_packages
+      script: *build_and_publish
+    # OS X
+    - os: osx
+      # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
+      osx_image: xcode8
+      env: NODE="4" TARGET=Release
+      script: *build_and_publish
+    - os: osx
+      # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
+      osx_image: xcode8
+      env: NODE="4" TARGET=Debug NPM_FLAGS="--debug"
+      script: *build_and_publish
+    # Linux coverage build
+    - os: linux
+      env: NODE="4" TARGET=Debug COVERAGE=true NPM_FLAGS="--debug"
+      addons: *apt_packages
+      script:
+        - ./scripts/build.sh
+        - curl -S -f https://codecov.io/bash -o codecov
+        - chmod +x codecov
+        - ./codecov -x "llvm-cov gcov" -Z
