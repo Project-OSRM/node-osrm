@@ -6,6 +6,7 @@ $(error OSRM_RELEASE variable was not correct set)
 endif
 
 CAR_PROFILE_URL:=https://raw.githubusercontent.com/Project-OSRM/osrm-backend/$(OSRM_RELEASE)/profiles/car.lua
+LIB_GUIDANCE_URL:=https://raw.githubusercontent.com/Project-OSRM/osrm-backend/$(OSRM_RELEASE)/profiles/lib/guidance.lua
 PROFILE_LIB_ACCESS_URL:=https://raw.githubusercontent.com/Project-OSRM/osrm-backend/$(OSRM_RELEASE)/profiles/lib/access.lua
 PROFILE_LIB_DESTINATION_URL:=https://raw.githubusercontent.com/Project-OSRM/osrm-backend/$(OSRM_RELEASE)/profiles/lib/destination.lua
 BERLIN_URL:=https://s3.amazonaws.com/mapbox/node-osrm/testing/berlin-latest.osm.pbf
@@ -20,7 +21,10 @@ lib/access.lua:
 	mkdir -p lib
 	wget $(PROFILE_LIB_ACCESS_URL) -O lib/access.lua
 
-car.lua: lib/access.lua lib/destination.lua
+lib/guidance.lua:
+	wget $(LIB_GUIDANCE_URL) -O lib/guidance.lua
+
+car.lua: lib/access.lua lib/destination.lua lib/guidance.lua
 	wget $(CAR_PROFILE_URL) -O car.lua
 
 clean:
