@@ -8,9 +8,14 @@ endif
 CAR_PROFILE_URL:=https://raw.githubusercontent.com/Project-OSRM/osrm-backend/$(OSRM_RELEASE)/profiles/car.lua
 PROFILE_LIB_ACCESS_URL:=https://raw.githubusercontent.com/Project-OSRM/osrm-backend/$(OSRM_RELEASE)/profiles/lib/access.lua
 PROFILE_LIB_DESTINATION_URL:=https://raw.githubusercontent.com/Project-OSRM/osrm-backend/$(OSRM_RELEASE)/profiles/lib/destination.lua
+PROFILE_LIB_GUIDANCE_URL:=https://raw.githubusercontent.com/Project-OSRM/osrm-backend/$(OSRM_RELEASE)/profiles/lib/guidance.lua
 BERLIN_URL:=https://s3.amazonaws.com/mapbox/node-osrm/testing/berlin-latest.osm.pbf
 
 all: berlin-latest.osrm.hsgr
+
+lib/guidance.lua:
+	mkdir -p lib
+	wget $(PROFILE_LIB_GUIDANCE_URL) -O lib/guidance.lua
 
 lib/destination.lua:
 	mkdir -p lib
@@ -20,7 +25,7 @@ lib/access.lua:
 	mkdir -p lib
 	wget $(PROFILE_LIB_ACCESS_URL) -O lib/access.lua
 
-car.lua: lib/access.lua lib/destination.lua
+car.lua: lib/access.lua lib/destination.lua lib/guidance.lua
 	wget $(CAR_PROFILE_URL) -O car.lua
 
 clean:
