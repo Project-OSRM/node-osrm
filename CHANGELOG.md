@@ -1,4 +1,7 @@
 ## node-osrm changelog
+### v5.4.0-rc.2
+  - Update to osrm-backend v5.4.0-rc.2
+
 ### v5.4.0-rc.1
  - Update to osrm-backend v5.4.0-rc.1
  - New *.lua dependency lib/guidance.lua
