@@ -24,6 +24,11 @@ if [[ ! $(which wget) ]]; then
     exit 1;
 fi;
 
+if [[ ! $(which md5sum) ]]; then
+    echo "echo md5sum must be installed";
+    exit 1;
+fi;
+
 if [[ ! $(which pkg-config) ]]; then
     echo "echo pkg-config must be installed";
     exit 1;
@@ -37,7 +42,6 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
         sudo sysctl -w kern.sysv.shmmax=4294967296
         sudo sysctl -w kern.sysv.shmall=1048576
         sudo sysctl -w kern.sysv.shmseg=128
-        mapbox_time "brew" brew install md5sha1sum
     fi
 fi
 
