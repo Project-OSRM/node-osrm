@@ -49,6 +49,7 @@ lines.forEach(function(line) {
     var md5_actual = md5FileSync(filename);
     if (md5_actual !== md5) {
         error++;
+        console.error(filename + ': FAILED')
     } else {
         console.log(filename + ': OK');
     }
