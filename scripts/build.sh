@@ -37,7 +37,6 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
         sudo sysctl -w kern.sysv.shmmax=4294967296
         sudo sysctl -w kern.sysv.shmall=1048576
         sudo sysctl -w kern.sysv.shmseg=128
-        mapbox_time "brew" brew install md5sha1sum
     fi
 fi
 

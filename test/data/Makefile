@@ -33,7 +33,7 @@ berlin-latest.osm.pbf:
 
 berlin-latest.osrm: berlin-latest.osm.pbf car.lua $(OSRM_EXTRACT)
 	@echo "Verifiyng data file integrity..."
-	md5sum -c data.md5sum
+	node md5sum.js data.md5sum
 	@PATH="${PATH}:../../lib/binding" && echo "*** Using osrm-extract from `which osrm-extract` ***"
 	@echo "Running osrm-extract..."
 	@PATH="${PATH}:../../lib/binding" && osrm-extract berlin-latest.osm.pbf -p car.lua
