@@ -24,11 +24,6 @@ if [[ ! $(which wget) ]]; then
     exit 1;
 fi;
 
-if [[ ! $(which md5sum) ]]; then
-    echo "echo md5sum must be installed";
-    exit 1;
-fi;
-
 if [[ ! $(which pkg-config) ]]; then
     echo "echo pkg-config must be installed";
     exit 1;
