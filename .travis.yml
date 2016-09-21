@@ -86,7 +86,7 @@ matrix:
       env: NODE="4" TARGET=Debug COVERAGE=true NPM_FLAGS="--debug"
       addons: *apt_packages
       script:
-        - ./scripts/build.sh
+        - source ./scripts/build.sh
         - curl -S -f https://codecov.io/bash -o codecov
         - chmod +x codecov
         - ./codecov -x "llvm-cov gcov" -Z
