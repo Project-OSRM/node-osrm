@@ -6,6 +6,10 @@ set -o pipefail
 # should be set for debug builds
 export NPM_FLAGS=${NPM_FLAGS:-}
 
+echo "node version is:"
+which node
+node -v
+
 echo "dumping binary meta..."
 ./node_modules/.bin/node-pre-gyp reveal ${NPM_FLAGS}
 

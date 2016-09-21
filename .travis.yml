@@ -40,7 +40,7 @@ addons_default: &apt_packages
     packages: [ 'libstdc++-5-dev', 'apport', 'gdb' ]
 
 script_default: &build_and_publish
-    - ./scripts/build.sh
+    - source ./scripts/build.sh
     - ./scripts/publish.sh
 
 matrix:
