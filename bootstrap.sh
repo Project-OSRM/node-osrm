@@ -45,8 +45,8 @@ echo
 
 function all_deps() {
     dep cmake 3.2.2 &
-    dep lua 5.3.0 &
-    dep luabind e414c57bcb687bb3091b7c55bbff6947f052e46b &
+    dep lua 5.2.4 &
+    dep luabind_lua524 e414c57bcb687bb3091b7c55bbff6947f052e46b &
     dep boost 1.61.0 &
     dep boost_libsystem 1.61.0 &
     dep boost_libthread 1.61.0 &
