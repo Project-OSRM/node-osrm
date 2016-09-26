@@ -1,4 +1,9 @@
 ## node-osrm changelog
+
+### v5.4.0-rc.5
+  - downgrade lua to 5.2.4
+  - Update to osrm-backend v5.4.0-rc.5
+
 ### v5.4.0-rc.4
   - Update to osrm-backend v5.4.0-rc.4
 
