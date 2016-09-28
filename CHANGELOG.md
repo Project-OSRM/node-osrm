@@ -1,5 +1,22 @@
 ## node-osrm changelog
 
+### v5.4.0-rc.5
+  - downgrade lua to 5.2.4
+  - Update to osrm-backend v5.4.0-rc.5
+
+### v5.4.0-rc.4
+  - Update to osrm-backend v5.4.0-rc.4
+
+### v5.4.0-rc.3
+  - Update to osrm-backend v5.4.0-rc.3
+
+### v5.4.0-rc.2
+  - Update to osrm-backend v5.4.0-rc.2
+
+### v5.4.0-rc.1
+ - Update to osrm-backend v5.4.0-rc.1
+ - New *.lua dependency lib/guidance.lua
+
 ### v5.3.0
  - Update to osrm-backend v5.3.0
 
