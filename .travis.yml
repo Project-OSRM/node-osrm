@@ -40,6 +40,11 @@ addons_default: &apt_packages
     packages: [ 'libstdc++-5-dev', 'apport', 'gdb' ]
 
 script_default: &build_and_publish
+    # still happening as of sept 27, 2016: https://github.com/travis-ci/travis-ci/issues/6307
+    - |
+      if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+        rvm get head || true
+      fi
     - source ./scripts/build.sh
     - ./scripts/publish.sh
 

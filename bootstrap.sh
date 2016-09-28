@@ -19,6 +19,8 @@ fi;
 
 function dep() {
     mason install $1 $2
+    # the rm here is to workaround https://github.com/mapbox/mason/issues/230
+    rm -f ./mason_packages/.link/mason.ini
     mason link $1 $2
 }
 
@@ -44,24 +46,23 @@ echo
 echo
 
 function all_deps() {
-    dep cmake 3.2.2 &
-    dep lua 5.3.0 &
-    dep luabind e414c57bcb687bb3091b7c55bbff6947f052e46b &
-    dep boost 1.61.0 &
-    dep boost_libsystem 1.61.0 &
-    dep boost_libthread 1.61.0 &
-    dep boost_libfilesystem 1.61.0 &
-    dep boost_libprogram_options 1.61.0 &
-    dep boost_libregex 1.61.0 &
-    dep boost_libiostreams 1.61.0 &
-    dep boost_libtest 1.61.0 &
-    dep boost_libdate_time 1.61.0 &
-    dep expat 2.1.0 &
-    dep stxxl 1.4.1 &
-    dep bzip2 1.0.6 &
-    dep zlib system &
-    dep tbb 43_20150316 &
-    wait
+    dep cmake 3.2.2
+    dep lua 5.2.4
+    dep luabind_lua524 e414c57bcb687bb3091b7c55bbff6947f052e46b
+    dep boost 1.61.0
+    dep boost_libsystem 1.61.0
+    dep boost_libthread 1.61.0
+    dep boost_libfilesystem 1.61.0
+    dep boost_libprogram_options 1.61.0
+    dep boost_libregex 1.61.0
+    dep boost_libiostreams 1.61.0
+    dep boost_libtest 1.61.0
+    dep boost_libdate_time 1.61.0
+    dep expat 2.1.0
+    dep stxxl 1.4.1
+    dep bzip2 1.0.6
+    dep zlib system
+    dep tbb 43_20150316
 }
 
 function move_tools() {
@@ -111,7 +112,7 @@ function build_osrm() {
     pushd build
     # put mason installed ccache on PATH
     # then osrm-backend will pick it up automatically
-    export CCACHE_VERSION="3.2.4"
+    export CCACHE_VERSION="3.3.1"
     mason install ccache ${CCACHE_VERSION}
     export PATH=$(mason prefix ccache ${CCACHE_VERSION})/bin:${PATH}
     CMAKE_EXTRA_ARGS=""
