@@ -4,8 +4,8 @@
   "url": "https://github.com/Project-OSRM/node-osrm",
   "homepage": "http://project-osrm.org",
   "author": "Dane Springmeyer <springmeyer>",
-  "version": "5.4.0-rc.6",
-  "osrm_release" : "v5.4.0-rc.6",
+  "version": "5.4.0-rc.7",
+  "osrm_release" : "v5.4.0-rc.7",
   "main": "./lib/osrm.js",
   "license": "BSD-2-Clause",
   "bugs": {
