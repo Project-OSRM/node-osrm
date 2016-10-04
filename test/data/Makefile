@@ -34,14 +34,14 @@ berlin-latest.osm.pbf:
 berlin-latest.osrm: berlin-latest.osm.pbf car.lua $(OSRM_EXTRACT)
 	@echo "Verifiyng data file integrity..."
 	node md5sum.js data.md5sum
-	@PATH="${PATH}:../../lib/binding" && echo "*** Using osrm-extract from `which osrm-extract` ***"
+	@PATH="../../lib/binding:${PATH}" && echo "*** Using osrm-extract from `which osrm-extract` ***"
 	@echo "Running osrm-extract..."
-	@PATH="${PATH}:../../lib/binding" && osrm-extract berlin-latest.osm.pbf -p car.lua
+	@PATH="../../lib/binding:${PATH}" && osrm-extract berlin-latest.osm.pbf -p car.lua
 
 berlin-latest.osrm.hsgr: berlin-latest.osrm car.lua $(OSRM_CONTRACT)
-	@PATH="${PATH}:../../lib/binding" && echo "*** Using osrm-contract from `which osrm-contract` ***"
+	@PATH="../../lib/binding:${PATH}" && echo "*** Using osrm-contract from `which osrm-contract` ***"
 	@echo "Running osrm-contract..."
-	@PATH="${PATH}:../../lib/binding" && osrm-contract berlin-latest.osrm
+	@PATH="../../lib/binding:${PATH}" && osrm-contract berlin-latest.osrm
 
 checksum:
 	md5sum lib/access.lua lib/destination.lua car.lua berlin-latest.osm.pbf > data.md5sum
