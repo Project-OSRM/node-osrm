@@ -29,8 +29,6 @@ function mapbox_time_finish {
     local end_time=$(mapbox_nanoseconds)
     local duration=$(($end_time-$start_time))
     echo -en "travis_time:end:$timer_id:start=$start_time,finish=$end_time,duration=$duration\n"
-
-    mapbox_fold end $name
 }
 
 function mapbox_time {
@@ -38,8 +36,20 @@ function mapbox_time {
     mapbox_time_start $name
     local timer_id=$mapbox_timer_id
     echo "\$ $@"
-    $@
+    # note: we capture the return code here
+    # so that we can ensure mapbox_time_finish is called
+    # and an error is trickled up correctly
+    local RESULT=0
+    $@ || RESULT=$?
     mapbox_time_finish $name $timer_id
+    if [[ ${RESULT} != 0 ]]; then
+      echo "$name failed with ${RESULT}"
+      # note: we use false here instead of exit this this script is sourced
+      # and exit would abort the shell which we don't want
+      false
+    else
+      mapbox_fold end $name
+    fi
 }
 
 function mapbox_fold {

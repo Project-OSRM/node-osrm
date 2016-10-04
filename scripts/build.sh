@@ -49,13 +49,20 @@ else
     mapbox_time "bootstrap" source ./bootstrap.sh
 fi
 
+echo "showing osrm-backend libosrm.pc details"
+pkg-config libosrm --debug
+
 # only set coverage flags for node-osrm to avoid
 # very slow performance for osrm command line tools
 if [[ ${COVERAGE} == true ]]; then
     export LDFLAGS="${LDFLAGS:-} --coverage" && export CXXFLAGS="${CXXFLAGS:-} --coverage"
 fi
 
-mapbox_time "npm-install" npm install --build-from-source ${NPM_FLAGS} --clang=1
+echo "First install node dependencies"
+mapbox_time "npm-update" npm update ${NPM_FLAGS}
+
+echo "Now build node-osrm"
+mapbox_time "node-pre-gyp-build" ./node_modules/.bin/node-pre-gyp configure build ${NPM_FLAGS} --verbose --clang=1
 
 # run tests, with backtrace support
 if [[ "$(uname -s)" == "Linux" ]]; then
