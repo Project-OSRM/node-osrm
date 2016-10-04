@@ -145,6 +145,10 @@ set the `OSRM_DATA_PATH` variable:
 
     export OSRM_DATA_PATH=/path/to/osrm-backend/test/data
 
+And you will need to remove, if they exist, any previous builds that created local binaries of osrm-backend because the `osrm-extract` and other tools here will be used in preference of your global installation:
+
+    rm -rf lib/binding/
+
 Then you can run `npm test`.
 
 To recap, here is a full example of building against an osrm-backend that is cloned beside node-osrm but installed into a custom location:
