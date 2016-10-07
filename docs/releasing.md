@@ -2,13 +2,15 @@
 
 Releasing a new version of `node-osrm` is mostly automated using Travis CI.
 
-The version of `node-osrm` is locked to the same version as `osrm-backend`. Every `node-osrm` should have a `osrm-backend` release of the same version.
+The version of `node-osrm` is locked to the same version as `osrm-backend`. Every `node-osrm` should have a `osrm-backend` release of the same version. Of course, only release a `node-osrm` after the release has been tagged in `osrm-backend`.
+
+These steps all happen on `master`. After the release is out, create a branch using the MAJOR.MINOR version of the release to document code changes made for that version.
 
 ### Steps to release
 
-1. Confirm the desired OSRM branch and commit.
-
-   This is configured in the `package.json` under `osrm_release`. **use the corresponding git tag in osrm-backend**
+1. Update the `osrm_release` field in `package.json` to the corresonding git tag in `osrm-backend.`
+   
+   Confirm the desired OSRM branch and commit to `master`.
 
 1. Bump node-osrm version
 
