@@ -47,7 +47,7 @@ berlin-latest.osrm.hsgr: berlin-latest.osrm car.lua $(OSRM_CONTRACT)
 	@echo "Running osrm-contract..."
 	@PATH="${PATH}:../../lib/binding" && osrm-contract berlin-latest.osrm
 
-checksum:
-	md5sum lib/access.lua lib/destination.lua car.lua berlin-latest.osm.pbf > data.md5sum
+checksum: car.lua lib/destination.lua lib/access.lua lib/guidance.lua berlin-latest.osm.pbf
+	md5sum $^ > data.md5sum
 
 .PHONY: clean checksum
