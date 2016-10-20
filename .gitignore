@@ -1,6 +1,9 @@
+.mason
 .DS_Store
 build/
+deps/
 lib/binding/
+lib/profiles/
 node_modules
 berlin-latest.osm.pbf
 berlin-latest.osrm*

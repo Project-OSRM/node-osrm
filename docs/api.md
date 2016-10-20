@@ -1,9 +1,18 @@
 # OSRM
 
 The `OSRM` method is the main constructor for creating an OSRM instance. An OSRM instance requires a `.osrm` network,
-which is prepared by the OSRM Backend C++ library. Once you have a complete `network.osrm` file, you can calculate
-networks in javascript with this library using the methods below. To create an OSRM instance with your network
-you need to construct an instance like this:
+which is prepared by the OSRM Backend C++ library.
+
+You can create such a `.osrm` file by running the OSRM binaries we ship in `node_modules/osrm/lib/binding/` and default
+profiles (e.g. for setting speeds and determining road types to route on) in `node_modules/osrm/lib/profiles/`:
+
+    node_modules/osrm/lib/binding/osrm-extract data.osm.pbf -p node_modules/osrm/lib/profiles/car.lua
+    node_modules/osrm/lib/binding/osrm-contract data.osrm
+
+Consult the [osrm-backend](https://github.com/Project-OSRM/osrm-backend) documentation or further details.
+
+Once you have a complete `network.osrm` file, you can calculate networks in javascript with this library using the
+methods below. To create an OSRM instance with your network you need to construct an instance like this:
 
 ```javascript
 var osrm = new OSRM('network.osrm');
