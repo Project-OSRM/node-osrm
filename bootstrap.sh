@@ -129,6 +129,7 @@ function build_osrm() {
       -DCMAKE_CXX_COMPILER="$CXX" \
       -DBoost_NO_SYSTEM_PATHS=ON \
       -DTBB_INSTALL_DIR=${MASON_HOME} \
+      -DCMAKE_CXX_FLAGS="${CXXFLAGS:-}" \
       -DCMAKE_INCLUDE_PATH=${MASON_HOME}/include \
       -DCMAKE_LIBRARY_PATH=${MASON_HOME}/lib \
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
@@ -161,6 +162,8 @@ function main() {
     export C_INCLUDE_PATH="${MASON_HOME}/include"
     export CPLUS_INCLUDE_PATH="${MASON_HOME}/include"
     export LIBRARY_PATH="${MASON_HOME}/lib"
+
+    export CXXFLAGS="${CXXFLAGS:-} -D_GLIBCXX_USE_CXX11_ABI=0"
 
     LINK_FLAGS=""
     if [[ $(uname -s) == 'Linux' ]]; then
