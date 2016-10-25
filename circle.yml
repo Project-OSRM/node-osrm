@@ -10,7 +10,6 @@ dependencies:
   cache_directories:
     - '~/.ccache'
     - '~/.apt-cache'
-    - 'test/data'
   pre:
     - |
       if [[ "$(uname -s)" == "Linux" ]]; then
@@ -20,7 +19,7 @@ dependencies:
         sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
         sudo apt-get update -y
         echo "Installing apt deps"
-        sudo apt-get install -y g++-4.8 pkg-config wget ccache
+        sudo apt-get install -y libstdc++-5-dev pkg-config wget ccache zlib1g-dev make
       else
         brew install pkg-config wget ccache || true
       fi
@@ -28,12 +27,7 @@ dependencies:
   override:
     - which ccache
     - ccache -s
-    - |
-      if [[ "$(uname -s)" == "Linux" ]]; then
-        JOBS=2 CXX=g++-4.8 CC=gcc-4.8 ./scripts/build.sh
-      else
-        JOBS=4 CXX=clang++ CC=clang ./scripts/build.sh
-      fi
+    - JOBS=4 ./scripts/build.sh
 
 test:
   override:
