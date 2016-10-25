@@ -37,7 +37,7 @@ addons_default: &apt_packages
   apt:
     sources: [ 'ubuntu-toolchain-r-test' ]
     # note: libstdc++-5-dev is required by clang-3.8 for its headers (clang-3.8 is installed by mason on linux)
-    packages: [ 'libstdc++-5-dev', 'apport', 'gdb' ]
+    packages: [ 'libstdc++-5-dev', 'zlib1g-dev', 'make', 'apport', 'gdb' ]
 
 script_default: &build_and_publish
     # still happening as of sept 27, 2016: https://github.com/travis-ci/travis-ci/issues/6307
