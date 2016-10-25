@@ -14,7 +14,8 @@
           './src/'
       ],
       'libraries': [
-        '<!@(pkg-config libosrm --libs --static)'
+        '<!@(pkg-config libosrm --libs)',
+        '<!@(pkg-config libosrm --static --libs-only-other)'
       ],
       'defines': ['LIBOSRM_GIT_REVISION="<!@(pkg-config libosrm --modversion)"'],
       'conditions': [
@@ -29,9 +30,7 @@
               '<!@(pkg-config libosrm --cflags)'
           ],
           'libraries':[
-              '-Wl,-rpath=<!@(pkg-config libosrm --variable=libdir)',
-              '-lboost_program_options',
-              '-lboost_regex'
+              '-Wl,-rpath=<!@(pkg-config libosrm --variable=libdir)'
           ]}
         ],
         ['OS=="mac"', {
