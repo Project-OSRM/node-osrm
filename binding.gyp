@@ -14,8 +14,9 @@
           './src/'
       ],
       'libraries': [
-        '<!@(pkg-config libosrm --libs)',
-        '<!@(pkg-config libosrm --static --libs-only-other)'
+        '<!@(pkg-config libosrm --libs-only-L)',
+        '<!@(pkg-config libosrm --libs-only-l --static)',
+        '<!@(pkg-config libosrm --libs-only-other --static)'
       ],
       'defines': ['LIBOSRM_GIT_REVISION="<!@(pkg-config libosrm --modversion)"'],
       'conditions': [
