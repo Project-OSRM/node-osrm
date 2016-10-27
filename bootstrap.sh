@@ -17,13 +17,6 @@ else
     exit 1;
 fi;
 
-function dep() {
-    mason install $1 $2
-    # the rm here is to workaround https://github.com/mapbox/mason/issues/230
-    rm -f ./mason_packages/.link/mason.ini
-    mason link $1 $2
-}
-
 # Set 'osrm_release' to a branch, tag, or gitsha in package.json
 export OSRM_RELEASE=$(node -e "console.log(require('./package.json').osrm_release)")
 export CXX=${CXX:-clang++}
@@ -33,6 +26,9 @@ export TARGET_DIR=${TARGET_DIR:-$(pwd)/lib/binding}
 export OSRM_REPO=${OSRM_REPO:-"https://github.com/Project-OSRM/osrm-backend.git"}
 export OSRM_DIR=$(pwd)/deps/osrm-backend-${BUILD_TYPE}
 export JOBS=${JOBS:-1}
+export TMP_PREFIX=${TMP_PREFIX:-"/tmp/osrm-backend"}
+export CCACHE_VERSION=3.3.1
+export CMAKE_VERSION=3.6.2
 
 echo
 echo "*******************"
@@ -41,50 +37,23 @@ echo -e "BUILD_TYPE set to:     \033[1m\033[36m ${BUILD_TYPE}\033[0m"
 echo -e "CXX set to:            \033[1m\033[36m ${CXX}\033[0m"
 echo -e "CC set to:             \033[1m\033[36m ${CC}\033[0m"
 echo -e "JOBS set to:           \033[1m\033[36m ${JOBS}\033[0m"
+echo -e "TMP_PREFIX set to: \033[1m\033[36m ${TMP_PREFIX}\033[0m"
 echo "*******************"
 echo
 echo
 
-function all_deps() {
-    dep cmake 3.2.2
-    dep lua 5.2.4
-    dep luabind_lua524 e414c57bcb687bb3091b7c55bbff6947f052e46b
-    dep boost 1.61.0
-    dep boost_libsystem 1.61.0
-    dep boost_libthread 1.61.0
-    dep boost_libfilesystem 1.61.0
-    dep boost_libprogram_options 1.61.0
-    dep boost_libregex 1.61.0
-    dep boost_libiostreams 1.61.0
-    dep boost_libtest 1.61.0
-    dep boost_libdate_time 1.61.0
-    dep expat 2.1.0
-    dep stxxl 1.4.1
-    dep bzip2 1.0.6
-    dep zlib system
-    dep tbb 43_20150316
-}
-
-function move_tools() {
-    cp -r ${MASON_HOME}/bin/osrm-* "${TARGET_DIR}/"
-}
-
-function copy_tbb() {
-    if [[ `uname -s` == 'Darwin' ]]; then
-        cp ${MASON_HOME}/lib/libtbb.dylib ${TARGET_DIR}/
-        cp ${MASON_HOME}/lib/libtbbmalloc.dylib ${TARGET_DIR}/
-    else
-        cp ${MASON_HOME}/lib/libtbb.so.2 ${TARGET_DIR}/
-        cp ${MASON_HOME}/lib/libtbbmalloc.so.2 ${TARGET_DIR}/
-        cp ${MASON_HOME}/lib/libtbbmalloc_proxy.so.2 ${TARGET_DIR}/
-    fi
-}
-
 function localize() {
     mkdir -p ${TARGET_DIR}
-    copy_tbb
-    cp ${MASON_HOME}/bin/lua ${TARGET_DIR}
-    move_tools
+    if [[ $(uname -s) == 'Darwin' ]]; then
+        install_name_tool -id @loader_path/libtbb.dylib ${TMP_PREFIX}/lib/libtbb.dylib
+        cp ${TMP_PREFIX}/lib/libtbb.dylib "${TARGET_DIR}/"
+        for i in $(ls ${TMP_PREFIX}/bin/osrm-*); do
+            install_name_tool -change @rpath/libtbb.dylib @loader_path/libtbb.dylib $i
+        done
+    else
+        cp -r ${TMP_PREFIX}/lib/libtbb.so* "${TARGET_DIR}/"
+    fi
+    cp -r ${TMP_PREFIX}/bin/osrm-* "${TARGET_DIR}/"
 }
 
 function build_osrm() {
@@ -108,13 +77,14 @@ function build_osrm() {
     echo "*******************"
     echo
 
+    # install cmake and ccache
+    ./third_party/mason/mason install ccache ${CCACHE_VERSION}
+    export PATH=$(./third_party/mason/mason prefix ccache ${CCACHE_VERSION})/bin:${PATH}
+    ./third_party/mason/mason install cmake ${CMAKE_VERSION}
+    export PATH=$(./third_party/mason/mason prefix cmake ${CMAKE_VERSION})/bin:${PATH}
+
     mkdir -p build
     pushd build
-    # put mason installed ccache on PATH
-    # then osrm-backend will pick it up automatically
-    export CCACHE_VERSION="3.3.1"
-    mason install ccache ${CCACHE_VERSION}
-    export PATH=$(mason prefix ccache ${CCACHE_VERSION})/bin:${PATH}
     CMAKE_EXTRA_ARGS=""
     if [[ ${AR:-false} != false ]]; then
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_AR=${AR}"
@@ -125,46 +95,23 @@ function build_osrm() {
     if [[ ${NM:-false} != false ]]; then
         CMAKE_EXTRA_ARGS="${CMAKE_EXTRA_ARGS} -DCMAKE_NM=${NM}"
     fi
-    ${MASON_HOME}/bin/cmake ../ -DCMAKE_INSTALL_PREFIX=${MASON_HOME} \
-      -DCMAKE_CXX_COMPILER="$CXX" \
-      -DBoost_NO_SYSTEM_PATHS=ON \
-      -DTBB_INSTALL_DIR=${MASON_HOME} \
-      -DCMAKE_CXX_FLAGS="${CXXFLAGS:-}" \
-      -DCMAKE_INCLUDE_PATH=${MASON_HOME}/include \
-      -DCMAKE_LIBRARY_PATH=${MASON_HOME}/lib \
+    cmake ../ -DCMAKE_INSTALL_PREFIX=${TMP_PREFIX} \
+      -DENABLE_MASON=ON \
+      -DCMAKE_CC_COMPILER=${CC} \
+      -DCMAKE_CXX_COMPILER=${CXX} \
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
       -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}" \
       -DCMAKE_SHARED_LINKER_FLAGS="${LINK_FLAGS}" \
       -DBoost_USE_STATIC_LIBS=ON \
       ${CMAKE_EXTRA_ARGS}
     make -j${JOBS} VERBOSE=1 && make install
-    ccache -s
     popd
-
     popd
 }
 
 function main() {
-    source scripts/setup_mason.sh
-    all_deps
-    # fix install name of tbb
-    if [[ `uname -s` == 'Darwin' ]]; then
-        install_name_tool -id @loader_path/libtbb.dylib ${MASON_HOME}/lib/libtbb.dylib
-        install_name_tool -id @loader_path/libtbb.dylib ${MASON_HOME}/lib/libtbbmalloc.dylib
-    fi
-    export PKG_CONFIG_PATH=${MASON_HOME}/lib/pkgconfig
 
-    # environment variables to tell the compiler and linker
-    # to prefer mason paths over other paths when finding
-    # headers and libraries. This should allow the build to
-    # work even when conflicting versions of dependencies
-    # exist on global paths
-    # stopgap until c++17 :) (http://www.open-std.org/JTC1/SC22/WG21/docs/papers/2014/n4214.pdf)
-    export C_INCLUDE_PATH="${MASON_HOME}/include"
-    export CPLUS_INCLUDE_PATH="${MASON_HOME}/include"
-    export LIBRARY_PATH="${MASON_HOME}/lib"
-
-    export CXXFLAGS="${CXXFLAGS:-} -D_GLIBCXX_USE_CXX11_ABI=0"
+    export PKG_CONFIG_PATH=${TMP_PREFIX}/lib/pkgconfig
 
     LINK_FLAGS=""
     if [[ $(uname -s) == 'Linux' ]]; then
@@ -174,7 +121,6 @@ function main() {
     fi
 
     build_osrm
-
     localize
 }
 

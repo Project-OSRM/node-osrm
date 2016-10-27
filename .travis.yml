@@ -28,15 +28,12 @@ env:
    - CCACHE_TEMPDIR=/tmp/.ccache-temp
    - CCACHE_COMPRESS=1
    - CASHER_TIME_OUT=1000
-   - CC="clang"
-   - CXX="clang++"
    - secure: KitzGZjoDblX/3heajcvssGz0JnJ/k02dr2tu03ksUV+6MogC3RSQudqyKY57+f8VyZrcllN/UOlJ0Q/3iG38Oz8DljC+7RZxtkVmE1SFBoOezKCdhcvWM12G3uqPs7hhrRxuUgIh0C//YXEkulUrqa2H1Aj2xeen4E3FAqEoy0=
    - secure: WLGmxl6VTVWhXGm6X83GYNYzPNsvTD+9usJOKM5YBLAdG7cnOBQBNiCCUKc9OZMMZVUr3ec2/iigakH5Y8Yc+U6AlWKzlORyqWLuk4nFuoedu62x6ocQkTkuOc7mHiYhKd21xTGMYauaZRS6kugv4xkpGES2UjI2T8cjZ+LN2jU=
 
 addons_default: &apt_packages
   apt:
     sources: [ 'ubuntu-toolchain-r-test' ]
-    # note: libstdc++-5-dev is required by clang-3.8 for its headers (clang-3.8 is installed by mason on linux)
     packages: [ 'libstdc++-5-dev', 'zlib1g-dev', 'make', 'apport', 'gdb' ]
 
 script_default: &build_and_publish

@@ -8,13 +8,22 @@ set -o pipefail
 export TARGET=${TARGET:-Release}
 export COVERAGE=${COVERAGE:-false}
 export NODE=${NODE:-4}
+export CLANG_VERSION="${CLANG_VERSION:-3.8.1}"
 
 export CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-source ${CURRENT_DIR}/travis_helper.sh
+export DEPS_DIR="$(pwd)/deps"
+export PATH=${DEPS_DIR}/bin:${PATH}
+mkdir -p ${DEPS_DIR}
 
-mapbox_time "setup-mason" source ${CURRENT_DIR}/setup_mason.sh
-mapbox_time "setup-compiler" source ${CURRENT_DIR}/setup_compiler.sh
+# install clang++
+if [[ $(uname -s) == 'Linux' ]]; then
+    wget --quiet -O - https://mason-binaries.s3.amazonaws.com/${platform}-x86_64/clang++/${CLANG_VERSION}.tar.gz | tar --strip-components=1 -xz -C ${DEPS_DIR} || exit 1
+    export CXX=${DEPS_DIR}/bin/clang++
+    export CC=${DEPS_DIR}/bin/clang
+fi
+
+source ${CURRENT_DIR}/travis_helper.sh
 
 # ensure we start inside the root directory (one level up)
 cd ${CURRENT_DIR}/../
