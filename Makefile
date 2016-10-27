@@ -1,5 +1,7 @@
 # http://www.gnu.org/prep/standards/html_node/Standard-Targets.html#Standard-Targets
 
+export TMP_PREFIX ?= /tmp/osrm-backend
+
 all: build/Release/osrm.node
 
 # osrm-backend provides libosrm.pc for use with
@@ -44,18 +46,18 @@ endif
 # directly (this is more direct than "npm install" which just calls node-pre-gyp anyway)
 # We use "--loglevel=error" to quiet the verbosity to make it easier to see compiler errors quickly
 build/Release/osrm.node: ./node_modules ./deps/osrm-backend-Release
-	@export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && \
+	@export PKG_CONFIG_PATH="$(TMP_PREFIX)/lib/pkgconfig" && \
 	  echo "*** Using osrm installed at `pkg-config libosrm --variable=prefix` ***" && \
 	  ./node_modules/.bin/node-pre-gyp configure build --loglevel=error --clang=1 $(NPM_FLAGS)
 
 # put the local debug-built osrm-backend on PKG_CONFIG_PATH and build as normal
 debug: ./node_modules ./deps/osrm-backend-Debug
-	@export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && \
+	@export PKG_CONFIG_PATH="$(TMP_PREFIX)/lib/pkgconfig" && \
 	  echo "*** Using osrm installed at `pkg-config libosrm --variable=prefix` ***" && \
 	  ./node_modules/.bin/node-pre-gyp configure build --debug --clang=1 $(NPM_FLAGS)
 
 coverage: ./node_modules ./deps/osrm-backend-Debug
-	@export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && \
+	@export PKG_CONFIG_PATH="$(TMP_PREFIX)/lib/pkgconfig" && \
 	  export LDFLAGS="--coverage" && export CXXFLAGS="--coverage" && \
 	  echo "*** Using osrm installed at `pkg-config libosrm --variable=prefix` ***" && \
 	  ./node_modules/.bin/node-pre-gyp configure build --debug --clang=1 $(NPM_FLAGS)
@@ -63,7 +65,7 @@ coverage: ./node_modules ./deps/osrm-backend-Debug
 # same as typing "make" (which hits the "build/Release/osrm.node" target) except that
 # "--loglevel=verbose" shows the actual compiler arguments
 verbose: ./node_modules ./deps/osrm-backend-Release
-	@export PKG_CONFIG_PATH="mason_packages/.link/lib/pkgconfig" && \
+	@export PKG_CONFIG_PATH="$(TMP_PREFIX)/lib/pkgconfig" && \
 	  echo "*** Using osrm installed at `pkg-config libosrm --variable=prefix` ***" && \
 	  ./node_modules/.bin/node-pre-gyp configure build --loglevel=verbose --clang=1 $(NPM_FLAGS)
 
@@ -73,8 +75,7 @@ clean:
 	rm -rf ./lib/binding/*
 	rm -rf ./node_modules/
 	rm -f ./*tgz
-	rm -rf ./mason_packages
-	rm -rf ./deps
+	rm -rf ./deps/
 
 grind:
 	valgrind --leak-check=full node node_modules/.bin/_mocha

@@ -11,7 +11,9 @@ fi
 NODE_VERSION=$1
 
 # if an existing nvm is already installed we need to unload it
-nvm unload || true
+if [[ $(command -v nvm) == 'nvm' ]]; then
+    nvm unload || true
+fi
 
 # here we set up the node version on the fly based on the matrix value.
 # This is done manually so that the build works the same on OS X
