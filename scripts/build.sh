@@ -75,7 +75,8 @@ if [[ "$(uname -s)" == "Linux" ]]; then
     if [[ ${RESULT} != 0 ]]; then exit $RESULT; fi
 else
     # todo: coredump support on OS X
-    mapbox_time "make-test" make test
+    mapbox_time "make-test" make test || RESULT=$?
+    if [[ ${RESULT} != 0 ]]; then exit $RESULT; fi
 fi
 
 
