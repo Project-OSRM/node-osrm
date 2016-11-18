@@ -27,6 +27,7 @@ export OSRM_REPO=${OSRM_REPO:-"https://github.com/Project-OSRM/osrm-backend.git"
 export OSRM_DIR=$(pwd)/deps/osrm-backend-${BUILD_TYPE}
 export JOBS=${JOBS:-1}
 export TMP_PREFIX=${TMP_PREFIX:-"/tmp/osrm-backend"}
+export CLANG_VERSION="${CLANG_VERSION:-3.8.1}"
 export CCACHE_VERSION=3.3.1
 export CMAKE_VERSION=3.6.2
 
@@ -78,6 +79,8 @@ function build_osrm() {
     echo
 
     # install cmake and ccache
+    ./third_party/mason/mason install clang++ ${CLANG_VERSION}
+    export PATH=$(./third_party/mason/mason prefix clang++ ${CLANG_VERSION})/bin:${PATH}
     ./third_party/mason/mason install ccache ${CCACHE_VERSION}
     export PATH=$(./third_party/mason/mason prefix ccache ${CCACHE_VERSION})/bin:${PATH}
     ./third_party/mason/mason install cmake ${CMAKE_VERSION}
