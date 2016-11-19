@@ -67,20 +67,20 @@ matrix:
     # OS X
     - os: osx
       # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
-      osx_image: xcode8
+      osx_image: xcode7.3
       env: NODE="4" TARGET=Release
       script: *build_and_publish
     - os: osx
-      osx_image: xcode8
+      osx_image: xcode7.3
       env: NODE="4" TARGET=Debug NPM_FLAGS="--debug"
       script: *build_and_publish
     - os: osx
       # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
-      osx_image: xcode8
+      osx_image: xcode7.3
       env: NODE="6" TARGET=Release
       script: *build_and_publish
     - os: osx
-      osx_image: xcode8
+      osx_image: xcode7.3
       env: NODE="6" TARGET=Debug NPM_FLAGS="--debug"
       script: *build_and_publish
     # Linux coverage build
