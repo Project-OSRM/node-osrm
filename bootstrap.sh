@@ -30,6 +30,8 @@ export TMP_PREFIX=${TMP_PREFIX:-"/tmp/osrm-backend"}
 export CLANG_VERSION="${CLANG_VERSION:-3.8.1}"
 export CCACHE_VERSION=3.3.1
 export CMAKE_VERSION=3.6.2
+export TBB_VERSION=43_20150316
+export MASON_CMD=${OSRM_DIR}/third_party/mason/mason
 
 echo
 echo "*******************"
@@ -46,13 +48,19 @@ echo
 function localize() {
     mkdir -p ${TARGET_DIR}
     if [[ $(uname -s) == 'Darwin' ]]; then
-        install_name_tool -id @loader_path/libtbb.dylib ${TMP_PREFIX}/lib/libtbb.dylib
-        cp ${TMP_PREFIX}/lib/libtbb.dylib "${TARGET_DIR}/"
+        pushd ${OSRM_DIR}
+        TBB_LIB_PATH=$(${MASON_CMD} prefix tbb ${TBB_VERSION})/lib/libtbb.dylib
+        popd
+        cp ${TBB_LIB_PATH} "${TARGET_DIR}/"
+        install_name_tool -id @loader_path/libtbb.dylib ${TARGET_DIR}/libtbb.dylib
         for i in $(ls ${TMP_PREFIX}/bin/osrm-*); do
             install_name_tool -change @rpath/libtbb.dylib @loader_path/libtbb.dylib $i
         done
     else
-        cp -r ${TMP_PREFIX}/lib/libtbb.so* "${TARGET_DIR}/"
+        pushd ${OSRM_DIR}
+        TBB_LIB_PATH=$(${MASON_CMD} prefix tbb ${TBB_VERSION})/lib/libtbb.so*
+        popd
+        cp -r ${TBB_LIB_PATH} "${TARGET_DIR}/"
     fi
     cp -r ${TMP_PREFIX}/bin/osrm-* "${TARGET_DIR}/"
 }
@@ -78,13 +86,16 @@ function build_osrm() {
     echo "*******************"
     echo
 
+    # only install clang for linux, OSX has xcode clang
+    if [[ $(uname -s) != 'Darwin' ]]; then
+        ${MASON_CMD} install clang++ ${CLANG_VERSION}
+        export PATH=$(${MASON_CMD} prefix clang++ ${CLANG_VERSION})/bin:${PATH}
+    fi
     # install cmake and ccache
-    ./third_party/mason/mason install clang++ ${CLANG_VERSION}
-    export PATH=$(./third_party/mason/mason prefix clang++ ${CLANG_VERSION})/bin:${PATH}
-    ./third_party/mason/mason install ccache ${CCACHE_VERSION}
-    export PATH=$(./third_party/mason/mason prefix ccache ${CCACHE_VERSION})/bin:${PATH}
-    ./third_party/mason/mason install cmake ${CMAKE_VERSION}
-    export PATH=$(./third_party/mason/mason prefix cmake ${CMAKE_VERSION})/bin:${PATH}
+    ${MASON_CMD} install ccache ${CCACHE_VERSION}
+    export PATH=$(${MASON_CMD} prefix ccache ${CCACHE_VERSION})/bin:${PATH}
+    ${MASON_CMD} install cmake ${CMAKE_VERSION}
+    export PATH=$(${MASON_CMD} prefix cmake ${CMAKE_VERSION})/bin:${PATH}
 
     mkdir -p build
     pushd build
