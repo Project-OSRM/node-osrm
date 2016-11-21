@@ -27,7 +27,9 @@ if [[ $(uname -s) == 'Linux' ]]; then
     fi
 fi
 
-echo "determining publishing status..."
+PACKAGE_VERSION=$(node -e "console.log(require('../package.json').version)")
+OSRM_VERSION=$(node -e "console.log(require('../package.json').osrm_version)")
+echo "determining publishing status for ${PACKAGE_VERSION} using OSRM ${OSRM_VERSION} ..."
 
 if [[ $(./scripts/is_pr_merge.sh) ]]; then
     echo "Skipping publishing because this is a PR merge commit"
@@ -45,6 +47,8 @@ else
         echo "*** Error: Republishing is disallowed for this repository"
         exit 1
         #./node_modules/.bin/node-pre-gyp unpublish publish ${NPM_FLAGS}
+    elif [[ ${TRAVIS_EVENT_TYPE} == 'chron' && ${PACKAGE_VERSION} =~ .*-master && ${OSRM_VERSION} == "master"]]; then
+        echo "Would allow republishing!"
     else
         echo "Skipping publishing"
     fi;
