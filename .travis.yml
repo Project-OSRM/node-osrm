@@ -1,5 +1,4 @@
-# We actually depend on this being the generic image
-language: generic
+language: node
 
 git:
   depth: 10
@@ -25,6 +24,7 @@ sudo: false
 
 env:
   global:
+   - JOBS=4
    - CCACHE_TEMPDIR=/tmp/.ccache-temp
    - CCACHE_COMPRESS=1
    - CASHER_TIME_OUT=1000
@@ -42,6 +42,8 @@ script_default: &build_and_publish
       if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
         rvm get head || true
       fi
+    - nvm install ${NODE}
+    - nvm use ${NODE}
     - source ./scripts/build.sh
     - ./scripts/publish.sh
 
@@ -49,45 +51,47 @@ matrix:
   include:
     # Linux
     - os: linux
-      env: NODE="4" TARGET=Release
+      env: NODE="4" BUILD_TYPE=Release
       addons: *apt_packages
       script: *build_and_publish
     - os: linux
-      env: NODE="4" TARGET=Debug NPM_FLAGS="--debug"
+      env: NODE="4" BUILD_TYPE=Debug NPM_FLAGS="--debug"
       addons: *apt_packages
       script: *build_and_publish
     - os: linux
-      env: NODE="6" TARGET=Release
+      env: NODE="6" BUILD_TYPE=Release
       addons: *apt_packages
       script: *build_and_publish
     - os: linux
-      env: NODE="6" TARGET=Debug NPM_FLAGS="--debug"
+      env: NODE="6" BUILD_TYPE=Debug NPM_FLAGS="--debug"
       addons: *apt_packages
       script: *build_and_publish
     # OS X
     - os: osx
       # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
       osx_image: xcode7.3
-      env: NODE="4" TARGET=Release
+      env: NODE="4" BUILD_TYPE=Release
       script: *build_and_publish
     - os: osx
       osx_image: xcode7.3
-      env: NODE="4" TARGET=Debug NPM_FLAGS="--debug"
+      env: NODE="4" BUILD_TYPE=Debug NPM_FLAGS="--debug"
       script: *build_and_publish
     - os: osx
       # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
       osx_image: xcode7.3
-      env: NODE="6" TARGET=Release
+      env: NODE="6" BUILD_TYPE=Release
       script: *build_and_publish
     - os: osx
       osx_image: xcode7.3
-      env: NODE="6" TARGET=Debug NPM_FLAGS="--debug"
+      env: NODE="6" BUILD_TYPE=Debug NPM_FLAGS="--debug"
       script: *build_and_publish
     # Linux coverage build
     - os: linux
-      env: NODE="4" TARGET=Debug COVERAGE=true NPM_FLAGS="--debug"
+      env: NODE="4" BUILD_TYPE=Debug COVERAGE=true NPM_FLAGS="--debug"
       addons: *apt_packages
       script:
+        - nvm install ${NODE}
+        - nvm use ${NODE}
         - source ./scripts/build.sh
         - curl -S -f https://codecov.io/bash -o codecov
         - chmod +x codecov

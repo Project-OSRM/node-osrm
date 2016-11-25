@@ -121,63 +121,36 @@ make && make test
 
 ## Using an existing local osrm-backend
 
-If you do wish to build node-osrm against an existing osrm-backend that you have on your system you will need:
+If you do wish to build node-osrm against an existing osrm-backend we assume it is installed and will be found by pkg-config.
 
- - OSRM develop branch cloned, built from source, and installed
- - The test data initialized: `make -C test/data` inside the `osrm-backend` directory
+To check if you installed it correctly the following command and verify the output:
 
-See [Project-OSRM wiki](https://github.com/Project-OSRM/osrm-backend/wiki/Building%20OSRM) for details.
+  which osrm-extract
+  which osrm-contract
+  which osrm-datastore
+  pkg-config libosrm --variable=prefix
 
-Once Project-OSRM is built you should be able to run:
-
-    pkg-config libosrm --variable=prefix
-
-Which should return the path to where you installed Project-OSRM.
+See the [Project-OSRM wiki](https://github.com/Project-OSRM/osrm-backend/wiki/Building%20OSRM) for details in how to build osrm-backend from source.
 
 Now you can build `node-osrm`:
 
     git clone https://github.com/Project-OSRM/node-osrm.git
     cd node-osrm
-    npm install --build-from-source
-
-To run the tests against your local osrm-backend's data you will need to
-set the `OSRM_DATA_PATH` variable:
-
-    export OSRM_DATA_PATH=/path/to/osrm-backend/test/data
-
-And you will need to remove, if they exist, any previous builds that created local binaries of osrm-backend because the `osrm-extract` and other tools here will be used in preference of your global installation:
-
-    rm -rf lib/binding/
-
-Then you can run `npm test`.
-
-To recap, here is a full example of building against an osrm-backend that is cloned beside node-osrm but installed into a custom location:
-
-```
-export PATH=/opt/osrm/bin:${PATH}
-export PKG_CONFIG_PATH=/opt/osrm/lib/pkgconfig
-pkg-config libosrm --variable=prefix
-# if boost headers are in a custom location give a hint about that
-# here we assume the are in `/opt/boost`
-export CXXFLAGS="-I/opt/boost/include"
-npm install --build-from-source
-# build the osrm-backend test data
-make -C ../osrm-backend/test/data
-export OSRM_DATA_PATH=../osrm-backend/test/data
-npm test
-```
+    mkdir build
+    cd build
+    cmake ..
+    make clean
+    make
+    make test
 
 # Developing
 
-After setting up a [Source Build](#source-build) you can make changes to the code and rebuild like:
+After setting up a [Source Build](#source-build) you can make changes to the code and rebuild like any other cmake project:
 
-    npm install --build-from-source
+  cd build
+  make
 
-But that will trigger a full re-configure if any changes occurred to dependencies.
-
-However you can optionally use the Makefile which simplifies some common needs.
-
-To rebuild using cached data:
+To rebuild using with a full re-configuration do:
 
     make
 
@@ -188,8 +161,6 @@ If you want to see all the arguments sent to the compiler do:
 If you want to build in debug mode (-DDEBUG -O0) then do:
 
     make debug
-
-Under the hood this uses [node-pre-gyp](https://github.com/mapbox/node-pre-gyp) (which itself used [node-gyp](https://github.com/TooTallNate/node-gyp)) to compile the source code.
 
 # Testing
 

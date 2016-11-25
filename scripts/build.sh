@@ -3,9 +3,7 @@
 set -eu
 set -o pipefail
 
-
 # defaults
-export TARGET=${TARGET:-Release}
 export COVERAGE=${COVERAGE:-false}
 export NODE=${NODE:-4}
 
@@ -14,6 +12,10 @@ export CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export DEPS_DIR="$(pwd)/deps"
 export PATH=${DEPS_DIR}/bin:${PATH}
 mkdir -p ${DEPS_DIR}
+
+export CLANG_VERSION="${CLANG_VERSION:-3.8.1}"
+export CCACHE_VERSION=3.3.1
+export CMAKE_VERSION=3.6.2
 
 source ${CURRENT_DIR}/travis_helper.sh
 
@@ -25,10 +27,24 @@ if [[ ! $(which wget) ]]; then
     exit 1;
 fi;
 
-if [[ ! $(which pkg-config) ]]; then
-    echo "echo pkg-config must be installed";
-    exit 1;
-fi;
+# FIXME This should be replaced by proper calls to mason but we currently have a chicken-egg problem
+# since we rely on osrm-backend to ship mason for us. Once we merged this into osrm-backend this will not be needed.
+CMAKE_URL="https://s3.amazonaws.com/mason-binaries/${TRAVIS_OS_NAME}-x86_64/cmake/${CMAKE_VERSION}.tar.gz"
+echo "Downloading cmake from ${CMAKE_URL} ..."
+wget --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C ${DEPS_DIR} || exit 1
+CCACHE_URL="https://s3.amazonaws.com/mason-binaries/${TRAVIS_OS_NAME}-x86_64/ccache/${CCACHE_VERSION}.tar.gz"
+echo "Downloading ccache from ${CCACHE_URL} ..."
+wget --quiet -O - ${CCACHE_URL} | tar --strip-components=1 -xz -C ${DEPS_DIR} || exit 1
+# install clang for linux but use the xcode version on OSX
+if [[ "$(uname -s)" != "Darwin" ]]; then
+    CLANG_URL="https://s3.amazonaws.com/mason-binaries/${TRAVIS_OS_NAME}-x86_64/clang++/${CLANG_VERSION}.tar.gz"
+    echo "Downloading clang from ${CLANG_URL} ..."
+    wget --quiet -O - ${CLANG_URL} | tar --strip-components=1 -xz -C ${DEPS_DIR} || exit 1
+    export CCOMPILER='clang'
+    export CXXCOMPILER='clang++'
+    export CC='clang'
+    export CXX='clang++'
+fi
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
     if [[ -f /etc/sysctl.conf ]] && [[ $(grep shmmax /etc/sysctl.conf) ]]; then
@@ -41,29 +57,22 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
     fi
 fi
 
-# install consistent node version
-mapbox_time "install_node" source ./scripts/install_node.sh ${NODE}
-
-if [[ ${TARGET} == 'Debug' ]]; then
-    export BUILD_TYPE=Debug
-fi
-
-mapbox_time "bootstrap" source ./bootstrap.sh
-
-echo "showing osrm-backend libosrm.pc details"
-mapbox_time "libosrm.pc-details" pkg-config libosrm --debug
-
 # only set coverage flags for node-osrm to avoid
 # very slow performance for osrm command line tools
 if [[ ${COVERAGE} == true ]]; then
     export LDFLAGS="${LDFLAGS:-} --coverage" && export CXXFLAGS="${CXXFLAGS:-} --coverage"
 fi
 
-echo "First install node dependencies"
-mapbox_time "npm-update" npm update ${NPM_FLAGS}
-
-echo "Now build node-osrm"
-mapbox_time "node-pre-gyp-build" ./node_modules/.bin/node-pre-gyp configure build ${NPM_FLAGS} --verbose --clang=1
+echo "Now build node-osrm and dependencies"
+export VERBOSE=1
+if [[ "${BUILD_TYPE}" == "Debug" ]]; then
+    mapbox_time "make" make -j${JOBS} debug
+elif [[ "${BUILD_TYPE}" == "Release" ]]; then
+    mapbox_time "make" make -j${JOBS} release
+else
+    echo "Unknown build type ${BUILD_TYPE}"
+    exit 1
+fi
 
 # run tests, with backtrace support
 if [[ "$(uname -s)" == "Linux" ]]; then

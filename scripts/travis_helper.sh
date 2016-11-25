@@ -4,12 +4,6 @@
 # bleed into Travis' wrapper script, which messes with their workflow, e.g.
 # preventing after_failure scripts to be triggered.
 
-case `uname -s` in
-    'Darwin') JOBS=$((`sysctl -n hw.ncpu` + 2)) ;;
-    'Linux')  JOBS=$((`nproc` + 2)) ;;
-    *)        JOBS=2 ;;
-esac
-
 function mapbox_time_start {
     local name=$1
     mapbox_timer_name=$name
