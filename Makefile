@@ -1,3 +1,15 @@
+# If JOBS environment variable not defined, default to the number of CPUs available
+ifeq ($(JOBS),)
+JOBS:=1
+OS:=$(shell uname -s)
+ifeq ($(OS),Linux)
+  JOBS:=$(shell grep -c ^processor /proc/cpuinfo)
+endif
+ifeq ($(OS),Darwin) # Assume Mac OS X
+  JOBS:=$(shell sysctl -n hw.ncpu)
+endif
+endif
+
 all: release
 
 node_modules: package.json
