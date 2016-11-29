@@ -92,6 +92,7 @@ if [[ "${OS_NAME}" == "linux" ]]; then
     if [[ ${RESULT} != 0 ]]; then exit $RESULT; fi
 else
     # todo: coredump support on OS X
+    RESULT=0
     mapbox_time "make-test" make test || RESULT=$?
     if [[ ${RESULT} != 0 ]]; then exit $RESULT; fi
 fi
