@@ -2,6 +2,7 @@ machine:
   xcode:
     version: 7.3
   environment:
+    BUILD_TYPE: "Debug"
     XCODE_SCHEME: "no"
     XCODE_WORKSPACE: "no"
     CCACHE_COMPRESS: 1

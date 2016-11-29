@@ -27,17 +27,24 @@ if [[ ! $(which wget) ]]; then
     exit 1;
 fi;
 
+SYSTEM_NAME=$(uname -s)
+if [[ "${SYSTEM_NAME}" == "Darwin" ]]; then
+    OS_NAME="osx"
+elif [[ "${SYSTEM_NAME}" == "Linux" ]]; then
+    OS_NAME="linux"
+fi
+
 # FIXME This should be replaced by proper calls to mason but we currently have a chicken-egg problem
 # since we rely on osrm-backend to ship mason for us. Once we merged this into osrm-backend this will not be needed.
-CMAKE_URL="https://s3.amazonaws.com/mason-binaries/${TRAVIS_OS_NAME}-x86_64/cmake/${CMAKE_VERSION}.tar.gz"
+CMAKE_URL="https://s3.amazonaws.com/mason-binaries/${OS_NAME}-x86_64/cmake/${CMAKE_VERSION}.tar.gz"
 echo "Downloading cmake from ${CMAKE_URL} ..."
 wget --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C ${DEPS_DIR} || exit 1
-CCACHE_URL="https://s3.amazonaws.com/mason-binaries/${TRAVIS_OS_NAME}-x86_64/ccache/${CCACHE_VERSION}.tar.gz"
+CCACHE_URL="https://s3.amazonaws.com/mason-binaries/${OS_NAME}-x86_64/ccache/${CCACHE_VERSION}.tar.gz"
 echo "Downloading ccache from ${CCACHE_URL} ..."
 wget --quiet -O - ${CCACHE_URL} | tar --strip-components=1 -xz -C ${DEPS_DIR} || exit 1
 # install clang for linux but use the xcode version on OSX
-if [[ "$(uname -s)" != "Darwin" ]]; then
-    CLANG_URL="https://s3.amazonaws.com/mason-binaries/${TRAVIS_OS_NAME}-x86_64/clang++/${CLANG_VERSION}.tar.gz"
+if [[ "${OS_NAME}" != "osx" ]]; then
+    CLANG_URL="https://s3.amazonaws.com/mason-binaries/${OS_NAME}-x86_64/clang++/${CLANG_VERSION}.tar.gz"
     echo "Downloading clang from ${CLANG_URL} ..."
     wget --quiet -O - ${CLANG_URL} | tar --strip-components=1 -xz -C ${DEPS_DIR} || exit 1
     export CCOMPILER='clang'
@@ -46,7 +53,7 @@ if [[ "$(uname -s)" != "Darwin" ]]; then
     export CXX='clang++'
 fi
 
-if [[ "$(uname -s)" == "Darwin" ]]; then
+if [[ "${OS_NAME}" == "osx" ]]; then
     if [[ -f /etc/sysctl.conf ]] && [[ $(grep shmmax /etc/sysctl.conf) ]]; then
         echo "Note: found shmmax setting in /etc/sysctl.conf, not modifying"
     else
@@ -75,7 +82,7 @@ else
 fi
 
 # run tests, with backtrace support
-if [[ "$(uname -s)" == "Linux" ]]; then
+if [[ "${OS_NAME}" == "linux" ]]; then
     ulimit -c unlimited -S
     RESULT=0
     mapbox_time "make-test" make test || RESULT=$?
