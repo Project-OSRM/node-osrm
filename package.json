@@ -43,6 +43,7 @@
   },
   "scripts": {
     "preinstall": "npm install node-pre-gyp",
+    "prepublish": "make profiles",
     "install": "node-pre-gyp install --fallback-to-build=false || make",
     "test": "node test/index.js",
     "docs": "npm install documentation@^4.0.0-beta5 && documentation build src/node_osrm.cpp --polyglot -f md -o docs/api.md"

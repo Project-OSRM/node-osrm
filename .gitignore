@@ -3,7 +3,8 @@
 build/
 deps/
 lib/binding/
-lib/profiles/
+profiles/*.lua
+profiles/lib
 node_modules
 berlin-latest.osm.pbf
 berlin-latest.osrm*

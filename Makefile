@@ -40,7 +40,8 @@ coverage: ./node_modules
 	 cd ..
 
 clean:
-	(cd test/data/ && $(MAKE) clean)
+	$(MAKE) -C ./test/data clean
+	$(MAKE) -C ./profiles clean
 	rm -rf ./build
 	rm -rf ./lib/binding/*
 	rm -rf ./node_modules/
@@ -50,9 +51,12 @@ clean:
 grind:
 	valgrind --leak-check=full node node_modules/.bin/_mocha
 
+profiles:
+	$(MAKE) -C ./profiles
+
 # Note: this PATH setting is used to allow the localized tools to be used
 # but your locally installed osrm-backend tool, if on PATH should override
-shm: ./test/data/Makefile
+shm: ./test/data/Makefile profiles
 	@PATH="$(PATH):./lib/binding" && echo "*** Using osrm-datastore from `which osrm-datastore` ***"
 	$(MAKE) -C ./test/data
 	PATH="$(PATH):./lib/binding" && osrm-datastore ./test/data/berlin-latest.osrm
@@ -60,4 +64,4 @@ shm: ./test/data/Makefile
 test: shm
 	npm test
 
-.PHONY: test clean build shm debug release coverage
+.PHONY: test clean build shm debug release profiles coverage
