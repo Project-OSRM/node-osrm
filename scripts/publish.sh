@@ -16,7 +16,7 @@ echo "dumping binary meta..."
 # enforce that binary has proper ORIGIN flags so that
 # it can portably find libtbb.so in the same directory
 if [[ $(uname -s) == 'Linux' ]]; then
-    readelf -d ./lib/binding/osrm.node > readelf-output.txt
+    readelf -d ./lib/binding/node-osrm.node > readelf-output.txt
     if grep -q 'Flags: ORIGIN' readelf-output.txt; then
         echo "Found ORIGIN flag in readelf output"
         cat readelf-output.txt

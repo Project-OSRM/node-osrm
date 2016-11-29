@@ -6,7 +6,7 @@
   "author": "Dane Springmeyer <springmeyer>",
   "version": "5.5.0-cmaketest",
   "osrm_release": "fix/rpath4all",
-  "main": "./lib/osrm.js",
+  "main": "./lib/index.js",
   "license": "BSD-2-Clause",
   "bugs": {
     "email": "dane@mapbox.com",
@@ -23,7 +23,7 @@
     "url": "git://github.com/Project-OSRM/node-osrm.git"
   },
   "binary": {
-    "module_name": "osrm",
+    "module_name": "node-osrm",
     "module_path": "./lib/binding/",
     "host": "https://mapbox-node-binary.s3.amazonaws.com",
     "remote_path": "./{name}/v{version}/{configuration}/",

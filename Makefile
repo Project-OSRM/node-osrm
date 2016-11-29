@@ -16,16 +16,16 @@ node_modules: package.json
 	npm install --ignore-scripts # Install dependencies but don't run our own install script.
 
 # build the node module and libosrm using cmake
-build/%/osrm.node: ./node_modules
+build/%/node-osrm.node: ./node_modules
 	mkdir -p build &&\
 	 cd build &&\
 	 cmake .. -DCMAKE_BUILD_TYPE=$* -DBUILD_LIBOSRM=On &&\
 	 VERBOSE=1 make -j${JOBS} &&\
 	 cd ..
 
-release: build/Release/osrm.node
+release: build/Release/node-osrm.node
 
-debug: build/Debug/osrm.node
+debug: build/Debug/node-osrm.node
 
 clean:
 	(cd test/data/ && $(MAKE) clean)
