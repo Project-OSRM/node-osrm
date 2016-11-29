@@ -4,8 +4,8 @@
   "url": "https://github.com/Project-OSRM/node-osrm",
   "homepage": "http://project-osrm.org",
   "author": "Dane Springmeyer <springmeyer>",
-  "version": "5.5.0-cmaketest",
-  "osrm_release": "fix/rpath4all",
+  "version": "5.5.0-latest",
+  "osrm_release": "master",
   "main": "./lib/index.js",
   "license": "BSD-2-Clause",
   "bugs": {
