@@ -87,7 +87,7 @@ matrix:
       script: *build_and_publish
     # Linux coverage build
     - os: linux
-      env: NODE="4" BUILD_TYPE=Debug COVERAGE=true NPM_FLAGS="--debug"
+      env: NODE="4" BUILD_TYPE=Debug ENABLE_COVERAGE=On NPM_FLAGS="--debug"
       addons: *apt_packages
       script:
         - nvm install ${NODE}

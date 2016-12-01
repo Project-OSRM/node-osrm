@@ -27,6 +27,18 @@ release: build/Release/node-osrm.node
 
 debug: build/Debug/node-osrm.node
 
+coverage: ./node_modules
+	mkdir -p build &&\
+	 cd build &&\
+	 cmake .. -DCMAKE_BUILD_TYPE=RelWithDebug -DBUILD_LIBOSRM=On &&\
+	 VERBOSE=1 make -j${JOBS} copy_all_osrm_binaries &&\
+	 cd ..
+	mkdir -p build &&\
+	 cd build &&\
+	 cmake .. -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=On -DBUILD_LIBOSRM=On &&\
+	 VERBOSE=1 make -j${JOBS} node-osrm &&\
+	 cd ..
+
 clean:
 	(cd test/data/ && $(MAKE) clean)
 	rm -rf ./build

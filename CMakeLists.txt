@@ -100,7 +100,5 @@ set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${LINKER_FLAGS}")
 set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${LINKER_FLAGS}")
 
 add_custom_command(TARGET node-osrm POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:node-osrm> ${CMAKE_SOURCE_DIR}/lib/binding/node-osrm.node)
-add_custom_target(copy_osrm_binaries ALL
-  DEPENDS ${OSRM_BINARIES}
-)
+add_custom_target(copy_osrm_binaries ALL DEPENDS ${OSRM_BINARIES})
 

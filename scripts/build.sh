@@ -4,7 +4,8 @@ set -eu
 set -o pipefail
 
 # defaults
-export COVERAGE=${COVERAGE:-false}
+export ENABLE_COVERAGE=${ENABLE_COVERAGE:-"Off"}
+export BUILD_TYPE=${BUILD_TYPE:-"Release"}
 export NODE=${NODE:-4}
 
 export CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -64,21 +65,19 @@ if [[ "${OS_NAME}" == "osx" ]]; then
     fi
 fi
 
-# only set coverage flags for node-osrm to avoid
-# very slow performance for osrm command line tools
-if [[ ${COVERAGE} == true ]]; then
-    export LDFLAGS="${LDFLAGS:-} --coverage" && export CXXFLAGS="${CXXFLAGS:-} --coverage"
-fi
-
 echo "Now build node-osrm and dependencies"
 export VERBOSE=1
-if [[ "${BUILD_TYPE}" == "Debug" ]]; then
-    mapbox_time "make" make -j${JOBS} debug
-elif [[ "${BUILD_TYPE}" == "Release" ]]; then
-    mapbox_time "make" make -j${JOBS} release
+if [[ "${ENABLE_COVERAGE}" == "On" ]]; then
+    mapbox_time "make" make -j${JOBS} coverage
 else
-    echo "Unknown build type ${BUILD_TYPE}"
-    exit 1
+    if [[ "${BUILD_TYPE}" == "Debug" ]]; then
+        mapbox_time "make" make -j${JOBS} debug
+    elif [[ "${BUILD_TYPE}" == "Release" ]]; then
+        mapbox_time "make" make -j${JOBS} release
+    else
+        echo "Unknown build type ${BUILD_TYPE}"
+        exit 1
+    fi
 fi
 
 # run tests, with backtrace support
