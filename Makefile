@@ -31,7 +31,7 @@ coverage: ./node_modules
 	mkdir -p build &&\
 	 cd build &&\
 	 cmake .. -DCMAKE_BUILD_TYPE=RelWithDebug -DBUILD_LIBOSRM=On &&\
-	 VERBOSE=1 make -j${JOBS} copy_all_osrm_binaries &&\
+	 VERBOSE=1 make -j${JOBS} copy_osrm_binaries &&\
 	 cd ..
 	mkdir -p build &&\
 	 cd build &&\
@@ -60,4 +60,4 @@ shm: ./test/data/Makefile
 test: shm
 	npm test
 
-.PHONY: test clean build shm debug release
+.PHONY: test clean build shm debug release coverage
