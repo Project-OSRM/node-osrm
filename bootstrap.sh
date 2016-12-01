@@ -90,6 +90,8 @@ function build_osrm() {
     if [[ $(uname -s) != 'Darwin' ]]; then
         ${MASON_CMD} install clang++ ${CLANG_VERSION}
         export PATH=$(${MASON_CMD} prefix clang++ ${CLANG_VERSION})/bin:${PATH}
+        ${MASON_CMD} install binutils 2.27
+        export PATH=$(${MASON_CMD} prefix binutils 2.27)/bin:${PATH}
     fi
     # install cmake and ccache
     ${MASON_CMD} install ccache ${CCACHE_VERSION}
@@ -111,7 +113,7 @@ function build_osrm() {
     fi
     cmake ../ -DCMAKE_INSTALL_PREFIX=${TMP_PREFIX} \
       -DENABLE_MASON=ON \
-      -DCMAKE_CC_COMPILER=${CC} \
+      -DCMAKE_C_COMPILER=${CC} \
       -DCMAKE_CXX_COMPILER=${CXX} \
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
       -DCMAKE_EXE_LINKER_FLAGS="${LINK_FLAGS}" \
