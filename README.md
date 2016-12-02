@@ -125,10 +125,10 @@ If you do wish to build node-osrm against an existing osrm-backend we assume it 
 
 To check if you installed it correctly the following command and verify the output:
 
-  which osrm-extract
-  which osrm-contract
-  which osrm-datastore
-  pkg-config libosrm --variable=prefix
+    which osrm-extract
+    which osrm-contract
+    which osrm-datastore
+    pkg-config libosrm --variable=prefix
 
 See the [Project-OSRM wiki](https://github.com/Project-OSRM/osrm-backend/wiki/Building%20OSRM) for details in how to build osrm-backend from source.
 
