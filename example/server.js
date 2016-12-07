@@ -9,7 +9,7 @@ var app = express();
 var osrm = new OSRM(path.join(__dirname,"../test/data/berlin-latest.osrm"));
 
 // Accepts a query like:
-// http://localhost:8888?start=52.519930,13.438640&end=52.513191,13.415852
+// http://localhost:8888?start=13.438640,52.519930&end=13.415852,52.513191
 app.get('/', function(req, res) {
     if (!req.query.start || !req.query.end) {
         return res.json({"error":"invalid start and end query"});
@@ -31,4 +31,3 @@ app.get('/', function(req, res) {
 
 console.log('Listening on port: ' + 8888);
 app.listen(8888);
-
