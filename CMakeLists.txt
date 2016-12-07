@@ -10,8 +10,14 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 option(BUILD_LIBOSRM "Download and build own libsorm version" OFF)
+option(ENABLE_NODE_COVERAGE "Build node-osrm with coverage" OFF)
 
 set(OSRM_BINARIES "")
+set(BINDING_DIR "${CMAKE_SOURCE_DIR}/lib/binding/")
+add_custom_command(OUTPUT ${BINDING_DIR}
+                   COMMAND ${CMAKE_COMMAND} -E make_directory ${BINDING_DIR})
+
+
 if(BUILD_LIBOSRM)
   set(OSRM_INSTALL_DIR "/tmp/osrm-backend")
   set(OSRM_DEPS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/osrm-backend-${CMAKE_BUILD_TYPE}")
@@ -37,10 +43,6 @@ if(BUILD_LIBOSRM)
   set(MASON_TBB_VERSION "43_20150316")
   mason_use(tbb VERSION ${MASON_TBB_VERSION})
 
-  set(BINDING_DIR "${CMAKE_SOURCE_DIR}/lib/binding/")
-  add_custom_command(OUTPUT ${BINDING_DIR}
-                     COMMAND ${CMAKE_COMMAND} -E make_directory ${BINDING_DIR})
-
   # We need this because we depend on the shared libraries from TBB
   foreach(libpath ${MASON_PACKAGE_tbb_LIBRARY_DIRS})
     file(GLOB TBBGlob ${libpath}/*.*)
@@ -55,22 +57,22 @@ if(BUILD_LIBOSRM)
   endforeach()
 
 
-  add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/lib/binding/osrm-extract
+  add_custom_command(OUTPUT ${BINDING_DIR}/osrm-extract
                      COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:osrm-extract> ${BINDING_DIR}
                      DEPENDS osrm-extract ${BINDING_DIR})
-  add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/lib/binding/osrm-contract
+  add_custom_command(OUTPUT ${BINDING_DIR}/osrm-contract
                      COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:osrm-contract> ${BINDING_DIR}
                      DEPENDS osrm-contract ${BINDING_DIR})
-  add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/lib/binding/osrm-routed
+  add_custom_command(OUTPUT ${BINDING_DIR}/osrm-routed
                      COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:osrm-routed> ${BINDING_DIR}
                      DEPENDS osrm-routed ${BINDING_DIR})
-  add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/lib/binding/osrm-datastore
+  add_custom_command(OUTPUT ${BINDING_DIR}/osrm-datastore
                      COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:osrm-datastore> ${BINDING_DIR}
                      DEPENDS osrm-datastore ${BINDING_DIR})
-  list(APPEND OSRM_BINARIES "${CMAKE_SOURCE_DIR}/lib/binding/osrm-extract")
-  list(APPEND OSRM_BINARIES "${CMAKE_SOURCE_DIR}/lib/binding/osrm-contract")
-  list(APPEND OSRM_BINARIES "${CMAKE_SOURCE_DIR}/lib/binding/osrm-routed")
-  list(APPEND OSRM_BINARIES "${CMAKE_SOURCE_DIR}/lib/binding/osrm-datastore")
+  list(APPEND OSRM_BINARIES "${BINDING_DIR}/osrm-extract")
+  list(APPEND OSRM_BINARIES "${BINDING_DIR}/osrm-contract")
+  list(APPEND OSRM_BINARIES "${BINDING_DIR}/osrm-routed")
+  list(APPEND OSRM_BINARIES "${BINDING_DIR}/osrm-datastore")
 else()
   # These will be set by the find script
   # LibOSRM_INCLUDE_DIRS
@@ -89,9 +91,20 @@ set(NodeJS_USE_CLANG_STDLIB OFF CACHE BOOL "Don't use libc++ by default" FORCE)
 find_package(NodeJS REQUIRED)
 add_nodejs_module(node-osrm src/node_osrm.cpp)
 
+if (ENABLE_NODE_COVERAGE)
+  if (NOT CMAKE_BUILD_TYPE MATCHES "Debug")
+    message(ERROR "ENABLE_NODE_COVERAGE=ON only make sense with a Debug build")
+  endif()
+  message(INFO "Enabling node-osrm coverage")
+  set(MAYBE_NODE_COVERAGE_LIBRARIES "-lgcov --coverage")
+  target_compile_options(node-osrm
+    PRIVATE -ftest-coverage
+    PRIVATE -fprofile-arcs)
+endif()
+
 include_directories(SYSTEM ${LibOSRM_INCLUDE_DIRS})
 link_directories(${LibOSRM_LIBRARY_DIRS})
-target_link_libraries(node-osrm ${LibOSRM_LIBRARIES} ${LibOSRM_DEPENDENT_LIBRARIES})
+target_link_libraries(node-osrm ${LibOSRM_LIBRARIES} ${LibOSRM_DEPENDENT_LIBRARIES} ${MAYBE_NODE_COVERAGE_LIBRARIES})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LibOSRM_CXXFLAGS}")
 
 # Enforce proper rpath for osrm.node
@@ -104,6 +117,9 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LINKER_FLAGS}")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${LINKER_FLAGS}")
 set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${LINKER_FLAGS}")
 
-add_custom_command(TARGET node-osrm POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:node-osrm> ${CMAKE_SOURCE_DIR}/lib/binding/node-osrm.node)
+add_custom_command(OUTPUT ${BINDING_DIR}/node-osrm.node
+                   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:node-osrm> ${BINDING_DIR}
+                   DEPENDS node-osrm ${BINDING_DIR})
+list(APPEND OSRM_BINARIES "${BINDING_DIR}/node-osrm.node")
 add_custom_target(copy_osrm_binaries ALL DEPENDS ${OSRM_BINARIES})
 
