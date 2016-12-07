@@ -6,7 +6,7 @@ endif
 
 PROFILES_URL:=https://raw.githubusercontent.com/Project-OSRM/osrm-backend/$(OSRM_RELEASE)/profiles
 
-all: car.lua bicycle.lua foot.lua lib/access.lua lib/destination.lua lib/guidance.lua lib/set.lua lib/sequence.lua
+all: car.lua bicycle.lua foot.lua lib/access.lua lib/destination.lua lib/guidance.lua lib/set.lua lib/sequence.lua lib/directional.lua
 
 ./lib:
 	mkdir -p lib
