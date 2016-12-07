@@ -44,10 +44,7 @@ script_default: &build_and_publish
       fi
     - nvm install ${NODE}
     - nvm use ${NODE}
-    - source ./scripts/build.sh || true
-    - ls /home/travis/build/Project-OSRM/node-osrm/mason_packages
-    - ls /home/travis/build/Project-OSRM/node-osrm/mason_packages/linux-x86_64/tbb
-    - ls /home/travis/build/Project-OSRM/node-osrm/mason_packages/linux-x86_64/tbb/43_20150316/lib/
+    - source ./scripts/build.sh
     - ./scripts/publish.sh
 
 matrix:

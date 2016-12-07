@@ -68,17 +68,21 @@ fi
 echo "Now build node-osrm and dependencies"
 export VERBOSE=1
 if [[ "${ENABLE_COVERAGE}" == "On" ]]; then
-    mapbox_time "make" make -j${JOBS} coverage
+    mapbox_time "make" make -j${JOBS} coverage || true
 else
     if [[ "${BUILD_TYPE}" == "Debug" ]]; then
-        mapbox_time "make" make -j${JOBS} debug
+        mapbox_time "make" make -j${JOBS} debug || true
     elif [[ "${BUILD_TYPE}" == "Release" ]]; then
-        mapbox_time "make" make -j${JOBS} release
+        mapbox_time "make" make -j${JOBS} release || true
     else
         echo "Unknown build type ${BUILD_TYPE}"
         exit 1
     fi
 fi
+
+echo $(ls /home/travis/build/Project-OSRM/node-osrm/mason_packages)
+echo $(ls /home/travis/build/Project-OSRM/node-osrm/mason_packages/linux-x86_64/tbb)
+echo $(ls /home/travis/build/Project-OSRM/node-osrm/mason_packages/linux-x86_64/tbb/43_20150316/lib/)
 
 # run tests, with backtrace support
 if [[ "${OS_NAME}" == "linux" ]]; then
