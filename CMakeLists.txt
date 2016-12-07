@@ -22,6 +22,10 @@ if(BUILD_LIBOSRM)
   set(OSRM_INSTALL_DIR "/tmp/osrm-backend")
   set(OSRM_DEPS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/osrm-backend-${CMAKE_BUILD_TYPE}")
 
+  # FIXME this needs a buildsystem fix in osrm-backend
+  set(OSRM_VARIANT "${CMAKE_CURRENT_SOURCE_DIR}/deps/osrm-backend-${CMAKE_BUILD_TYPE}/third_party/variant/include")
+  include_directories(SYSTEM ${OSRM_VARIANT})
+
   execute_process(COMMAND node -p "require('../package.json').osrm_release" OUTPUT_VARIABLE OSRM_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
   message(STATUS "Using osrm ${OSRM_VERSION}")
   message(STATUS "Downloading to ${OSRM_DEPS_DIR}")
