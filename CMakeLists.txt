@@ -37,6 +37,10 @@ if(BUILD_LIBOSRM)
   set(MASON_TBB_VERSION "43_20150316")
   mason_use(tbb VERSION ${MASON_TBB_VERSION})
 
+  set(BINDING_DIR "${CMAKE_SOURCE_DIR}/lib/binding/")
+  add_custom_command(OUTPUT ${BINDING_DIR}
+                     COMMAND ${CMAKE_COMMAND} -E make_directory ${BINDING_DIR})
+
   # We need this because we depend on the shared libraries from TBB
   foreach(libpath ${MASON_PACKAGE_tbb_LIBRARY_DIRS})
     file(GLOB TBBGlob ${libpath}/*.*)
@@ -44,24 +48,25 @@ if(BUILD_LIBOSRM)
       get_filename_component(filename ${filepath} NAME)
       set(targetfile "${CMAKE_SOURCE_DIR}/lib/binding/${filename}")
       add_custom_command(OUTPUT ${targetfile}
-                         COMMAND ${CMAKE_COMMAND} -E copy ${filepath} ${CMAKE_SOURCE_DIR}/lib/binding/
-                         DEPENDS ${filepath})
+                         COMMAND ${CMAKE_COMMAND} -E copy ${filepath} ${BINDING_DIR}
+                         DEPENDS ${filepath} ${BINDING_DIR})
       list(APPEND OSRM_BINARIES "${targetfile}")
     endforeach()
   endforeach()
 
+
   add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/lib/binding/osrm-extract
-                     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:osrm-extract> ${CMAKE_SOURCE_DIR}/lib/binding/
-                     DEPENDS osrm-extract)
+                     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:osrm-extract> ${BINDING_DIR}
+                     DEPENDS osrm-extract ${BINDING_DIR})
   add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/lib/binding/osrm-contract
-                     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:osrm-contract> ${CMAKE_SOURCE_DIR}/lib/binding/
-                     DEPENDS osrm-contract)
+                     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:osrm-contract> ${BINDING_DIR}
+                     DEPENDS osrm-contract ${BINDING_DIR})
   add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/lib/binding/osrm-routed
-                     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:osrm-routed> ${CMAKE_SOURCE_DIR}/lib/binding/
-                     DEPENDS osrm-routed)
+                     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:osrm-routed> ${BINDING_DIR}
+                     DEPENDS osrm-routed ${BINDING_DIR})
   add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/lib/binding/osrm-datastore
-                     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:osrm-datastore> ${CMAKE_SOURCE_DIR}/lib/binding/
-                     DEPENDS osrm-datastore)
+                     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:osrm-datastore> ${BINDING_DIR}
+                     DEPENDS osrm-datastore ${BINDING_DIR})
   list(APPEND OSRM_BINARIES "${CMAKE_SOURCE_DIR}/lib/binding/osrm-extract")
   list(APPEND OSRM_BINARIES "${CMAKE_SOURCE_DIR}/lib/binding/osrm-contract")
   list(APPEND OSRM_BINARIES "${CMAKE_SOURCE_DIR}/lib/binding/osrm-routed")
