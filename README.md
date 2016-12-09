@@ -70,22 +70,35 @@ Just do:
 
 However other platforms will fall back to a source compile: see [Source Build](#source-build) for details.
 
-# Setup
+# Quick start
 
 The `node-osrm` module consumes data processed by OSRM core.
 
-This repository contains a Makefile that does this automatically:
+For this purpose we ship the binaries `osrm-extract` and `osrm-contract` with the node module.
+For example if you want to prepare a Berlin dataset the following will run the osrm toolchain to do that:
 
-- Downloads an OSM extract
-- Runs osrm tools to prepare data
+```
+export PATH="./lib/binding/:$PATH"
 
-Just run:
+wget http://download.geofabrik.de/europe/germany/berlin-latest.osm.pbf
+osrm-extract berlin-latest.osm.pbf -p profiles/car.lua
+osrm-contract berlin-latest.osrm
+```
 
-    make
-    make test
+You can then use the dataset like:
 
-Once that is done then you can calculate routes in Javascript like:
+```
+const OSRM = require('osrm');
+let osrm = new OSRM('berlin-latest.osrm');
 
+osrm.route({coordinates: [[13.388860,52.517037], [13.39319,52.533976]]}, (err, result) => {
+  if (err) return;
+
+  console.log(`duration: ${result.routes[0].duration} distance: ${result.routes[0].distance}`);
+});
+```
+
+See the [full documentation](docs/api.md) for more examples.
 
 # Source Build
 
