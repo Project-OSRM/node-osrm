@@ -3,6 +3,7 @@
 !docs/*
 !examples/*
 !profiles/*
+!profiles/lib/*
 !LICENCE.TXT
 !Makefile
 !package.json
