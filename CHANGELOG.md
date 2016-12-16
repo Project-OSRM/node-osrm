@@ -1,5 +1,11 @@
 ## node-osrm changelog
 
+### v5.5.1
+ - Update to osrm-backend v5.5.1
+
+### v5.5.0
+ - Update to osrm-backend v5.5.0
+
 ### v5.5.0 RC5
  - Update to osrm-backend v5.5.0 RC5
 
