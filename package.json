@@ -5,7 +5,7 @@
   "homepage": "http://project-osrm.org",
   "author": "Dane Springmeyer <springmeyer>",
   "version": "5.6.0-latest",
-  "osrm_release": "master",
+  "osrm_release": "v5.5.4",
   "main": "./lib/index.js",
   "license": "BSD-2-Clause",
   "bugs": {
@@ -23,20 +23,20 @@
     "url": "git://github.com/Project-OSRM/node-osrm.git"
   },
   "binary": {
-    "module_name": "node-osrm",
+    "module_name": "node_osrm",
     "module_path": "./lib/binding/",
     "host": "https://mapbox-node-binary.s3.amazonaws.com",
     "remote_path": "./{name}/v{version}/{configuration}/",
     "package_name": "{node_abi}-{platform}-{arch}.tar.gz"
   },
   "dependencies": {
-    "nan": "^2.1.0",
-    "node-cmake": "^1.2.1",
-    "node-pre-gyp": "~0.6.30"
+    "nan": "^2.5.0",
+    "node-cmake": "^2.1.1",
+    "node-pre-gyp": "~0.6.32"
   },
   "devDependencies": {
-    "aws-sdk": "~2.0.31",
-    "tape": "^4.2.2"
+    "aws-sdk": "~2.7.19",
+    "tape": "^4.6.3"
   },
   "engines": {
     "node": ">=4"
