@@ -14,7 +14,7 @@ export DEPS_DIR="$(pwd)/deps"
 export PATH=${DEPS_DIR}/bin:${PATH}
 mkdir -p ${DEPS_DIR}
 
-export CLANG_VERSION="${CLANG_VERSION:-3.8.1}"
+export CLANG_VERSION="${CLANG_VERSION:-3.9.1}"
 export CCACHE_VERSION=3.3.1
 export CMAKE_VERSION=3.6.2
 
