@@ -108,6 +108,25 @@ test('route: routes Berlin without geometry compression', function(assert) {
     });
 });
 
+test('Test polyline6 geometries option', function(assert) {
+    var osrm = new OSRM(berlin_path);
+    var options = {
+        coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
+        continue_straight: false,
+        overview: 'false',
+        geometries: 'polyline6',
+        steps: true
+    };
+    osrm.route(options, function(err, first) {
+        assert.ifError(err);
+        assert.ok(first.routes);
+        assert.equal(first.routes.length, 1);
+        assert.notOk(first.routes[0].geometry);
+        assert.ok(first.routes[0].legs[0]);
+        assert.equal(typeof first.routes[0].legs[0].steps[0].geometry, 'string');
+    });
+});
+
 test('route: routes Berlin with options', function(assert) {
     assert.plan(11);
     var osrm = new OSRM(berlin_path);
@@ -158,7 +177,7 @@ test('route: invalid route options', function(assert) {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         geometries: true
     }, function(err, route) {}); },
-        /Geometries must be a string: \[polyline, geojson\]/);
+        /Geometries must be a string: \[polyline, polyline6, geojson\]/);
     assert.throws(function() { osrm.route({
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         overview: false
@@ -178,7 +197,7 @@ test('route: invalid route options', function(assert) {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
         geometries: 'maybe'
     }, function(err, route) {}); },
-        /'geometries' param must be one of \[polyline, geojson\]/);
+        /'geometries' param must be one of \[polyline, polyline6, geojson\]/);
     assert.throws(function() { osrm.route({
         coordinates: [[NaN, -NaN],[Infinity, -Infinity]]
     }, function(err, route) {}); },
