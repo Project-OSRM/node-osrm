@@ -437,7 +437,7 @@ inline bool parseCommonParameters(const v8::Local<v8::Object> &obj, ParamType &p
 
         if (!geometries->IsString())
         {
-            Nan::ThrowError("Geometries must be a string: [polyline, geojson]");
+            Nan::ThrowError("Geometries must be a string: [polyline, polyline6, geojson]");
             return false;
         }
 
@@ -447,13 +447,17 @@ inline bool parseCommonParameters(const v8::Local<v8::Object> &obj, ParamType &p
         {
             params->geometries = osrm::RouteParameters::GeometriesType::Polyline;
         }
+        else if (geometries_str == "polyline6")
+        {
+            params->geometries = osrm::RouteParameters::GeometriesType::Polyline6;
+        }
         else if (geometries_str == "geojson")
         {
             params->geometries = osrm::RouteParameters::GeometriesType::GeoJSON;
         }
         else
         {
-            Nan::ThrowError("'geometries' param must be one of [polyline, geojson]");
+            Nan::ThrowError("'geometries' param must be one of [polyline, polyline6 geojson]");
             return false;
         }
     }
