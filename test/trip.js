@@ -76,7 +76,7 @@ test('trip: throws with bad params', function(assert) {
     delete options.hints;
     options.geometries = 'false';
     assert.throws(function() { osrm.trip(options, function(err, trip) {}); },
-        /'geometries' param must be one of \[polyline, geojson\]/);
+        /'geometries' param must be one of \[polyline, polyline6, geojson\]/);
 });
 
 test('trip: routes Berlin using shared memory', function(assert) {
