@@ -109,6 +109,7 @@ test('route: routes Berlin without geometry compression', function(assert) {
 });
 
 test('Test polyline6 geometries option', function(assert) {
+    assert.plan(6);
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
