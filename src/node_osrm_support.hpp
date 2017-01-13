@@ -457,7 +457,7 @@ inline bool parseCommonParameters(const v8::Local<v8::Object> &obj, ParamType &p
         }
         else
         {
-            Nan::ThrowError("'geometries' param must be one of [polyline, polyline6 geojson]");
+            Nan::ThrowError("'geometries' param must be one of [polyline, polyline6, geojson]");
             return false;
         }
     }
