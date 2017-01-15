@@ -6,7 +6,7 @@ which is prepared by the OSRM Backend C++ library.
 You can create such a `.osrm` file by running the OSRM binaries we ship in `node_modules/osrm/lib/binding/` and default
 profiles (e.g. for setting speeds and determining road types to route on) in `node_modules/osrm/lib/profiles/`:
 
-    node_modules/osrm/lib/binding/osrm-extract data.osm.pbf -p node_modules/osrm/lib/profiles/car.lua
+    node_modules/osrm/lib/binding/osrm-extract data.osm.pbf -p node_modules/osrm/profiles/car.lua
     node_modules/osrm/lib/binding/osrm-contract data.osrm
 
 Consult the [osrm-backend](https://github.com/Project-OSRM/osrm-backend) documentation or further details.
