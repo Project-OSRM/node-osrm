@@ -1,5 +1,9 @@
 ## node-osrm changelog
 
+### v5.5.4
+ - Update to osrm-backend v5.5.4
+ - add passthrough support for `geometries=polyline6`
+
 ### v5.5.3
  - Update to osrm-backend v5.5.3
 
