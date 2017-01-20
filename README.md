@@ -98,6 +98,8 @@ osrm.route({coordinates: [[13.388860,52.517037], [13.39319,52.533976]]}, (err, r
 });
 ```
 
+We also ship the `osrm-components` binary which allows you to extract a GeoJSON file showing connectivity issues (small components) in the road network.
+
 See the [full documentation](docs/api.md) for more examples.
 
 # Source Build

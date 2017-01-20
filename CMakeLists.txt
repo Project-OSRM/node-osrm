@@ -73,10 +73,14 @@ if(BUILD_LIBOSRM)
   add_custom_command(OUTPUT ${BINDING_DIR}/osrm-datastore
                      COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:osrm-datastore> ${BINDING_DIR}
                      DEPENDS osrm-datastore ${BINDING_DIR})
+  add_custom_command(OUTPUT ${BINDING_DIR}/osrm-components
+                     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:osrm-components> ${BINDING_DIR}
+                     DEPENDS osrm-components ${BINDING_DIR})
   list(APPEND OSRM_BINARIES "${BINDING_DIR}/osrm-extract")
   list(APPEND OSRM_BINARIES "${BINDING_DIR}/osrm-contract")
   list(APPEND OSRM_BINARIES "${BINDING_DIR}/osrm-routed")
   list(APPEND OSRM_BINARIES "${BINDING_DIR}/osrm-datastore")
+  list(APPEND OSRM_BINARIES "${BINDING_DIR}/osrm-components")
 else()
   # These will be set by the find script
   # LibOSRM_INCLUDE_DIRS
