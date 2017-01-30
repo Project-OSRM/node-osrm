@@ -31,7 +31,7 @@ if(BUILD_LIBOSRM)
   message(STATUS "Downloading to ${OSRM_DEPS_DIR}")
   message(STATUS "Installing to ${OSRM_INSTALL_DIR}")
 
-  execute_process(COMMAND git clone https://github.com/Project-OSRM/osrm-backend.git ${OSRM_DEPS_DIR})
+  execute_process(COMMAND git clone https://github.com/oxidase/osrm-backend.git ${OSRM_DEPS_DIR})
   execute_process(COMMAND git checkout ${OSRM_VERSION} WORKING_DIRECTORY ${OSRM_DEPS_DIR})
 
   # These will be set by the subproject
@@ -126,4 +126,3 @@ add_custom_command(OUTPUT ${BINDING_DIR}/node-osrm.node
                    DEPENDS node-osrm ${BINDING_DIR})
 list(APPEND OSRM_BINARIES "${BINDING_DIR}/node-osrm.node")
 add_custom_target(copy_osrm_binaries ALL DEPENDS ${OSRM_BINARIES})
-
