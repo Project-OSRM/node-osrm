@@ -49,50 +49,50 @@ script_default: &build_and_publish
 
 matrix:
   include:
-    # Linux
-    - os: linux
-      env: NODE="4" BUILD_TYPE=Release
-      addons: *apt_packages
-      script: *build_and_publish
-    - os: linux
-      env: NODE="4" BUILD_TYPE=Debug NPM_FLAGS="--debug"
-      addons: *apt_packages
-      script: *build_and_publish
-    - os: linux
-      env: NODE="6" BUILD_TYPE=Release
-      addons: *apt_packages
-      script: *build_and_publish
-    - os: linux
-      env: NODE="6" BUILD_TYPE=Debug NPM_FLAGS="--debug"
-      addons: *apt_packages
-      script: *build_and_publish
-    # OS X
-    - os: osx
-      # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
-      osx_image: xcode7.3
-      env: NODE="4" BUILD_TYPE=Release
-      script: *build_and_publish
-    - os: osx
-      osx_image: xcode7.3
-      env: NODE="4" BUILD_TYPE=Debug NPM_FLAGS="--debug"
-      script: *build_and_publish
-    - os: osx
-      # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
-      osx_image: xcode7.3
-      env: NODE="6" BUILD_TYPE=Release
-      script: *build_and_publish
+    # # Linux
+    # - os: linux
+    #   env: NODE="4" BUILD_TYPE=Release
+    #   addons: *apt_packages
+    #   script: *build_and_publish
+    # - os: linux
+    #   env: NODE="4" BUILD_TYPE=Debug NPM_FLAGS="--debug"
+    #   addons: *apt_packages
+    #   script: *build_and_publish
+    # - os: linux
+    #   env: NODE="6" BUILD_TYPE=Release
+    #   addons: *apt_packages
+    #   script: *build_and_publish
+    # - os: linux
+    #   env: NODE="6" BUILD_TYPE=Debug NPM_FLAGS="--debug"
+    #   addons: *apt_packages
+    #   script: *build_and_publish
+    # # OS X
+    # - os: osx
+    #   # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
+    #   osx_image: xcode7.3
+    #   env: NODE="4" BUILD_TYPE=Release
+    #   script: *build_and_publish
+    # - os: osx
+    #   osx_image: xcode7.3
+    #   env: NODE="4" BUILD_TYPE=Debug NPM_FLAGS="--debug"
+    #   script: *build_and_publish
+    # - os: osx
+    #   # https://docs.travis-ci.com/user/languages/objective-c/#Supported-OS-X-iOS-SDK-versions
+    #   osx_image: xcode7.3
+    #   env: NODE="6" BUILD_TYPE=Release
+    #   script: *build_and_publish
     - os: osx
       osx_image: xcode7.3
       env: NODE="6" BUILD_TYPE=Debug NPM_FLAGS="--debug"
       script: *build_and_publish
     # Linux coverage build
-    - os: linux
-      env: NODE="4" BUILD_TYPE=Debug ENABLE_COVERAGE=On NPM_FLAGS="--debug"
-      addons: *apt_packages
-      script:
-        - nvm install ${NODE}
-        - nvm use ${NODE}
-        - source ./scripts/build.sh
-        - curl -S -f https://codecov.io/bash -o codecov
-        - chmod +x codecov
-        - ./codecov -x "llvm-cov gcov" -Z
+    # - os: linux
+    #   env: NODE="4" BUILD_TYPE=Debug ENABLE_COVERAGE=On NPM_FLAGS="--debug"
+    #   addons: *apt_packages
+    #   script:
+    #     - nvm install ${NODE}
+    #     - nvm use ${NODE}
+    #     - source ./scripts/build.sh
+    #     - curl -S -f https://codecov.io/bash -o codecov
+    #     - chmod +x codecov
+    #     - ./codecov -x "llvm-cov gcov" -Z
