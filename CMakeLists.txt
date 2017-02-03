@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(node-osrm C CXX)
+project(node_osrm C CXX)
 
 # Explicitly set the build type to Release if no other type is specified
 # on the command line.  Without this, cmake defaults to an unoptimized,
@@ -10,7 +10,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 option(BUILD_LIBOSRM "Download and build own libsorm version" OFF)
-option(ENABLE_NODE_COVERAGE "Build node-osrm with coverage" OFF)
+option(ENABLE_NODE_COVERAGE "Build node_osrm with coverage" OFF)
 
 set(OSRM_BINARIES "")
 set(BINDING_DIR "${CMAKE_SOURCE_DIR}/lib/binding/")
@@ -93,26 +93,27 @@ endif()
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/node_modules/node-cmake")
 
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/NodeJS.cmake)
 set(NodeJS_CXX_STANDARD 14 CACHE INTERNAL "Use C++14" FORCE)
 set(NodeJS_DOWNLOAD ON CACHE INTERNAL "Download node.js sources" FORCE)
 set(NodeJS_USE_CLANG_STDLIB OFF CACHE BOOL "Don't use libc++ by default" FORCE)
-find_package(NodeJS REQUIRED)
-add_nodejs_module(node-osrm src/node_osrm.cpp)
+nodejs_init()
+add_nodejs_module(node_osrm src/node_osrm.cpp)
 
 if (ENABLE_NODE_COVERAGE)
   if (NOT CMAKE_BUILD_TYPE MATCHES "Debug")
     message(ERROR "ENABLE_NODE_COVERAGE=ON only make sense with a Debug build")
   endif()
-  message(INFO "Enabling node-osrm coverage")
+  message(INFO "Enabling node_osrm coverage")
   set(MAYBE_NODE_COVERAGE_LIBRARIES "-lgcov --coverage")
-  target_compile_options(node-osrm
+  target_compile_options(node_osrm
     PRIVATE -ftest-coverage
     PRIVATE -fprofile-arcs)
 endif()
 
 include_directories(SYSTEM ${LibOSRM_INCLUDE_DIRS})
 link_directories(${LibOSRM_LIBRARY_DIRS})
-target_link_libraries(node-osrm ${LibOSRM_LIBRARIES} ${LibOSRM_DEPENDENT_LIBRARIES} ${MAYBE_NODE_COVERAGE_LIBRARIES})
+target_link_libraries(node_osrm ${LibOSRM_LIBRARIES} ${LibOSRM_DEPENDENT_LIBRARIES} ${MAYBE_NODE_COVERAGE_LIBRARIES})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${LibOSRM_CXXFLAGS}")
 
 # Enforce proper rpath for osrm.node
@@ -125,9 +126,9 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LINKER_FLAGS}")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${LINKER_FLAGS}")
 set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${LINKER_FLAGS}")
 
-add_custom_command(OUTPUT ${BINDING_DIR}/node-osrm.node
-                   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:node-osrm> ${BINDING_DIR}
-                   DEPENDS node-osrm ${BINDING_DIR})
-list(APPEND OSRM_BINARIES "${BINDING_DIR}/node-osrm.node")
+add_custom_command(OUTPUT ${BINDING_DIR}/node_osrm.node
+                   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:node_osrm> ${BINDING_DIR}
+                   DEPENDS node_osrm ${BINDING_DIR})
+list(APPEND OSRM_BINARIES "${BINDING_DIR}/node_osrm.node")
 add_custom_target(copy_osrm_binaries ALL DEPENDS ${OSRM_BINARIES})
 
