@@ -17,6 +17,8 @@ set(BINDING_DIR "${CMAKE_SOURCE_DIR}/lib/binding/")
 add_custom_command(OUTPUT ${BINDING_DIR}
                    COMMAND ${CMAKE_COMMAND} -E make_directory ${BINDING_DIR})
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/node_modules/node-cmake")
 
 if(BUILD_LIBOSRM)
   set(OSRM_INSTALL_DIR "/tmp/osrm-backend")
@@ -89,9 +91,6 @@ else()
   # LibOSRM_CXXFLAGS
   find_package(LibOSRM REQUIRED)
 endif()
-
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/node_modules/node-cmake")
 
 set(NodeJS_CXX_STANDARD 14 CACHE INTERNAL "Use C++14" FORCE)
 set(NodeJS_DOWNLOAD ON CACHE INTERNAL "Download node.js sources" FORCE)
