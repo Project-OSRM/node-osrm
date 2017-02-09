@@ -733,6 +733,74 @@ argumentsToTripParameter(const Nan::FunctionCallbackInfo<v8::Value> &args,
         return trip_parameters_ptr();
     }
 
+    if (obj->Has(Nan::New("roundtrip").ToLocalChecked()))
+    {
+        auto roundtrip = obj->Get(Nan::New("roundtrip").ToLocalChecked());
+        if (roundtrip->IsBoolean())
+        {
+            params->roundtrip = roundtrip->BooleanValue();
+        }
+        else
+        {
+            Nan::ThrowError("'roundtrip' param must be a boolean");
+            return trip_parameters_ptr();
+        }
+    }
+
+    if (obj->Has(Nan::New("source").ToLocalChecked()))
+    {
+        v8::Local<v8::Value> source = obj->Get(Nan::New("source").ToLocalChecked());
+
+        if (!source->IsString())
+        {
+            Nan::ThrowError("Source must be a string: [any, first]");
+            return trip_parameters_ptr();
+        }
+
+        std::string source_str = *v8::String::Utf8Value(source);
+
+        if (source_str == "first")
+        {
+            params->source = osrm::TripParameters::SourceType::First;
+        }
+        else if (source_str == "any")
+        {
+            params->source = osrm::TripParameters::SourceType::Any;
+        }
+        else
+        {
+            Nan::ThrowError("'source' param must be one of [any, first]");
+            return trip_parameters_ptr();
+        }
+    }
+
+    if (obj->Has(Nan::New("destination").ToLocalChecked()))
+    {
+        v8::Local<v8::Value> destination = obj->Get(Nan::New("destination").ToLocalChecked());
+
+        if (!destination->IsString())
+        {
+            Nan::ThrowError("Destination must be a string: [any, last]");
+            return trip_parameters_ptr();
+        }
+
+        std::string destination_str = *v8::String::Utf8Value(destination);
+
+        if (destination_str == "last")
+        {
+            params->destination = osrm::TripParameters::DestinationType::Last;
+        }
+        else if (destination_str == "any")
+        {
+            params->destination = osrm::TripParameters::DestinationType::Any;
+        }
+        else
+        {
+            Nan::ThrowError("'destination' param must be one of [any, last]");
+            return trip_parameters_ptr();
+        }
+    }
+
     return params;
 }
 

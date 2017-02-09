@@ -62,14 +62,14 @@ NAN_MODULE_INIT(Engine::Init)
  *
  * #### Methods
  *
- * | Service     |           Description                                     |
- * |-------------|-----------------------------------------------------------|
- * | [`osrm.route`](#route)     | shortest path between given coordinates                   |
- * | [`osrm.nearest`](#nearest)   | returns the nearest street segment for a given coordinate |
- * | [`osrm.table`](#table)     | computes distance tables for given coordinates            |
- * | [`osrm.match`](#match)     | matches given coordinates to the road network             |
- * | [`osrm.trip`](#trip)      | Compute the shortest round trip between given coordinates |
- * | [`osrm.tile`](#tile)      | Return vector tiles containing debugging info             |
+ * | Service                     | Description                                               |
+ * |-----------------------------|-----------------------------------------------------------|
+ * | [`osrm.route`](#route)      | shortest path between given coordinates                   |
+ * | [`osrm.nearest`](#nearest)  | returns the nearest street segment for a given coordinate |
+ * | [`osrm.table`](#table)      | computes distance tables for given coordinates            |
+ * | [`osrm.match`](#match)      | matches given coordinates to the road network             |
+ * | [`osrm.trip`](#trip)        | computes the shortest trip between given coordinates      |
+ * | [`osrm.tile`](#tile)        | Return vector tiles containing debugging info             |
  *
  * #### General Options
  *
@@ -358,10 +358,8 @@ NAN_METHOD(Engine::match) //
 }
 
 /**
- * The trip plugin solves the Traveling Salesman Problem using a greedy heuristic (farthest-insertion algorithm).
- * The returned path does not have to be the shortest path, as TSP is NP-hard it is only an approximation.
- * Note that if the input coordinates can not be joined by a single trip (e.g. the coordinates are on several
- * disconnected islands) multiple trips for each connected component are returned.
+ * The trip plugin solves the Traveling Salesman Problem using a greedy heuristic (farthest-insertion algorithm) for 10 or * more waypoints and uses brute force for less than 10 waypoints. The returned path does not have to be the shortest path, * as TSP is NP-hard it is only an approximation.
+ * Note that all input coordinates have to be connected for the trip service to work. 
  *
  * @name trip
  * @memberof OSRM
@@ -372,9 +370,12 @@ NAN_METHOD(Engine::match) //
  * and per step). Can also be `geojson`.
  * @param {String} [options.overview=simplified] Add overview geometry either `full`, `simplified`
  * @param {Function} callback
+ * @param {Boolean} [options.roundtrip=true] Return route is a roundtrip.
+ * @param {String} [options.source=any] Return route starts at `any` or `first` coordinate.
+ * @param {String} [options.destination=any] Return route ends at `any` or `last` coordinate.
  *
  * @returns {Object} containing `waypoints` and `trips`.
- * **`waypoints`**: an array of [`Ẁaypoint`](#waypoint) objects representing all waypoints in input order.
+ * **`waypoints`**: an array of [`Waypoint`](#waypoint) objects representing all waypoints in input order.
  * Each Waypoint object has the following additional properties, 1) `trips_index`: index to trips of the
  * sub-trip the point was matched to, and 2) `waypoint_index`: index of the point in the trip.
  * **`trips`**: an array of [`Route`](#route) objects that assemble the trace.

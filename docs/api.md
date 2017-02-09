@@ -26,7 +26,7 @@ var osrm = new OSRM('network.osrm');
 | [`osrm.nearest`](#nearest) | returns the nearest street segment for a given coordinate |
 | [`osrm.table`](#table)     | computes distance tables for given coordinates            |
 | [`osrm.match`](#match)     | matches given coordinates to the road network             |
-| [`osrm.trip`](#trip)       | Compute the shortest round trip between given coordinates |
+| [`osrm.trip`](#trip)       | Compute the shortest trip between given coordinates       |
 | [`osrm.tile`](#tile)       | Return vector tiles containing debugging info             |
 
 #### General Options
@@ -212,14 +212,14 @@ the matching. float value between `0` and `1`. `1` is very confident that the ma
 
 ## trip
 
-The trip plugin solves the Traveling Salesman Problem using a greedy heuristic (farthest-insertion algorithm).
-The returned path does not have to be the shortest path, as TSP is NP-hard it is only an approximation.
-Note that if the input coordinates can not be joined by a single trip (e.g. the coordinates are on several
-disconnected islands) multiple trips for each connected component are returned.
+The trip plugin solves the Traveling Salesman Problem using a greedy heuristic (farthest-insertion algorithm). The returned path does not have to be the fastest path, as TSP is NP-hard it is only an approximation. Note that all input coordinates have to be connected for the trip service to work.
 
 **Parameters**
 
 -   `options` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Object literal containing parameters for the trip query.
+    -   `options.roundtrip` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return route is a roundtrip. (optional, default `true`)
+    -   `options.source` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Return route starts at `any` coordinate. Can also be `first`. (optional, default `any`)
+    -   `options.destination` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Return route ends at `any` coordinate. Can also be `last`. (optional, default `any`)
     -   `options.steps` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return route steps for each route. (optional, default `false`)
     -   `options.annotations` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return annotations for each route leg. (optional, default `false`)
     -   `options.geometries` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Returned route geometry format (influences overview
@@ -227,8 +227,29 @@ disconnected islands) multiple trips for each connected component are returned.
     -   `options.overview` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Add overview geometry either `full`, `simplified` (optional, default `simplified`)
 -   `callback` **[Function](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function)** 
 
+**Fixing Start and End Points**
+
+It is possible to explicitly set the start or end coordinate of the trip. When source is set to `first`, the first coordinate is used as start coordinate of the trip in the output. When destination is set to `last`, the last coordinate will be used as destination of the trip in the returned output. If you specify `any`, any of the coordinates can be used as the first or last coordinate in the output.
+
+However, if `source=any&destination=any` the returned round-trip will still start at the first input coordinate by default.
+
+Currently, not all combinations of `roundtrip`, `source` and `destination` are supported.
+Right now, the following combinations are possible:
+
+| roundtrip | source | destination | supported |
+| :-- | :-- | :-- | :-- |
+| true | first | last | **yes** | 
+| true | first | any | **yes** |
+| true | any | last | **yes** |
+| true | any | any | **yes** |
+| false | first | last | **yes** |
+| false | first | any | no |
+| false | any | last | no |
+| false | any | any | no |
+
 **Examples**
 
+Roundtrip Request
 ```javascript
 var osrm = new OSRM('network.osrm');
 var options = {
@@ -236,6 +257,25 @@ var options = {
     [13.36761474609375, 52.51663871100423],
     [13.374481201171875, 52.506191342034576]
   ]
+}
+osrm.trip(options, function(err, response) {
+  if (err) throw err;
+  console.log(response.waypoints); // array of Waypoint objects
+  console.log(response.trips); // array of Route objects
+});
+```
+
+Non Roundtrip Request
+```javascript
+var osrm = new OSRM('network.osrm');
+var options = {
+  coordinates: [
+    [13.36761474609375, 52.51663871100423],
+    [13.374481201171875, 52.506191342034576]
+  ],
+  source: "first",
+  destination: "last",
+  roundtrip: false
 }
 osrm.trip(options, function(err, response) {
   if (err) throw err;

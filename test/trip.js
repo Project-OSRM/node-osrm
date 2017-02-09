@@ -41,7 +41,7 @@ test('trip: throws with too few or invalid args', function(assert) {
 });
 
 test('trip: throws with bad params', function(assert) {
-    assert.plan(9);
+    assert.plan(14);
     var osrm = new OSRM(berlin_path);
     assert.throws(function () { osrm.trip({coordinates: []}, function(err) {}) });
     assert.throws(function() { osrm.trip({}, function(err, trip) {}) },
@@ -77,6 +77,23 @@ test('trip: throws with bad params', function(assert) {
     options.geometries = 'false';
     assert.throws(function() { osrm.trip(options, function(err, trip) {}); },
         /'geometries' param must be one of \[polyline, polyline6, geojson\]/);
+    delete options.geometries;
+    options.source = false;
+    assert.throws(function() { osrm.trip(options, function(err, trip) {}); },
+        /Source must be a string: \[any, first\]/);
+    options.source = 'false';
+    assert.throws(function() { osrm.trip(options, function(err, trip) {}); },
+        /'source' param must be one of \[any, first\]/);
+    delete options.source;
+    options.destination = true;
+    assert.throws(function() { osrm.trip(options, function(err, trip) {}); },
+        /Destination must be a string: \[any, last\]/);
+    options.destination = 'true';
+    assert.throws(function() { osrm.trip(options, function(err, trip) {}); },
+        /'destination' param must be one of \[any, last\]/);
+    options.roundtrip = 'any';
+    assert.throws(function() { osrm.trip(options, function(err, trip) {}); },
+        /'roundtrip' param must be a boolean/);
 });
 
 test('trip: routes Berlin using shared memory', function(assert) {
@@ -174,4 +191,89 @@ test('trip: routes Berlin with null hints', function(assert) {
     osrm.trip(options, function(err, second) {
         assert.ifError(err);
     });
+});
+
+test('trip: service combinations that are not implemented', function(assert) {
+    assert.plan(3);
+    var osrm = new OSRM(berlin_path);
+
+    // fixed start, non-roundtrip
+    var options = {
+        coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
+        source: 'first',
+        roundtrip: false
+    };
+    osrm.trip(options, function(err, second) {
+        assert.equal('NotImplemented', err.message);
+    });
+
+    // fixed start, fixed end, non-roundtrip
+    options.source = 'any';
+    options.destination = 'any';
+    osrm.trip(options, function(err, second) {
+        assert.equal('NotImplemented', err.message);
+    });
+
+    // fixed end, non-roundtrip
+    delete options.source;
+    options.destination = 'last';
+    osrm.trip(options, function(err, second) {
+        assert.equal('NotImplemented', err.message);
+    });
+
+});
+
+test('trip: fixed start and end combinations', function(assert) {
+    var osrm = new OSRM(berlin_path);
+    
+    var options = {
+        coordinates: [[13.36761474609375,52.51663871100423],[13.374481201171875,52.506191342034576]],
+        source: 'first',
+        destination: 'last',
+        roundtrip: false,
+        geometries: 'geojson'
+    };
+
+    // fixed start and end, non-roundtrip
+    osrm.trip(options, function(err, fseTrip) {
+        assert.ifError(err);
+        assert.equal(206.8, fseTrip.trips[0].duration);
+        assert.equal(1, fseTrip.trips.length);
+        var coordinates = fseTrip.trips[0].geometry.coordinates;
+        assert.equal(15, coordinates.length);
+        assert.notEqual(JSON.stringify(coordinates[0]), JSON.stringify(coordinates[coordinates.length - 1]));
+    });
+
+    // variations of roundtrip
+
+    var roundtripChecks = function(options) {
+        osrm.trip(options, function(err, trip) {
+            assert.ifError(err);
+            assert.equal(1, trip.trips.length);
+            assert.equal(422, Math.round(trip.trips[0].duration));
+            var coordinates = trip.trips[0].geometry.coordinates;
+            assert.equal(29, coordinates.length);
+            assert.equal(JSON.stringify(coordinates[0]), JSON.stringify(coordinates[coordinates.length - 1]));
+        });
+    }
+
+    // roundtrip, source and destination not specified
+    roundtripChecks({coordinates: options.coordinates, geometries: options.geometries});
+
+    // roundtrip, fixed destination
+    options.roundtrip = true;
+    delete options.source;
+    roundtripChecks(options);
+
+    //roundtrip, fixed source
+    delete options.destination;
+    options.source = 'first';
+    roundtripChecks(options);
+
+    // roundtrip, non-fixed source, non-fixed destination
+    options.source = 'any';
+    options.destination = 'any';
+    roundtripChecks(options);
+
+    assert.end();
 });
