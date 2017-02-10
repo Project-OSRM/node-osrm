@@ -142,7 +142,7 @@ test('trip: trip through Berlin without geometry compression', function(assert) 
     });
 });
 
-test.skip('trip: trip through Berlin with options', function(assert) {
+test('trip: trip through Berlin with options', function(assert) {
     assert.plan(6);
     var osrm = new OSRM(berlin_path);
     var options = {
