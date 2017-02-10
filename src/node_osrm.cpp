@@ -189,7 +189,7 @@ inline void async(const Nan::FunctionCallbackInfo<v8::Value> &info,
  * @param {Object} options Object literal containing parameters for the route query.
  * @param {Boolean} [options.alternatives=false] Search for alternative routes and return as well. *Please note that even if an alternative route is requested, a result cannot be guaranteed.*
  * @param {Boolean} [options.steps=false] Return route steps for each route leg.
- * @param {Boolean} [options.annotations=false] Return annotations for each route leg.
+ * @param {Boolean} or {Array} [options.annotations=false] Return annotations for each route leg. Can be `false`, `true` or an array with strings of `duration`, `nodes`, `distance`, `weight`, `datasources`, `speed`.
  * @param {String} [options.geometries=polyline] Returned route geometry format (influences overview and per step). Can also be `geojson`.
  * @param {String} [options.overview=simplified] Add overview geometry either `full`, `simplified` according to highest zoom level it could be display on, or not at all (`false`).
  * @param {Boolean} [options.continue_straight] Forces the route to keep going straight at waypoints and don't do a uturn even if it would be faster. Default value depends on the profile. `null`/`true`/`false`
@@ -319,7 +319,7 @@ NAN_METHOD(Engine::tile)
  * @memberof OSRM
  * @param {Object} options - Object literal containing parameters for the match query.
  * @param {Boolean} [options.steps=false] Return route steps for each route.
- * @param {Boolean} [options.annotations=false] Return annotations for each route leg.
+ * @param {Boolean} or {Array} [options.annotations=false] Return annotations for each route leg. Can be `false`, `true` or an array with strings of `duration`, `nodes`, `distance`, `weight`, `datasources`, `speed`.
  * @param {String} [options.geometries=polyline] Returned route geometry format (influences overview
  * and per step). Can also be `geojson`.
  * @param {String} [options.overview=simplified] Add overview geometry either `full`, `simplified`
@@ -365,7 +365,7 @@ NAN_METHOD(Engine::match) //
  * @memberof OSRM
  * @param {Object} options - Object literal containing parameters for the trip query.
  * @param {Boolean} [options.steps=false] Return route steps for each route.
- * @param {Boolean} [options.annotations=false] Return annotations for each route leg.
+ * @param {Boolean} or {Array} [options.annotations=false] Return annotations for each route leg. Can be `false`, `true` or an array with strings of `duration`, `nodes`, `distance`, `weight`, `datasources`, `speed`.
  * @param {String} [options.geometries=polyline] Returned route geometry format (influences overview
  * and per step). Can also be `geojson`.
  * @param {String} [options.overview=simplified] Add overview geometry either `full`, `simplified`

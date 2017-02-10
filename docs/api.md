@@ -49,7 +49,7 @@ Returns the fastest route between two or more coordinates while visiting the way
 -   `options` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Object literal containing parameters for the route query.
     -   `options.alternatives` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Search for alternative routes and return as well. _Please note that even if an alternative route is requested, a result cannot be guaranteed._ (optional, default `false`)
     -   `options.steps` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return route steps for each route leg. (optional, default `false`)
-    -   `options.annotations` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return annotations for each route leg. (optional, default `false`)
+    -   `options.annotations` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)] or \[[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)>]** Return annotations for each route leg for duration, nodes, distance, weight, datasources and/or speed. Annotations can be `false` or `true` (no/full annotations) or an array of strings with `duration`, `nodes`, `distance`, `weight`, `datasources`, `speed`. (optional, default `false`)
     -   `options.geometries` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Returned route geometry format (influences overview and per step). Can also be `geojson`. (optional, default `polyline`)
     -   `options.overview` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Add overview geometry either `full`, `simplified` according to highest zoom level it could be display on, or not at all (`false`). (optional, default `simplified`)
     -   `options.continue_straight` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Forces the route to keep going straight at waypoints and don't do a uturn even if it would be faster. Default value depends on the profile. `null`/`true`/`false`
@@ -175,7 +175,7 @@ if they can not be matched successfully.
 
 -   `options` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Object literal containing parameters for the match query.
     -   `options.steps` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return route steps for each route. (optional, default `false`)
-    -   `options.annotations` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return annotations for each route leg. (optional, default `false`)
+    -   `options.annotations` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)] or \[[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)>]** Return annotations for each route leg for duration, nodes, distance, weight, datasources and/or speed. Annotations can be `false` or `true` (no/full annotations) or an array of strings with `duration`, `nodes`, `distance`, `weight`, `datasources`, `speed`. (optional, default `false`)
     -   `options.geometries` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Returned route geometry format (influences overview
         and per step). Can also be `geojson`. (optional, default `polyline`)
     -   `options.overview` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Add overview geometry either `full`, `simplified`
@@ -214,14 +214,13 @@ the matching. float value between `0` and `1`. `1` is very confident that the ma
 
 The trip plugin solves the Traveling Salesman Problem using a greedy heuristic (farthest-insertion algorithm). The returned path does not have to be the fastest path, as TSP is NP-hard it is only an approximation. Note that all input coordinates have to be connected for the trip service to work.
 
-**Parameters**
-
+**Parameters**  
 -   `options` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Object literal containing parameters for the trip query.
     -   `options.roundtrip` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return route is a roundtrip. (optional, default `true`)
     -   `options.source` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Return route starts at `any` coordinate. Can also be `first`. (optional, default `any`)
     -   `options.destination` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Return route ends at `any` coordinate. Can also be `last`. (optional, default `any`)
     -   `options.steps` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return route steps for each route. (optional, default `false`)
-    -   `options.annotations` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return annotations for each route leg. (optional, default `false`)
+    -   `options.annotations` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)] or \[[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)>]** Return annotations for each route leg for duration, nodes, distance, weight, datasources and/or speed. Annotations can be `false` or `true` (no/full annotations) or an array of strings with `duration`, `nodes`, `distance`, `weight`, `datasources`, `speed`. (optional, default `false`)
     -   `options.geometries` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Returned route geometry format (influences overview
         and per step). Can also be `geojson`. (optional, default `polyline`)
     -   `options.overview` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Add overview geometry either `full`, `simplified` (optional, default `simplified`)

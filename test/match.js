@@ -63,8 +63,65 @@ test('match: match in Berlin with geometry compression', function(assert) {
     });
 });
 
+test('match: match in Berlin with speed annotations options', function(assert) {
+    assert.plan(12);
+    var osrm = new OSRM(berlin_path);
+    var options = {
+        coordinates: [[13.393252,52.542648],[13.39478,52.543079],[13.397389,52.542107]],
+        timestamps: [1424684612, 1424684616, 1424684620],
+        radiuses: [4.07, 4.07, 4.07],
+        steps: true,
+        annotations: ['speed'],
+        overview: 'false',
+        geometries: 'geojson'
+    };
+    osrm.match(options, function(err, response) {
+        assert.ifError(err);
+        assert.equal(response.matchings.length, 1);
+        assert.ok(response.matchings[0].confidence > 0, 'has confidence');
+        assert.ok(response.matchings[0].legs.every((l) => {return l.steps.length > 0; }), 'every leg has steps');
+        assert.ok(response.matchings[0].legs.every((l) => {return l.annotation; }), 'every leg has annotations');
+        assert.ok(response.matchings[0].legs.every((l) => {return l.annotation.speed; }), 'every leg has annotations for speed');
+        assert.notOk(response.matchings[0].legs.every((l) => {return l.annotation.weight; }), 'has no annotations for weight')
+        assert.notOk(response.matchings[0].legs.every((l) => {return l.annotation.datasources; }), 'has no annotations for datasources')
+        assert.notOk(response.matchings[0].legs.every((l) => {return l.annotation.duration; }), 'has no annotations for duration')
+        assert.notOk(response.matchings[0].legs.every((l) => {return l.annotation.distance; }), 'has no annotations for distance')
+        assert.notOk(response.matchings[0].legs.every((l) => {return l.annotation.nodes; }), 'has no annotations for nodes')
+        assert.equal(undefined, response.matchings[0].geometry);
+    });
+});
+
+
+test('match: match in Berlin with several (duration, distance, nodes) annotations options', function(assert) {
+    assert.plan(12);
+    var osrm = new OSRM(berlin_path);
+    var options = {
+        coordinates: [[13.393252,52.542648],[13.39478,52.543079],[13.397389,52.542107]],
+        timestamps: [1424684612, 1424684616, 1424684620],
+        radiuses: [4.07, 4.07, 4.07],
+        steps: true,
+        annotations: ['duration','distance','nodes'],
+        overview: 'false',
+        geometries: 'geojson'
+    };
+    osrm.match(options, function(err, response) {
+        assert.ifError(err);
+        assert.equal(response.matchings.length, 1);
+        assert.ok(response.matchings[0].confidence > 0, 'has confidence');
+        assert.ok(response.matchings[0].legs.every((l) => {return l.steps.length > 0; }), 'every leg has steps');
+        assert.ok(response.matchings[0].legs.every((l) => {return l.annotation; }), 'every leg has annotations');
+        assert.ok(response.matchings[0].legs.every((l) => {return l.annotation.distance; }), 'every leg has annotations for distance');
+        assert.ok(response.matchings[0].legs.every((l) => {return l.annotation.duration; }), 'every leg has annotations for durations');
+        assert.ok(response.matchings[0].legs.every((l) => {return l.annotation.nodes; }), 'every leg has annotations for nodes');
+        assert.notOk(response.matchings[0].legs.every((l) => {return l.annotation.weight; }), 'has no annotations for weight')
+        assert.notOk(response.matchings[0].legs.every((l) => {return l.annotation.datasources; }), 'has no annotations for datasources')
+        assert.notOk(response.matchings[0].legs.every((l) => {return l.annotation.speed; }), 'has no annotations for speed')
+        assert.equal(undefined, response.matchings[0].geometry);
+    });
+});
+
 test('match: match in Berlin with all options', function(assert) {
-    assert.plan(6);
+    assert.plan(8);
     var osrm = new OSRM(berlin_path);
     var options = {
         coordinates: [[13.393252,52.542648],[13.39478,52.543079],[13.397389,52.542107]],
@@ -81,6 +138,8 @@ test('match: match in Berlin with all options', function(assert) {
         assert.ok(response.matchings[0].confidence > 0, 'has confidence');
         assert.ok(response.matchings[0].legs.every((l) => {return l.steps.length > 0; }), 'every leg has steps');
         assert.ok(response.matchings[0].legs.every((l) => {return l.annotation; }), 'every leg has annotations');
+        assert.ok(response.matchings[0].legs.every((l) => {return l.annotation.distance; }), 'every leg has annotations for distance');
+        assert.ok(response.matchings[0].legs.every((l) => {return l.annotation.duration; }), 'every leg has annotations for durations');
         assert.equal(undefined, response.matchings[0].geometry);
     });
 });
