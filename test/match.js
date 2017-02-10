@@ -63,7 +63,7 @@ test('match: match in Berlin with geometry compression', function(assert) {
     });
 });
 
-test('match: match in Berlin with all options', function(assert) {
+test.skip('match: match in Berlin with all options', function(assert) {
     assert.plan(6);
     var osrm = new OSRM(berlin_path);
     var options = {

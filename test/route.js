@@ -128,7 +128,7 @@ test('Test polyline6 geometries option', function(assert) {
     });
 });
 
-test('route: routes Berlin with options', function(assert) {
+test.skip('route: routes Berlin with options', function(assert) {
     assert.plan(11);
     var osrm = new OSRM(berlin_path);
     var options = {
