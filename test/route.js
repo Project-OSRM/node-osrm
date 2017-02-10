@@ -128,6 +128,117 @@ test('Test polyline6 geometries option', function(assert) {
     });
 });
 
+test('route: routes Berlin with speed annotations options', function(assert) {
+    assert.plan(17);
+    var osrm = new OSRM(berlin_path);
+    var options = {
+        coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
+        continue_straight: false,
+        overview: 'false',
+        geometries: 'polyline',
+        steps: true,
+        annotations: ['speed']
+    };
+    osrm.route(options, function(err, first) {
+        assert.ifError(err);
+        assert.ok(first.routes);
+        assert.ok(first.routes[0].legs.every(function(l) { return Array.isArray(l.steps) && l.steps.length > 0; }));
+        assert.equal(first.routes.length, 1);
+        assert.notOk(first.routes[0].geometry);
+        assert.ok(first.routes[0].legs[0]);
+        assert.ok(first.routes[0].legs.every(l => { return l.steps.length > 0; }), 'every leg has steps');
+        assert.ok(first.routes[0].legs.every(l => { return l.annotation;}), 'every leg has annotations');
+        assert.ok(first.routes[0].legs.every(l => { return l.annotation.speed;}), 'every leg has annotations for speed');
+        assert.notOk(first.routes[0].legs.every(l => { return l.annotation.weight; }), 'has no annotations for weight')
+        assert.notOk(first.routes[0].legs.every(l => { return l.annotation.datasources; }), 'has no annotations for datasources')
+        assert.notOk(first.routes[0].legs.every(l => { return l.annotation.duration; }), 'has no annotations for duration')
+        assert.notOk(first.routes[0].legs.every(l => { return l.annotation.distance; }), 'has no annotations for distance')
+        assert.notOk(first.routes[0].legs.every(l => { return l.annotation.nodes; }), 'has no annotations for nodes')
+
+        options.overview = 'full';
+        osrm.route(options, function(err, full) {
+            assert.ifError(err);
+            options.overview = 'simplified';
+            osrm.route(options, function(err, simplified) {
+                assert.ifError(err);
+                assert.notEqual(full.routes[0].geometry, simplified.routes[0].geometry);
+            });
+        });
+    });
+});
+
+test('route: routes Berlin with several (duration, distance, nodes) annotations options', function(assert) {
+    assert.plan(17);
+    var osrm = new OSRM(berlin_path);
+    var options = {
+        coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
+        continue_straight: false,
+        overview: 'false',
+        geometries: 'polyline',
+        steps: true,
+        annotations: ['duration','distance','nodes']
+    };
+    osrm.route(options, function(err, first) {
+        assert.ifError(err);
+        assert.ok(first.routes);
+        assert.ok(first.routes[0].legs.every(function(l) { return Array.isArray(l.steps) && l.steps.length > 0; }));
+        assert.equal(first.routes.length, 1);
+        assert.notOk(first.routes[0].geometry);
+        assert.ok(first.routes[0].legs[0]);
+        assert.ok(first.routes[0].legs.every(l => { return l.steps.length > 0; }), 'every leg has steps');
+        assert.ok(first.routes[0].legs.every(l => { return l.annotation;}), 'every leg has annotations');
+        assert.ok(first.routes[0].legs.every(l => { return l.annotation.distance;}), 'every leg has annotations for distance');
+        assert.ok(first.routes[0].legs.every(l => { return l.annotation.duration;}), 'every leg has annotations for durations');
+        assert.ok(first.routes[0].legs.every(l => { return l.annotation.nodes;}), 'every leg has annotations for nodes');
+        assert.notOk(first.routes[0].legs.every(l => { return l.annotation.weight; }), 'has no annotations for weight')
+        assert.notOk(first.routes[0].legs.every(l => { return l.annotation.datasources; }), 'has no annotations for datasources')
+        assert.notOk(first.routes[0].legs.every(l => { return l.annotation.speed; }), 'has no annotations for speed')
+
+        options.overview = 'full';
+        osrm.route(options, function(err, full) {
+            assert.ifError(err);
+            options.overview = 'simplified';
+            osrm.route(options, function(err, simplified) {
+                assert.ifError(err);
+                assert.notEqual(full.routes[0].geometry, simplified.routes[0].geometry);
+            });
+        });
+    });
+});
+
+test('route: routes Berlin with options', function(assert) {
+    assert.plan(11);
+    var osrm = new OSRM(berlin_path);
+    var options = {
+        coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
+        continue_straight: false,
+        overview: 'false',
+        geometries: 'polyline',
+        steps: true,
+        annotations: true
+    };
+    osrm.route(options, function(err, first) {
+        assert.ifError(err);
+        assert.ok(first.routes);
+        assert.ok(first.routes[0].legs.every(function(l) { return Array.isArray(l.steps) && l.steps.length > 0; }));
+        assert.equal(first.routes.length, 1);
+        assert.notOk(first.routes[0].geometry);
+        assert.ok(first.routes[0].legs[0]);
+        assert.ok(first.routes[0].legs.every(l => { return l.steps.length > 0; }), 'every leg has steps');
+        assert.ok(first.routes[0].legs.every(l => { return l.annotation;}), 'every leg has annotations');
+
+        options.overview = 'full';
+        osrm.route(options, function(err, full) {
+            assert.ifError(err);
+            options.overview = 'simplified';
+            osrm.route(options, function(err, simplified) {
+                assert.ifError(err);
+                assert.notEqual(full.routes[0].geometry, simplified.routes[0].geometry);
+            });
+        });
+    });
+});
+
 test('route: routes Berlin with options', function(assert) {
     assert.plan(11);
     var osrm = new OSRM(berlin_path);

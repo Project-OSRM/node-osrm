@@ -424,9 +424,48 @@ inline bool parseCommonParameters(const v8::Local<v8::Object> &obj, ParamType &p
         {
             params->annotations = annotations->BooleanValue();
         }
+        else if (annotations->IsArray())
+        {
+            v8::Local<v8::Array> annotations_array = v8::Local<v8::Array>::Cast(annotations);
+            for (std::size_t i = 0; i < annotations_array->Length(); i++)
+            {
+                const Nan::Utf8String annotations_utf8str(annotations_array->Get(i));
+                std::string annotations_str{*annotations_utf8str, *annotations_utf8str + annotations_utf8str.length()};
+
+                if (annotations_str == "duration")
+                {
+                    params->annotations_type = params->annotations_type | osrm::RouteParameters::AnnotationsType::Duration;
+                }
+                else if (annotations_str == "nodes")
+                {
+                    params->annotations_type = params->annotations_type | osrm::RouteParameters::AnnotationsType::Nodes;
+                }
+                else if (annotations_str == "distance")
+                {
+                    params->annotations_type = params->annotations_type | osrm::RouteParameters::AnnotationsType::Distance;
+                }
+                else if (annotations_str == "weight")
+                {
+                    params->annotations_type = params->annotations_type | osrm::RouteParameters::AnnotationsType::Weight;
+                }
+                else if (annotations_str == "datasources")
+                {
+                    params->annotations_type = params->annotations_type | osrm::RouteParameters::AnnotationsType::Datasources;
+                }
+                else if (annotations_str == "speed")
+                {
+                    params->annotations_type = params->annotations_type | osrm::RouteParameters::AnnotationsType::Speed;
+                }
+                else
+                {
+                    Nan::ThrowError("this 'annotations' param is not supported");
+                    return false;
+                }
+            }
+        }
         else
         {
-            Nan::ThrowError("'annotations' param must be a boolean");
+            Nan::ThrowError("this 'annotations' param is not supported");
             return false;
         }
     }
@@ -440,8 +479,8 @@ inline bool parseCommonParameters(const v8::Local<v8::Object> &obj, ParamType &p
             Nan::ThrowError("Geometries must be a string: [polyline, polyline6, geojson]");
             return false;
         }
-
-        std::string geometries_str = *v8::String::Utf8Value(geometries);
+        const Nan::Utf8String geometries_utf8str(geometries);
+        std::string geometries_str{*geometries_utf8str, *geometries_utf8str + geometries_utf8str.length()};
 
         if (geometries_str == "polyline")
         {
@@ -472,7 +511,8 @@ inline bool parseCommonParameters(const v8::Local<v8::Object> &obj, ParamType &p
             return false;
         }
 
-        std::string overview_str = *v8::String::Utf8Value(overview);
+        const Nan::Utf8String overview_utf8str(overview);
+        std::string overview_str{*overview_utf8str, *overview_utf8str + overview_utf8str.length()};
 
         if (overview_str == "simplified")
         {

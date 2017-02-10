@@ -142,6 +142,60 @@ test('trip: trip through Berlin without geometry compression', function(assert) 
     });
 });
 
+test('trip: trip through Berlin with speed annotations options', function(assert) {
+    assert.plan(12);
+    var osrm = new OSRM(berlin_path);
+    var options = {
+        coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
+        steps: true,
+        annotations: ['speed'],
+        overview: 'false'
+    };
+    osrm.trip(options, function(err, trip) {
+        assert.ifError(err);
+        assert.equal(trip.trips.length, 1);
+        for (t = 0; t < trip.trips.length; t++) {
+            assert.ok(trip.trips[t]);
+            assert.ok(trip.trips[t].legs.every(function(l) { return l.steps.length > 0; }), 'every leg has steps')
+            assert.ok(trip.trips[t].legs.every(function(l) { return l.annotation; }), 'every leg has annotations')
+            assert.ok(trip.trips[t].legs.every(function(l) { return l.annotation.speed; }), 'every leg has annotations for speed')
+            assert.notOk(trip.trips[t].legs.every(function(l) { return l.annotation.weight; }), 'has no annotations for weight')
+            assert.notOk(trip.trips[t].legs.every(function(l) { return l.annotation.datasources; }), 'has no annotations for datasources')
+            assert.notOk(trip.trips[t].legs.every(function(l) { return l.annotation.duration; }), 'has no annotations for duration')
+            assert.notOk(trip.trips[t].legs.every(function(l) { return l.annotation.distance; }), 'has no annotations for distance')
+            assert.notOk(trip.trips[t].legs.every(function(l) { return l.annotation.nodes; }), 'has no annotations for nodes')
+            assert.notOk(trip.trips[t].geometry);
+        }
+    });
+});
+
+test('trip: trip through Berlin with several (duration, distance, nodes) annotations options', function(assert) {
+    assert.plan(12);
+    var osrm = new OSRM(berlin_path);
+    var options = {
+        coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
+        steps: true,
+        annotations: ['duration', 'distance', 'nodes'],
+        overview: 'false'
+    };
+    osrm.trip(options, function(err, trip) {
+        assert.ifError(err);
+        assert.equal(trip.trips.length, 1);
+        for (t = 0; t < trip.trips.length; t++) {
+            assert.ok(trip.trips[t]);
+            assert.ok(trip.trips[t].legs.every(function(l) { return l.steps.length > 0; }), 'every leg has steps')
+            assert.ok(trip.trips[t].legs.every(function(l) { return l.annotation; }), 'every leg has annotations')
+            assert.ok(trip.trips[t].legs.every(function(l) { return l.annotation.duration; }), 'every leg has annotations for duration')
+            assert.ok(trip.trips[t].legs.every(function(l) { return l.annotation.distance; }), 'every leg has annotations for distance')
+            assert.ok(trip.trips[t].legs.every(function(l) { return l.annotation.nodes; }), 'every leg has annotations for nodes')
+            assert.notOk(trip.trips[t].legs.every(function(l) { return l.annotation.weight; }), 'has no annotations for weight')
+            assert.notOk(trip.trips[t].legs.every(function(l) { return l.annotation.datasources; }), 'has no annotations for datasources')
+            assert.notOk(trip.trips[t].legs.every(function(l) { return l.annotation.speed; }), 'has no annotations for speed')
+            assert.notOk(trip.trips[t].geometry);
+        }
+    });
+});
+
 test('trip: trip through Berlin with options', function(assert) {
     assert.plan(6);
     var osrm = new OSRM(berlin_path);

@@ -49,7 +49,7 @@ Returns the fastest route between two or more coordinates while visiting the way
 -   `options` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Object literal containing parameters for the route query.
     -   `options.alternatives` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Search for alternative routes and return as well. _Please note that even if an alternative route is requested, a result cannot be guaranteed._ (optional, default `false`)
     -   `options.steps` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return route steps for each route leg. (optional, default `false`)
-    -   `options.annotations` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return annotations for each route leg. (optional, default `false`)
+    -   `options.annotations` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)] or \[[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)>]** Return annotations for each route leg for duration, nodes, distance, weight, datasources and/or speed. Annotations can be `false` or `true` (no/full annotations) or an array of strings with `duration`, `nodes`, `distance`, `weight`, `datasources`, `speed`. (optional, default `false`)
     -   `options.geometries` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Returned route geometry format (influences overview and per step). Can also be `geojson`. (optional, default `polyline`)
     -   `options.overview` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Add overview geometry either `full`, `simplified` according to highest zoom level it could be display on, or not at all (`false`). (optional, default `simplified`)
     -   `options.continue_straight` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Forces the route to keep going straight at waypoints and don't do a uturn even if it would be faster. Default value depends on the profile. `null`/`true`/`false`
@@ -175,7 +175,7 @@ if they can not be matched successfully.
 
 -   `options` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Object literal containing parameters for the match query.
     -   `options.steps` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return route steps for each route. (optional, default `false`)
-    -   `options.annotations` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return annotations for each route leg. (optional, default `false`)
+    -   `options.annotations` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)] or \[[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)>]** Return annotations for each route leg for duration, nodes, distance, weight, datasources and/or speed. Annotations can be `false` or `true` (no/full annotations) or an array of strings with `duration`, `nodes`, `distance`, `weight`, `datasources`, `speed`. (optional, default `false`)
     -   `options.geometries` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Returned route geometry format (influences overview
         and per step). Can also be `geojson`. (optional, default `polyline`)
     -   `options.overview` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Add overview geometry either `full`, `simplified`
@@ -217,11 +217,10 @@ The returned path does not have to be the shortest path, as TSP is NP-hard it is
 Note that if the input coordinates can not be joined by a single trip (e.g. the coordinates are on several
 disconnected islands) multiple trips for each connected component are returned.
 
-**Parameters**
-
+**Parameters**  
 -   `options` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Object literal containing parameters for the trip query.
     -   `options.steps` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return route steps for each route. (optional, default `false`)
-    -   `options.annotations` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return annotations for each route leg. (optional, default `false`)
+    -   `options.annotations` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)] or \[[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)>]** Return annotations for each route leg for duration, nodes, distance, weight, datasources and/or speed. Annotations can be `false` or `true` (no/full annotations) or an array of strings with `duration`, `nodes`, `distance`, `weight`, `datasources`, `speed`. (optional, default `false`)
     -   `options.geometries` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Returned route geometry format (influences overview
         and per step). Can also be `geojson`. (optional, default `polyline`)
     -   `options.overview` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Add overview geometry either `full`, `simplified` (optional, default `simplified`)
