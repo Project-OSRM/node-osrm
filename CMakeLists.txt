@@ -43,7 +43,7 @@ if(BUILD_LIBOSRM)
   # LibOSRM_CXXFLAGS
   set(ENABLE_MASON ON CACHE INTERNAL "Always use mason for building osrm-backend" FORCE)
   add_subdirectory(${OSRM_DEPS_DIR})
-  include(${OSRM_DEPS_DIR}/third_party/mason/mason.cmake)
+  include(${OSRM_DEPS_DIR}/cmake/mason.cmake)
 
   # FIXME we can remove this double versioning after the merge
   set(MASON_TBB_VERSION "43_20150316")
