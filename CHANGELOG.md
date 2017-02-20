@@ -1,5 +1,10 @@
 ## node-osrm changelog
 
+### v5.6.0 RC2
+ - Update to osrm-backend v5.6.0 RC2
+ - `osrm.trip` has new parameters `roundtrip`, `source` and `destination`.
+ - `osrm.{match,route,trip}` accept more values for `annotations=["duration", "speed", "distance"]`
+
 ### v5.5.0 RC5
  - Update to osrm-backend v5.5.0 RC5
 
