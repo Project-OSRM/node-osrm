@@ -1,7 +1,11 @@
 ## node-osrm changelog
 
+### v5.6.1
+ - Update to osrm-backend v5.6.1
+ - `osrm.{match,route,trip,table}` accept new parameter `generate_hints={true,false}`
+
 ### v5.6.0
- - Update to osrm-backend v5.6.0 RC2
+ - Update to osrm-backend v5.6.0
  - `osrm.trip` has new parameters `roundtrip`, `source` and `destination`.
  - `osrm.{match,route,trip}` accept more values for `annotations=["duration", "speed", "distance"]`
 
