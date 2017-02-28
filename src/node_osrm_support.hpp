@@ -397,6 +397,19 @@ inline bool argumentsToParameter(const Nan::FunctionCallbackInfo<v8::Value> &arg
         }
     }
 
+    if (obj->Has(Nan::New("generate_hints").ToLocalChecked()))
+    {
+        v8::Local<v8::Value> generate_hints = obj->Get(Nan::New("generate_hints").ToLocalChecked());
+
+        if (!generate_hints->IsBoolean())
+        {
+            Nan::ThrowError("generate_hints must be of type Boolean");
+            return false;
+        }
+
+        params->generate_hints = generate_hints->BooleanValue();
+    }
+
     return true;
 }
 
@@ -430,31 +443,38 @@ inline bool parseCommonParameters(const v8::Local<v8::Object> &obj, ParamType &p
             for (std::size_t i = 0; i < annotations_array->Length(); i++)
             {
                 const Nan::Utf8String annotations_utf8str(annotations_array->Get(i));
-                std::string annotations_str{*annotations_utf8str, *annotations_utf8str + annotations_utf8str.length()};
+                std::string annotations_str{*annotations_utf8str,
+                                            *annotations_utf8str + annotations_utf8str.length()};
 
                 if (annotations_str == "duration")
                 {
-                    params->annotations_type = params->annotations_type | osrm::RouteParameters::AnnotationsType::Duration;
+                    params->annotations_type =
+                        params->annotations_type | osrm::RouteParameters::AnnotationsType::Duration;
                 }
                 else if (annotations_str == "nodes")
                 {
-                    params->annotations_type = params->annotations_type | osrm::RouteParameters::AnnotationsType::Nodes;
+                    params->annotations_type =
+                        params->annotations_type | osrm::RouteParameters::AnnotationsType::Nodes;
                 }
                 else if (annotations_str == "distance")
                 {
-                    params->annotations_type = params->annotations_type | osrm::RouteParameters::AnnotationsType::Distance;
+                    params->annotations_type =
+                        params->annotations_type | osrm::RouteParameters::AnnotationsType::Distance;
                 }
                 else if (annotations_str == "weight")
                 {
-                    params->annotations_type = params->annotations_type | osrm::RouteParameters::AnnotationsType::Weight;
+                    params->annotations_type =
+                        params->annotations_type | osrm::RouteParameters::AnnotationsType::Weight;
                 }
                 else if (annotations_str == "datasources")
                 {
-                    params->annotations_type = params->annotations_type | osrm::RouteParameters::AnnotationsType::Datasources;
+                    params->annotations_type = params->annotations_type |
+                                               osrm::RouteParameters::AnnotationsType::Datasources;
                 }
                 else if (annotations_str == "speed")
                 {
-                    params->annotations_type = params->annotations_type | osrm::RouteParameters::AnnotationsType::Speed;
+                    params->annotations_type =
+                        params->annotations_type | osrm::RouteParameters::AnnotationsType::Speed;
                 }
                 else
                 {
@@ -480,7 +500,8 @@ inline bool parseCommonParameters(const v8::Local<v8::Object> &obj, ParamType &p
             return false;
         }
         const Nan::Utf8String geometries_utf8str(geometries);
-        std::string geometries_str{*geometries_utf8str, *geometries_utf8str + geometries_utf8str.length()};
+        std::string geometries_str{*geometries_utf8str,
+                                   *geometries_utf8str + geometries_utf8str.length()};
 
         if (geometries_str == "polyline")
         {
