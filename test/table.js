@@ -61,7 +61,7 @@ test('table: distance table in Berlin with sources/destinations', function(asser
 });
 
 test('table: throws on invalid arguments', function(assert) {
-    assert.plan(13);
+    assert.plan(14);
     var osrm = new OSRM(berlin_path);
     var options = {};
     assert.throws(function() { osrm.table(options); },
@@ -109,6 +109,9 @@ test('table: throws on invalid arguments', function(assert) {
     options.destinations = [0, 1];
     assert.doesNotThrow(function() { osrm.table(options, function(err, response) {}) },
         /You can either specify sources and destinations, or coordinates/);
+
+    assert.throws(function() { osrm.route({coordinates: [[13.43864,52.51993],[13.415852,52.513191]], generate_hints: null}, function(err, route) {}) },
+        /generate_hints must be of type Boolean/);
 });
 
 test('table: throws on invalid arguments', function(assert) {
@@ -116,4 +119,43 @@ test('table: throws on invalid arguments', function(assert) {
     var osrm = new OSRM(berlin_path);
     assert.throws(function() { osrm.table(null, function() {}); },
         /First arg must be an object/);
+});
+
+test('table: distance table in Berlin with hints', function(assert) {
+    assert.plan(5);
+    var osrm = new OSRM(berlin_path);
+    var options = {
+        coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
+        generate_hints: true  // true is default but be explicit here
+    };
+    osrm.table(options, function(err, table) {
+        console.log(table);
+        assert.ifError(err);
+
+        function assertHasHints(waypoint) {
+            assert.notStrictEqual(waypoint.hint, undefined);
+        }
+
+        table.sources.map(assertHasHints);
+        table.destinations.map(assertHasHints);
+    });
+});
+
+test('table: distance table in Berlin without hints', function(assert) {
+    assert.plan(5);
+    var osrm = new OSRM(berlin_path);
+    var options = {
+        coordinates: [[13.43864,52.51993],[13.415852,52.513191]],
+        generate_hints: false  // true is default
+    };
+    osrm.table(options, function(err, table) {
+        assert.ifError(err);
+
+        function assertHasNoHints(waypoint) {
+            assert.strictEqual(waypoint.hint, undefined);
+        }
+
+        table.sources.map(assertHasNoHints);
+        table.destinations.map(assertHasNoHints);
+    });
 });
