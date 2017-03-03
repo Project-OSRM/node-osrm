@@ -1,5 +1,8 @@
 ## node-osrm changelog
 
+### v5.6.2
+ - Update to osrm-backend v5.6.2
+
 ### v5.6.1
  - Update to osrm-backend v5.6.1
  - `osrm.{match,route,trip,table}` accept new parameter `generate_hints={true,false}`
