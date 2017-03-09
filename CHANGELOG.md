@@ -1,5 +1,9 @@
 ## node-osrm changelog
 
+### v5.6.3
+ - Update to osrm-backend v5.6.3
+ - Fix including missing maxspeed.lua file
+
 ### v5.6.2
  - Update to osrm-backend v5.6.2
 
