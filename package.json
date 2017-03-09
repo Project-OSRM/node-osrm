@@ -42,7 +42,7 @@
     "node": ">=4"
   },
   "scripts": {
-    "preinstall": "npm install node-pre-gyp",
+    "preinstall": "npm install --no-global node-pre-gyp",
     "prepublish": "make profiles",
     "install": "node-pre-gyp install --fallback-to-build=false || make",
     "test": "node test/index.js",
