@@ -19,7 +19,7 @@ node_modules: package.json
 build/%/node-osrm.node: ./node_modules
 	mkdir -p build &&\
 	 cd build &&\
-	 cmake .. -DCMAKE_BUILD_TYPE=$* -DBUILD_LIBOSRM=On -DENABLE_LTO=On &&\
+	 cmake .. -DCMAKE_BUILD_TYPE=$* -DBUILD_LIBOSRM=On -DENABLE_LTO=Off &&\
 	 VERBOSE=1 make -j${JOBS} &&\
 	 cd ..
 
