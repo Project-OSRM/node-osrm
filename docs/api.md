@@ -217,7 +217,7 @@ The trip plugin solves the Traveling Salesman Problem using a greedy heuristic (
 
 **Parameters**  
 -   `options` **[Object](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)** Object literal containing parameters for the trip query.
-    -   `options.roundtrip` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return route is a roundtrip. (optional, default `true`)
+    -   `options.roundtrip` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return route is a roundtrip (route returns to first location). (optional, default `true`)
     -   `options.source` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Return route starts at `any` coordinate. Can also be `first`. (optional, default `any`)
     -   `options.destination` **\[[String](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)]** Return route ends at `any` coordinate. Can also be `last`. (optional, default `any`)
     -   `options.steps` **\[[Boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)]** Return route steps for each route. (optional, default `false`)
